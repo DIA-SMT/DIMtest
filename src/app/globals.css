@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/*
+ * Identidad municipal (estándar DIA 04): azul del logo para acciones, azul noche
+ * institucional para barras y bandas, amarillo solo como acento (nunca texto sobre claro).
+ * Los tokens llevan nombres de rol; en los componentes no hay colores sueltos.
+ * Contrastes medidos en docs/diseno.md.
+ */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
+
+  /* Marca */
+  --color-institucional: #0f2f5d;
+  --color-institucional-hover: #163b70;
+  --color-institucional-activo: #1a4683;
+  --color-institucional-texto: #c7d6eb;
+  --color-primario: #0066ff;
+  --color-primario-oscuro: #0052cc;
+  --color-celeste: #2eb1ff;
+  --color-amarillo: #f4dc00;
+  --color-amarillo-texto: #6e6300;
+  --color-superficie-azul: #e8f2ff;
+
+  /* Neutros */
+  --color-fondo: #f4f7fb;
+  --color-superficie: #ffffff;
+  --color-texto: #172b4d;
+  --color-texto-secundario: #5f6878;
+  --color-borde: #dce3ec;
+  --color-borde-control: #7c8798;
+
+  /* Estados */
+  --color-exito: #166534;
+  --color-exito-fondo: #eaf7ee;
+  --color-exito-borde: #9fd3b1;
+  --color-exito-solido: #15803d;
+  --color-advertencia: #8a4b00;
+  --color-advertencia-fondo: #fff4d6;
+  --color-advertencia-borde: #e9c46a;
+  --color-error: #b42318;
+  --color-error-fondo: #fdecec;
+  --color-error-borde: #f2b8b5;
+  --color-error-hover: #912018;
+  --color-info: #0052cc;
+  --color-info-fondo: #e8f2ff;
+  --color-info-borde: #b5d3ff;
+  --color-neutro-fondo: #eef1f5;
+
+  /* Forma */
+  --radius-control: 0.5rem;
+  --radius-tarjeta: 0.75rem;
+  --radius-panel: 1rem;
+  --shadow-tarjeta: 0 1px 2px rgb(15 47 93 / 0.05), 0 1px 3px rgb(15 47 93 / 0.07);
+  --shadow-elevada: 0 4px 12px rgb(15 47 93 / 0.08), 0 1px 3px rgb(15 47 93 / 0.06);
+
+  /* Movimiento */
+  --ease-salida: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Filete tricolor corto, bajo los antetítulos. */
+@utility filete {
+  display: block;
+  height: 3px;
+  width: 3.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primario) 0 46%,
+    var(--color-celeste) 46% 78%,
+    var(--color-amarillo) 78%
+  );
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-fondo);
+    color: var(--color-texto);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  /* Los resultados son radios grandes: el foco se ve en la tarjeta. */
+  .opcion-resultado:has(input:focus-visible) {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,2190 @@
+{
+  "fuente": "DIM360-checklist-prueba-funcional-2026-11-05.pdf",
+  "titulo": "DIM360: checklist de prueba funcional",
+  "fecha": "2026-11-05",
+  "totalSegunPdf": 217,
+  "perfiles": {
+    "C": "contribuyente",
+    "O": "operador de la DIM",
+    "A": "administrador del sistema",
+    "S": "proceso automático",
+    "P": "público, sin iniciar sesión"
+  },
+  "resultados": [
+    {
+      "clave": "funciona",
+      "nombre": "Funciona",
+      "ayuda": "Se hizo la prueba y el resultado coincide con el esperado y con lo que muestra el sistema de origen."
+    },
+    {
+      "clave": "no_funciona",
+      "nombre": "No funciona",
+      "ayuda": "Da error, no deja hacerlo o el resultado no es el correcto. Anotar el caso y lo que se vio."
+    },
+    {
+      "clave": "parcial",
+      "nombre": "Parcial",
+      "ayuda": "Funciona con algunos casos y con otros no, o falta una parte del resultado. Anotar cuál."
+    },
+    {
+      "clave": "no_probado",
+      "nombre": "No probado",
+      "ayuda": "No se pudo probar (falta de datos, permisos o tiempo) o la DIM no lo usa. Anotar el motivo."
+    }
+  ],
+  "exclusiones": [
+    {
+      "funcion": "Corrida masiva de intereses",
+      "motivo": "El interés se calcula a la fecha de pago (sección Intereses), pero no se graba en masa."
+    },
+    {
+      "funcion": "Envío del débito automático a los bancos",
+      "motivo": "Lo sigue haciendo el PGM."
+    },
+    {
+      "funcion": "DDJJ de Otros Tributos presentada por el contribuyente",
+      "motivo": "La presenta el operador, según la instrucción de la DIM."
+    },
+    {
+      "funcion": "Órdenes automáticas por diferencias con ARCA y por DDJJ omitidas, caducidad automática de planes y devengamiento anual",
+      "motivo": "Esperan definiciones de la DIM."
+    },
+    {
+      "funcion": "Interbanking y el asistente del contribuyente",
+      "motivo": "En modo de prueba."
+    }
+  ],
+  "modulos": [
+    {
+      "prefijo": "ACC",
+      "nombre": "Acceso y sesión",
+      "descripcion": "Entrada al sistema por cada vía habilitada y separación entre perfiles.",
+      "orden": 1,
+      "cantidadSegunPdf": 10,
+      "pagina": 2
+    },
+    {
+      "prefijo": "USR",
+      "nombre": "Usuarios, roles y representaciones",
+      "descripcion": "Quién puede hacer qué, y quién actúa en nombre de quién.",
+      "orden": 2,
+      "cantidadSegunPdf": 10,
+      "pagina": 2
+    },
+    {
+      "prefijo": "PAD",
+      "nombre": "Contribuyentes y padrón de actividad económica",
+      "descripcion": "Ficha del contribuyente, alta y baja de actividades, categorización y constancias.",
+      "orden": 3,
+      "cantidadSegunPdf": 21,
+      "pagina": 3
+    },
+    {
+      "prefijo": "TRA",
+      "nombre": "Trámites, certificados y habilitaciones",
+      "descripcion": "Trámites que inicia el contribuyente y resuelve la DIM, y los certificados que se emiten solos.",
+      "orden": 4,
+      "cantidadSegunPdf": 17,
+      "pagina": 4
+    },
+    {
+      "prefijo": "OT",
+      "nombre": "Órdenes de trabajo y fiscalización",
+      "descripcion": "Circuito de órdenes de trabajo, formularios y documentos de fiscalización.",
+      "orden": 5,
+      "cantidadSegunPdf": 18,
+      "pagina": 5
+    },
+    {
+      "prefijo": "PAT",
+      "nombre": "Patrimonios: inmuebles, cementerio y elementos",
+      "descripcion": "Padrones de CISI y CISCA, y elementos de Publicidad y Propaganda y Ocupación.",
+      "orden": 6,
+      "cantidadSegunPdf": 9,
+      "pagina": 6
+    },
+    {
+      "prefijo": "PAR",
+      "nombre": "Tributos y parametría",
+      "descripcion": "Tablas que definen cuánto se cobra y cuándo vence.",
+      "orden": 7,
+      "cantidadSegunPdf": 8,
+      "pagina": 6
+    },
+    {
+      "prefijo": "TEM",
+      "nombre": "TEM: declaración jurada mensual",
+      "descripcion": "Liquidación mensual de la Tasa por Actividad Económica (comercio e industria).",
+      "orden": 8,
+      "cantidadSegunPdf": 13,
+      "pagina": 7
+    },
+    {
+      "prefijo": "TEA",
+      "nombre": "TEM: declaración jurada anual y recategorización",
+      "descripcion": "DDJJ anual que define la categoría del año siguiente.",
+      "orden": 9,
+      "cantidadSegunPdf": 7,
+      "pagina": 8
+    },
+    {
+      "prefijo": "OTR",
+      "nombre": "Otros Tributos: publicidad, ocupación y tasas",
+      "descripcion": "Liquidación que hace el operador. El contribuyente no la presenta por decisión de la DIM.",
+      "orden": 10,
+      "cantidadSegunPdf": 6,
+      "pagina": 8
+    },
+    {
+      "prefijo": "CTA",
+      "nombre": "Obligaciones y cuenta corriente",
+      "descripcion": "Deuda, pagos e imputaciones de cada contribuyente.",
+      "orden": 11,
+      "cantidadSegunPdf": 10,
+      "pagina": 9
+    },
+    {
+      "prefijo": "BOL",
+      "nombre": "Boletas y pago en línea",
+      "descripcion": "Emisión de boletas, código de barras y cobro por Click de Pago.",
+      "orden": 12,
+      "cantidadSegunPdf": 10,
+      "pagina": 9
+    },
+    {
+      "prefijo": "INT",
+      "nombre": "Intereses",
+      "descripcion": "Interés resarcitorio a la fecha de pago.",
+      "orden": 13,
+      "cantidadSegunPdf": 3,
+      "pagina": 10
+    },
+    {
+      "prefijo": "PLA",
+      "nombre": "Planes de pago",
+      "descripcion": "Configuración, asignación por la DIM y autogestión del contribuyente.",
+      "orden": 14,
+      "cantidadSegunPdf": 13,
+      "pagina": 10
+    },
+    {
+      "prefijo": "EXE",
+      "nombre": "Exenciones",
+      "descripcion": "",
+      "orden": 15,
+      "cantidadSegunPdf": 6,
+      "pagina": 11
+    },
+    {
+      "prefijo": "AGE",
+      "nombre": "Agentes de retención y percepción",
+      "descripcion": "",
+      "orden": 16,
+      "cantidadSegunPdf": 10,
+      "pagina": 11
+    },
+    {
+      "prefijo": "ADH",
+      "nombre": "Adhesiones: débito automático y cesión de haberes",
+      "descripcion": "Hoy el débito lo sigue enviando el PGM; el envío desde DIM360 está apagado a propósito.",
+      "orden": 17,
+      "cantidadSegunPdf": 5,
+      "pagina": 12
+    },
+    {
+      "prefijo": "JUD",
+      "nombre": "Cuentas judiciales y expedientes",
+      "descripcion": "",
+      "orden": 18,
+      "cantidadSegunPdf": 6,
+      "pagina": 12
+    },
+    {
+      "prefijo": "DFE",
+      "nombre": "Domicilio fiscal electrónico y notificaciones",
+      "descripcion": "",
+      "orden": 19,
+      "cantidadSegunPdf": 8,
+      "pagina": 12
+    },
+    {
+      "prefijo": "REC",
+      "nombre": "Recaudación y conciliación",
+      "descripcion": "Movimientos bancarios, cobranza de redes y entidades recaudadoras.",
+      "orden": 20,
+      "cantidadSegunPdf": 10,
+      "pagina": 13
+    },
+    {
+      "prefijo": "AUT",
+      "nombre": "Procesos automáticos",
+      "descripcion": "Lo que el sistema hace solo. Se prueba mirando el resultado al día siguiente.",
+      "orden": 21,
+      "cantidadSegunPdf": 6,
+      "pagina": 14
+    },
+    {
+      "prefijo": "MIG",
+      "nombre": "Cotejo de datos con los sistemas actuales",
+      "descripcion": "La prueba central del traspaso: para casos que la DIM conoce, comparar DIM360 con el PGM, el 180 y el SIAC.",
+      "orden": 22,
+      "cantidadSegunPdf": 11,
+      "pagina": 14
+    }
+  ],
+  "pruebas": [
+    {
+      "codigo": "ACC-01",
+      "modulo": "ACC",
+      "numero": 1,
+      "perfil": "C",
+      "queProbar": "Ingresar con usuario y clave.",
+      "resultadoEsperado": "Entra al portal con su perfil. Con clave errada no entra.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-02",
+      "modulo": "ACC",
+      "numero": 2,
+      "perfil": "C",
+      "queProbar": "Equivocar la clave varias veces seguidas.",
+      "resultadoEsperado": "El usuario queda bloqueado por un tiempo y después vuelve a poder entrar.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-03",
+      "modulo": "ACC",
+      "numero": 3,
+      "perfil": "C",
+      "queProbar": "Usar como clave el DNI, el CUIT o el nombre de usuario.",
+      "resultadoEsperado": "El sistema no la acepta, ni para entrar ni como clave nueva.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-04",
+      "modulo": "ACC",
+      "numero": 4,
+      "perfil": "C",
+      "queProbar": "Registrarse como contribuyente nuevo y validar la cuenta desde el correo.",
+      "resultadoEsperado": "Llega el correo de validación. Sin validar no entra; validada, sí. Se puede pedir el reenvío.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-05",
+      "modulo": "ACC",
+      "numero": 5,
+      "perfil": "C",
+      "queProbar": "Recuperar la clave olvidada.",
+      "resultadoEsperado": "Llega el correo con el enlace; la clave nueva funciona y la anterior no.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-06",
+      "modulo": "ACC",
+      "numero": 6,
+      "perfil": "C",
+      "queProbar": "Cambiar la clave con la sesión iniciada.",
+      "resultadoEsperado": "La clave nueva funciona en el próximo ingreso.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-07",
+      "modulo": "ACC",
+      "numero": 7,
+      "perfil": "C",
+      "queProbar": "Ingresar con Clave Fiscal de ARCA.",
+      "resultadoEsperado": "Entra con el CUIT de la clave fiscal, sin pedir otra clave.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-08",
+      "modulo": "ACC",
+      "numero": 8,
+      "perfil": "C",
+      "queProbar": "Ingresar con Ciudadano Digital (CIDITUC).",
+      "resultadoEsperado": "Entra si el documento coincide con el CUIT; si no coincide, lo rechaza.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-09",
+      "modulo": "ACC",
+      "numero": 9,
+      "perfil": "C",
+      "queProbar": "Elegir perfil y representado (actividad económica, patrimonio o agente).",
+      "resultadoEsperado": "Cada perfil ve solo lo suyo. \"Agente\" aparece solo si el contribuyente es agente.",
+      "pagina": 2
+    },
+    {
+      "codigo": "ACC-10",
+      "modulo": "ACC",
+      "numero": 10,
+      "perfil": "C",
+      "queProbar": "Intentar entrar a una función de operador con un usuario contribuyente.",
+      "resultadoEsperado": "El sistema lo rechaza.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-01",
+      "modulo": "USR",
+      "numero": 1,
+      "perfil": "A",
+      "queProbar": "Buscar un usuario por persona o por CUIT.",
+      "resultadoEsperado": "Muestra el usuario con sus roles.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-02",
+      "modulo": "USR",
+      "numero": 2,
+      "perfil": "A",
+      "queProbar": "Crear una persona por CUIT.",
+      "resultadoEsperado": "Trae nombre y datos desde ARCA.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-03",
+      "modulo": "USR",
+      "numero": 3,
+      "perfil": "A",
+      "queProbar": "Crear un usuario operador.",
+      "resultadoEsperado": "Se genera un enlace para que cree su clave. Si se genera otro, el anterior deja de servir.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-04",
+      "modulo": "USR",
+      "numero": 4,
+      "perfil": "A",
+      "queProbar": "Asignar y quitar roles a un operador.",
+      "resultadoEsperado": "El operador ve y hace solo lo que permiten sus roles, desde el siguiente ingreso.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-05",
+      "modulo": "USR",
+      "numero": 5,
+      "perfil": "A",
+      "queProbar": "Quitar a un rol el permiso de ver un módulo en la matriz de permisos.",
+      "resultadoEsperado": "El módulo desaparece para ese rol y no se puede usar ni entrando directo.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-06",
+      "modulo": "USR",
+      "numero": 6,
+      "perfil": "A",
+      "queProbar": "Dar a un rol el permiso de agentes (caso YUHMAK).",
+      "resultadoEsperado": "Ese rol pasa a ver las pestañas de agentes.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-07",
+      "modulo": "USR",
+      "numero": 7,
+      "perfil": "A",
+      "queProbar": "Editar y eliminar un usuario.",
+      "resultadoEsperado": "Los cambios quedan guardados; el usuario eliminado no entra.",
+      "pagina": 2
+    },
+    {
+      "codigo": "USR-08",
+      "modulo": "USR",
+      "numero": 8,
+      "perfil": "A",
+      "queProbar": "Crear una representación (actividad económica, patrimonio o agente).",
+      "resultadoEsperado": "El representante ve y opera las cuentas del representado.",
+      "pagina": 3
+    },
+    {
+      "codigo": "USR-09",
+      "modulo": "USR",
+      "numero": 9,
+      "perfil": "A",
+      "queProbar": "Eliminar una representación.",
+      "resultadoEsperado": "El representante deja de ver al representado.",
+      "pagina": 3
+    },
+    {
+      "codigo": "USR-10",
+      "modulo": "USR",
+      "numero": 10,
+      "perfil": "A",
+      "queProbar": "Consultar representantes y representados de un CUIT.",
+      "resultadoEsperado": "Lista las relaciones vigentes de ese CUIT.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-01",
+      "modulo": "PAD",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Buscar un contribuyente por CUIT o por nombre.",
+      "resultadoEsperado": "Abre su ficha con los mismos datos que el PGM.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-02",
+      "modulo": "PAD",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Consultar ARCA desde la ficha.",
+      "resultadoEsperado": "Al rato aparece la respuesta de ARCA, con las diferencias de actividad, domicilio o razón social.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-03",
+      "modulo": "PAD",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Empadronar un CUIT nuevo desde ARCA.",
+      "resultadoEsperado": "Se crea el contribuyente con los datos de ARCA.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-04",
+      "modulo": "PAD",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Actualizar desde ARCA un contribuyente ya cargado.",
+      "resultadoEsperado": "Domicilios, actividades y razón social quedan como en ARCA.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-05",
+      "modulo": "PAD",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Editar los datos de la actividad (fantasía, inicio, personal, superficie).",
+      "resultadoEsperado": "Los cambios quedan guardados y se ven en la ficha y en la constancia.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-06",
+      "modulo": "PAD",
+      "numero": 6,
+      "perfil": "O",
+      "queProbar": "Alta, edición y baja de domicilios fiscal, real y postal.",
+      "resultadoEsperado": "Los domicilios se guardan con calles del nomenclador.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-07",
+      "modulo": "PAD",
+      "numero": 7,
+      "perfil": "O",
+      "queProbar": "Alta, edición y baja de contactos y datos del local.",
+      "resultadoEsperado": "Quedan guardados en la ficha.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-08",
+      "modulo": "PAD",
+      "numero": 8,
+      "perfil": "O",
+      "queProbar": "Dar de alta una actividad TEM con tributo y fecha de inicio.",
+      "resultadoEsperado": "La actividad queda vigente desde esa fecha y empieza a exigir DDJJ.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-09",
+      "modulo": "PAD",
+      "numero": 9,
+      "perfil": "O",
+      "queProbar": "Dar de baja una actividad con fecha de cese.",
+      "resultadoEsperado": "Deja de exigir DDJJ desde el cese. Las otras actividades siguen.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-10",
+      "modulo": "PAD",
+      "numero": 10,
+      "perfil": "O",
+      "queProbar": "Cese total TEM y baja de oficio.",
+      "resultadoEsperado": "Todas las actividades quedan dadas de baja con su fecha y motivo.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-11",
+      "modulo": "PAD",
+      "numero": 11,
+      "perfil": "O",
+      "queProbar": "Eliminar una actividad cargada por error.",
+      "resultadoEsperado": "Desaparece sin dejar obligaciones colgadas.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-12",
+      "modulo": "PAD",
+      "numero": 12,
+      "perfil": "O",
+      "queProbar": "Marcar un padrón como empadronado de oficio, con motivo.",
+      "resultadoEsperado": "Queda la marca y el motivo en la ficha.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-13",
+      "modulo": "PAD",
+      "numero": 13,
+      "perfil": "O",
+      "queProbar": "Calcular la categoría inicial con ingresos, personal y alquiler.",
+      "resultadoEsperado": "Da la categoría que corresponde por la tabla vigente. Una persona jurídica no queda por debajo de la D.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-14",
+      "modulo": "PAD",
+      "numero": 14,
+      "perfil": "O",
+      "queProbar": "Registrar magnitudes (espacios de playa, habitaciones).",
+      "resultadoEsperado": "El mínimo especial de la DDJJ las toma.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-15",
+      "modulo": "PAD",
+      "numero": 15,
+      "perfil": "O",
+      "queProbar": "Constancia de inscripción y constancia de baja en PDF.",
+      "resultadoEsperado": "Salen con los datos y las fechas correctas.",
+      "pagina": 3
+    },
+    {
+      "codigo": "PAD-16",
+      "modulo": "PAD",
+      "numero": 16,
+      "perfil": "O",
+      "queProbar": "Ficha de actividad económica en PDF.",
+      "resultadoEsperado": "Refleja actividades, categoría y domicilios vigentes.",
+      "pagina": 4
+    },
+    {
+      "codigo": "PAD-17",
+      "modulo": "PAD",
+      "numero": 17,
+      "perfil": "O",
+      "queProbar": "Socios: alta, edición, baja e importación desde ARCA.",
+      "resultadoEsperado": "Quedan los socios vigentes y se pueden ver los dados de baja.",
+      "pagina": 4
+    },
+    {
+      "codigo": "PAD-18",
+      "modulo": "PAD",
+      "numero": 18,
+      "perfil": "O",
+      "queProbar": "Adjuntar documentación al contribuyente.",
+      "resultadoEsperado": "Se sube, se renombra, se descarga y se elimina.",
+      "pagina": 4
+    },
+    {
+      "codigo": "PAD-19",
+      "modulo": "PAD",
+      "numero": 19,
+      "perfil": "O",
+      "queProbar": "Recorrer las pestañas de obligaciones, pagos, planes, DDJJ, patrimonios y agentes.",
+      "resultadoEsperado": "Cada pestaña muestra lo mismo que el PGM para ese contribuyente.",
+      "pagina": 4
+    },
+    {
+      "codigo": "PAD-20",
+      "modulo": "PAD",
+      "numero": 20,
+      "perfil": "C",
+      "queProbar": "Inicio del contribuyente: resumen y agenda de vencimientos.",
+      "resultadoEsperado": "Muestra su deuda y sus próximos vencimientos reales.",
+      "pagina": 4
+    },
+    {
+      "codigo": "PAD-21",
+      "modulo": "PAD",
+      "numero": 21,
+      "perfil": "C",
+      "queProbar": "Editar sus datos de contacto.",
+      "resultadoEsperado": "Quedan guardados y los ve el operador.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-01",
+      "modulo": "TRA",
+      "numero": 1,
+      "perfil": "C",
+      "queProbar": "Iniciar un trámite de inicio de actividades en borrador y adjuntar documentación.",
+      "resultadoEsperado": "Queda en borrador; se puede editar o eliminar.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-02",
+      "modulo": "TRA",
+      "numero": 2,
+      "perfil": "C",
+      "queProbar": "Presentar el trámite.",
+      "resultadoEsperado": "Pasa a \"en análisis\" y lo ve el operador.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-03",
+      "modulo": "TRA",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Tomar el trámite y observarlo.",
+      "resultadoEsperado": "El contribuyente ve la observación y puede corregir y volver a presentar.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-04",
+      "modulo": "TRA",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Proponer la resolución.",
+      "resultadoEsperado": "Pasa a \"en supervisión\" de la jefatura.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-05",
+      "modulo": "TRA",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Confirmar como jefatura.",
+      "resultadoEsperado": "Pasa a \"ejecutado\" y el alta o la modificación queda aplicada en el padrón.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-06",
+      "modulo": "TRA",
+      "numero": 6,
+      "perfil": "O",
+      "queProbar": "Rechazar o devolver un trámite.",
+      "resultadoEsperado": "El contribuyente ve el rechazo o la devolución con el motivo.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-07",
+      "modulo": "TRA",
+      "numero": 7,
+      "perfil": "C",
+      "queProbar": "Trámite de modificación de datos TEM.",
+      "resultadoEsperado": "Recorre el mismo circuito y, confirmado, cambia los datos.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-08",
+      "modulo": "TRA",
+      "numero": 8,
+      "perfil": "C",
+      "queProbar": "Pedir el libre deuda con un contribuyente sin deuda.",
+      "resultadoEsperado": "Se emite el certificado.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-09",
+      "modulo": "TRA",
+      "numero": 9,
+      "perfil": "C",
+      "queProbar": "Pedir el libre deuda con un contribuyente con deuda exigible.",
+      "resultadoEsperado": "Se rechaza con el motivo.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-10",
+      "modulo": "TRA",
+      "numero": 10,
+      "perfil": "C",
+      "queProbar": "Libre deuda de inmueble (CISI).",
+      "resultadoEsperado": "Sale solo si los últimos 5 años están pagos y no hay plan; si no, queda para revisión.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-11",
+      "modulo": "TRA",
+      "numero": 11,
+      "perfil": "C",
+      "queProbar": "Constancia de inscripto, de no inscripto y de baja.",
+      "resultadoEsperado": "Cada una sale solo si corresponde al estado de la actividad.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-12",
+      "modulo": "TRA",
+      "numero": 12,
+      "perfil": "C",
+      "queProbar": "Certificado de cumplimiento fiscal.",
+      "resultadoEsperado": "Sale sin deuda, sin planes vigentes y con los informes de área favorables.",
+      "pagina": 4
+    },
+    {
+      "codigo": "TRA-13",
+      "modulo": "TRA",
+      "numero": 13,
+      "perfil": "C",
+      "queProbar": "Baja o cese TEM autogestionado, total o por actividad.",
+      "resultadoEsperado": "Exige libre deuda, da de baja, cierra exenciones y emite la constancia.",
+      "pagina": 5
+    },
+    {
+      "codigo": "TRA-14",
+      "modulo": "TRA",
+      "numero": 14,
+      "perfil": "C",
+      "queProbar": "Pedir una representación.",
+      "resultadoEsperado": "Aprobada, se crea la representación; rechazada, se avisa al contribuyente.",
+      "pagina": 5
+    },
+    {
+      "codigo": "TRA-15",
+      "modulo": "TRA",
+      "numero": 15,
+      "perfil": "C",
+      "queProbar": "Prefactibilidad: validar actividad e inmueble e iniciar la habilitación.",
+      "resultadoEsperado": "Crea la orden de trabajo de habilitación.",
+      "pagina": 5
+    },
+    {
+      "codigo": "TRA-16",
+      "modulo": "TRA",
+      "numero": 16,
+      "perfil": "S",
+      "queProbar": "Habilitación de negocio provisoria o definitiva.",
+      "resultadoEsperado": "Sale el PDF con QR y datos correctos.",
+      "pagina": 5
+    },
+    {
+      "codigo": "TRA-17",
+      "modulo": "TRA",
+      "numero": 17,
+      "perfil": "P",
+      "queProbar": "Verificar un certificado o una DDJJ por su QR, sin iniciar sesión.",
+      "resultadoEsperado": "Confirma que el documento es auténtico y muestra sus datos.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-01",
+      "modulo": "OT",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Listar órdenes asignables, asignadas a mí y en las que participo.",
+      "resultadoEsperado": "Cada lista muestra las que corresponden, con filtros por estado y tipo.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-02",
+      "modulo": "OT",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Asignar y desasignar una orden a un operador (líder de equipo).",
+      "resultadoEsperado": "La orden pasa a la bandeja del operador asignado.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-03",
+      "modulo": "OT",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Autoasignarse una orden.",
+      "resultadoEsperado": "Queda asignada a quien la tomó.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-04",
+      "modulo": "OT",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Crear una orden manual para un CUIT.",
+      "resultadoEsperado": "Se crea con el tipo elegido y el contribuyente correcto.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-05",
+      "modulo": "OT",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Avanzar de estado completando el formulario del paso.",
+      "resultadoEsperado": "Pasa al estado siguiente y ejecuta la acción automática configurada.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-06",
+      "modulo": "OT",
+      "numero": 6,
+      "perfil": "O",
+      "queProbar": "Observaciones y adjuntos de la orden.",
+      "resultadoEsperado": "Se crean, editan, reemplazan y descargan.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-07",
+      "modulo": "OT",
+      "numero": 7,
+      "perfil": "S",
+      "queProbar": "Orden de inspección F.F.1 en PDF.",
+      "resultadoEsperado": "Número de orden y de actuación correlativos, sin saltos ni repetidos.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-08",
+      "modulo": "OT",
+      "numero": 8,
+      "perfil": "S",
+      "queProbar": "Acta de inspección en PDF.",
+      "resultadoEsperado": "Numeración correlativa.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-09",
+      "modulo": "OT",
+      "numero": 9,
+      "perfil": "S",
+      "queProbar": "Vista o cédula F.F.2 en PDF.",
+      "resultadoEsperado": "Numeración de vista, sumario y actuación correcta.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-10",
+      "modulo": "OT",
+      "numero": 10,
+      "perfil": "S",
+      "queProbar": "Nominar una orden de fiscalización con el CUIT cargado.",
+      "resultadoEsperado": "La orden queda a nombre de ese contribuyente.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-11",
+      "modulo": "OT",
+      "numero": 11,
+      "perfil": "S",
+      "queProbar": "Generar una determinación desde la orden.",
+      "resultadoEsperado": "Crea la obligación con la fórmula vigente del tributo.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-12",
+      "modulo": "OT",
+      "numero": 12,
+      "perfil": "S",
+      "queProbar": "Vincular las DDJJ presentadas dentro de la orden.",
+      "resultadoEsperado": "Sus obligaciones quedan ligadas a la orden.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-13",
+      "modulo": "OT",
+      "numero": 13,
+      "perfil": "S",
+      "queProbar": "Notificar por domicilio fiscal electrónico desde la orden.",
+      "resultadoEsperado": "La notificación llega a la bandeja del contribuyente.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-14",
+      "modulo": "OT",
+      "numero": 14,
+      "perfil": "S",
+      "queProbar": "Pagar una obligación ligada a una orden.",
+      "resultadoEsperado": "La orden avanza sola al imputarse el pago.",
+      "pagina": 5
+    },
+    {
+      "codigo": "OT-15",
+      "modulo": "OT",
+      "numero": 15,
+      "perfil": "S",
+      "queProbar": "Reporte de la orden en Excel.",
+      "resultadoEsperado": "Se adjunta a la orden con los datos pedidos.",
+      "pagina": 6
+    },
+    {
+      "codigo": "OT-16",
+      "modulo": "OT",
+      "numero": 16,
+      "perfil": "A",
+      "queProbar": "Configurar un tipo de orden: estados, transiciones, roles, formularios y requisitos.",
+      "resultadoEsperado": "Las órdenes nuevas de ese tipo siguen el circuito configurado.",
+      "pagina": 6
+    },
+    {
+      "codigo": "OT-17",
+      "modulo": "OT",
+      "numero": 17,
+      "perfil": "A",
+      "queProbar": "Formularios dinámicos: alta, nueva versión y finalizar versión.",
+      "resultadoEsperado": "Las órdenes usan la versión vigente; la anterior queda para las ya iniciadas.",
+      "pagina": 6
+    },
+    {
+      "codigo": "OT-18",
+      "modulo": "OT",
+      "numero": 18,
+      "perfil": "O",
+      "queProbar": "App de inspectores: bajar las órdenes asignadas y subir respuestas.",
+      "resultadoEsperado": "Las respuestas aparecen en la orden.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-01",
+      "modulo": "PAT",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Buscar un patrimonio por número de padrón.",
+      "resultadoEsperado": "Abre el mismo bien que en el PGM o el SIAC, con su titular.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-02",
+      "modulo": "PAT",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Ver el detalle del patrimonio.",
+      "resultadoEsperado": "Domicilios, categoría, titulares, exenciones, bases imponibles y contribuciones iguales a origen.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-03",
+      "modulo": "PAT",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Alta de patrimonio.",
+      "resultadoEsperado": "Queda creado con su padrón y su contribución.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-04",
+      "modulo": "PAT",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Pasar a inactivo o suspendido con fecha de baja.",
+      "resultadoEsperado": "Las obligaciones impagas posteriores a esa fecha quedan anuladas; las anteriores siguen.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-05",
+      "modulo": "PAT",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Baja definitiva de padrón.",
+      "resultadoEsperado": "Se dan de baja la contribución, los domicilios y los elementos.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-06",
+      "modulo": "PAT",
+      "numero": 6,
+      "perfil": "O",
+      "queProbar": "Ficha catastral en PDF.",
+      "resultadoEsperado": "Sale con los datos del inmueble.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-07",
+      "modulo": "PAT",
+      "numero": 7,
+      "perfil": "A",
+      "queProbar": "Categorías de patrimonio (zona o sección): alta y asignación.",
+      "resultadoEsperado": "El bien toma la categoría y su cálculo cambia en consecuencia.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-08",
+      "modulo": "PAT",
+      "numero": 8,
+      "perfil": "O",
+      "queProbar": "Acto parcelario (unificación o subdivisión) con origen y destino.",
+      "resultadoEsperado": "Queda registrado y los padrones quedan vinculados.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAT-09",
+      "modulo": "PAT",
+      "numero": 9,
+      "perfil": "C",
+      "queProbar": "Mis patrimonios y su estado de cuenta.",
+      "resultadoEsperado": "El contribuyente ve sus bienes y la deuda de cada uno.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAR-01",
+      "modulo": "PAR",
+      "numero": 1,
+      "perfil": "A",
+      "queProbar": "Alta, edición y baja de un tributo.",
+      "resultadoEsperado": "Queda disponible con su oficina y familia.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAR-02",
+      "modulo": "PAR",
+      "numero": 2,
+      "perfil": "A",
+      "queProbar": "Cargar una fórmula con vigencia (alícuota y mínimos TEM, montos fijos, tasas).",
+      "resultadoEsperado": "Desde la vigencia, los cálculos usan la fórmula nueva; antes, la vieja.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAR-03",
+      "modulo": "PAR",
+      "numero": 3,
+      "perfil": "A",
+      "queProbar": "Calcular el valor de un tributo a una fecha.",
+      "resultadoEsperado": "Da el importe de la ordenanza vigente a esa fecha.",
+      "pagina": 6
+    },
+    {
+      "codigo": "PAR-04",
+      "modulo": "PAR",
+      "numero": 4,
+      "perfil": "A",
+      "queProbar": "Cargar el valor de la UVR de un período.",
+      "resultadoEsperado": "Los importes calculados con UVR cambian desde ese período.",
+      "pagina": 7
+    },
+    {
+      "codigo": "PAR-05",
+      "modulo": "PAR",
+      "numero": 5,
+      "perfil": "A",
+      "queProbar": "Cargar una tasa de interés con vigencia.",
+      "resultadoEsperado": "El interés a la fecha usa la tasa vigente en cada tramo.",
+      "pagina": 7
+    },
+    {
+      "codigo": "PAR-06",
+      "modulo": "PAR",
+      "numero": 6,
+      "perfil": "A",
+      "queProbar": "Categorías de actividad económica: topes y mínimos.",
+      "resultadoEsperado": "Coinciden con la tabla oficial vigente (p. ej. mínimo de la categoría D).",
+      "pagina": 7
+    },
+    {
+      "codigo": "PAR-07",
+      "modulo": "PAR",
+      "numero": 7,
+      "perfil": "A",
+      "queProbar": "Calendario de vencimientos por oficina, familia y terminación de CUIT.",
+      "resultadoEsperado": "Las obligaciones nuevas vencen en la fecha del calendario.",
+      "pagina": 7
+    },
+    {
+      "codigo": "PAR-08",
+      "modulo": "PAR",
+      "numero": 8,
+      "perfil": "A",
+      "queProbar": "Opciones y catálogos: alta, edición y baja.",
+      "resultadoEsperado": "Las listas del sistema muestran los valores cargados.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-01",
+      "modulo": "TEM",
+      "numero": 1,
+      "perfil": "C",
+      "queProbar": "Ver los períodos a declarar.",
+      "resultadoEsperado": "Aparecen los que corresponden por categoría, desde la prescripción y en orden.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-02",
+      "modulo": "TEM",
+      "numero": 2,
+      "perfil": "C",
+      "queProbar": "Cargar la base imponible de cada actividad.",
+      "resultadoEsperado": "Calcula la alícuota correcta. Si da menos que el mínimo de la categoría, aplica el mínimo.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-03",
+      "modulo": "TEM",
+      "numero": 3,
+      "perfil": "C",
+      "queProbar": "Mínimo especial por magnitud (playa dentro y fuera del cuadrante, habitaciones).",
+      "resultadoEsperado": "Aplica el mínimo del lugar y de la cantidad declarada.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-04",
+      "modulo": "TEM",
+      "numero": 4,
+      "perfil": "C",
+      "queProbar": "Guardar borrador y previsualizar.",
+      "resultadoEsperado": "El borrador se recupera igual; la vista previa coincide con lo que se va a presentar.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-05",
+      "modulo": "TEM",
+      "numero": 5,
+      "perfil": "C",
+      "queProbar": "Presentar la DDJJ.",
+      "resultadoEsperado": "Genera la obligación, el F.15 con QR y la fecha de presentación real.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-06",
+      "modulo": "TEM",
+      "numero": 6,
+      "perfil": "C",
+      "queProbar": "Presentar una rectificativa.",
+      "resultadoEsperado": "Recalcula sobre la original. Los pagos y el interés de la original se mantienen.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-07",
+      "modulo": "TEM",
+      "numero": 7,
+      "perfil": "C",
+      "queProbar": "Retenciones informadas por agentes.",
+      "resultadoEsperado": "Aparecen precargadas en la DDJJ del período.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-08",
+      "modulo": "TEM",
+      "numero": 8,
+      "perfil": "C",
+      "queProbar": "Usar una retención en la DDJJ.",
+      "resultadoEsperado": "Se descuenta del importe y figura como saldo a favor en el F.15.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-09",
+      "modulo": "TEM",
+      "numero": 9,
+      "perfil": "C",
+      "queProbar": "Cargar retenciones a mano y desde un archivo.",
+      "resultadoEsperado": "Se suman las válidas; las que tienen errores se rechazan con su motivo.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-10",
+      "modulo": "TEM",
+      "numero": 10,
+      "perfil": "C",
+      "queProbar": "Declarar un pago o crédito a favor sin presentar.",
+      "resultadoEsperado": "Queda como crédito para imputar.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-11",
+      "modulo": "TEM",
+      "numero": 11,
+      "perfil": "C",
+      "queProbar": "Marcar una actividad \"sin local en SMT\".",
+      "resultadoEsperado": "La DDJJ anual deja de pedirle domicilio.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-12",
+      "modulo": "TEM",
+      "numero": 12,
+      "perfil": "C",
+      "queProbar": "Listado de DDJJ presentadas.",
+      "resultadoEsperado": "Muestra todas, con la fecha de presentación real; las migradas se distinguen de las nuevas.",
+      "pagina": 7
+    },
+    {
+      "codigo": "TEM-13",
+      "modulo": "TEM",
+      "numero": 13,
+      "perfil": "O",
+      "queProbar": "Cargar y presentar la DDJJ por el contribuyente.",
+      "resultadoEsperado": "Da el mismo resultado que si la presenta el contribuyente.",
+      "pagina": 8
+    },
+    {
+      "codigo": "TEA-01",
+      "modulo": "TEA",
+      "numero": 1,
+      "perfil": "C",
+      "queProbar": "Generar el borrador anual.",
+      "resultadoEsperado": "Trae, por actividad y mes, lo declarado en las mensuales presentadas.",
+      "pagina": 8
+    },
+    {
+      "codigo": "TEA-02",
+      "modulo": "TEA",
+      "numero": 2,
+      "perfil": "C",
+      "queProbar": "Simular la categoría.",
+      "resultadoEsperado": "Da la categoría que corresponde por ingresos, personal y alquiler.",
+      "pagina": 8
+    },
+    {
+      "codigo": "TEA-03",
+      "modulo": "TEA",
+      "numero": 3,
+      "perfil": "C",
+      "queProbar": "Cargar personal, alquiler de diciembre y domicilios.",
+      "resultadoEsperado": "Quedan guardados y cambian la categoría simulada si corresponde.",
+      "pagina": 8
+    },
+    {
+      "codigo": "TEA-04",
+      "modulo": "TEA",
+      "numero": 4,
+      "perfil": "C",
+      "queProbar": "Cargar magnitudes (habitaciones, espacios).",
+      "resultadoEsperado": "Quedan registradas para el mínimo especial.",
+      "pagina": 8
+    },
+    {
+      "codigo": "TEA-05",
+      "modulo": "TEA",
+      "numero": 5,
+      "perfil": "C",
+      "queProbar": "Presentar la DDJJ anual.",
+      "resultadoEsperado": "Recategoriza el año siguiente y emite el PDF.",
+      "pagina": 8
+    },
+    {
+      "codigo": "TEA-06",
+      "modulo": "TEA",
+      "numero": 6,
+      "perfil": "C",
+      "queProbar": "Rectificar la anual cambiando el mínimo.",
+      "resultadoEsperado": "Marca las mensuales del año siguiente que hay que rectificar.",
+      "pagina": 8
+    },
+    {
+      "codigo": "TEA-07",
+      "modulo": "TEA",
+      "numero": 7,
+      "perfil": "O",
+      "queProbar": "Presentar la anual por el contribuyente.",
+      "resultadoEsperado": "Da el mismo resultado que la del contribuyente.",
+      "pagina": 8
+    },
+    {
+      "codigo": "OTR-01",
+      "modulo": "OTR",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Ver las contribuciones de Otros Tributos del contribuyente.",
+      "resultadoEsperado": "Lista las mismas que el PGM.",
+      "pagina": 8
+    },
+    {
+      "codigo": "OTR-02",
+      "modulo": "OTR",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Buscar el padrón de ocupación, publicidad o inmueble asociado.",
+      "resultadoEsperado": "Encuentra el elemento con sus datos.",
+      "pagina": 8
+    },
+    {
+      "codigo": "OTR-03",
+      "modulo": "OTR",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Cargar conceptos (calle, superficie, caras, unidades, días) y ver la vista previa.",
+      "resultadoEsperado": "El importe coincide con la ordenanza vigente.",
+      "pagina": 8
+    },
+    {
+      "codigo": "OTR-04",
+      "modulo": "OTR",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Presentar.",
+      "resultadoEsperado": "Genera la obligación con su vencimiento.",
+      "pagina": 8
+    },
+    {
+      "codigo": "OTR-05",
+      "modulo": "OTR",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Dar de baja un concepto o elemento.",
+      "resultadoEsperado": "Deja de liquidarse desde la baja.",
+      "pagina": 8
+    },
+    {
+      "codigo": "OTR-06",
+      "modulo": "OTR",
+      "numero": 6,
+      "perfil": "S",
+      "queProbar": "Exención de ocupación por publicidad pagada en término (art. 175 f).",
+      "resultadoEsperado": "Al día siguiente, la ocupación del mismo elemento queda exenta.",
+      "pagina": 8
+    },
+    {
+      "codigo": "CTA-01",
+      "modulo": "CTA",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Listar obligaciones con filtros de familia, oficina, estado y período.",
+      "resultadoEsperado": "Las mismas obligaciones y estados que en el sistema de origen.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-02",
+      "modulo": "CTA",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Ver el detalle de una obligación.",
+      "resultadoEsperado": "Capital, interés, pagos imputados, boletas, DDJJ y plan de origen correctos.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-03",
+      "modulo": "CTA",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Exportar las obligaciones a PDF.",
+      "resultadoEsperado": "El PDF coincide con lo que muestra la pantalla.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-04",
+      "modulo": "CTA",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Crear una obligación manual (p. ej. tasa de actuación administrativa).",
+      "resultadoEsperado": "Se crea con su importe y vence en la fecha disponible elegida.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-05",
+      "modulo": "CTA",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Devengamiento masivo de una familia.",
+      "resultadoEsperado": "Crea las obligaciones del período para todo el padrón de esa familia.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-06",
+      "modulo": "CTA",
+      "numero": 6,
+      "perfil": "O",
+      "queProbar": "Estado de cuenta de un CUIT, y exportarlo a PDF.",
+      "resultadoEsperado": "Deuda, pagos e imputaciones iguales al sistema de origen.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-07",
+      "modulo": "CTA",
+      "numero": 7,
+      "perfil": "C",
+      "queProbar": "Resumen de cuenta del contribuyente.",
+      "resultadoEsperado": "Ve la misma deuda que el operador.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-08",
+      "modulo": "CTA",
+      "numero": 8,
+      "perfil": "C",
+      "queProbar": "Imputar un saldo a favor a una o varias obligaciones.",
+      "resultadoEsperado": "Las obligaciones bajan su saldo y el crédito se consume.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-09",
+      "modulo": "CTA",
+      "numero": 9,
+      "perfil": "C",
+      "queProbar": "Mis pagos.",
+      "resultadoEsperado": "Lista los pagos reales, sin ajustes internos ni imputaciones anuladas.",
+      "pagina": 9
+    },
+    {
+      "codigo": "CTA-10",
+      "modulo": "CTA",
+      "numero": 10,
+      "perfil": "C",
+      "queProbar": "Obligación en juicio.",
+      "resultadoEsperado": "Aparece con la leyenda de que no puede pagarse en línea.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-01",
+      "modulo": "BOL",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Buscar por CUIT o padrón (propiedades, cementerio, agente) y ver la deuda.",
+      "resultadoEsperado": "Muestra las obligaciones pendientes. El operador ve solo las de las oficinas de su rol.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-02",
+      "modulo": "BOL",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Elegir una fecha de vencimiento.",
+      "resultadoEsperado": "Saltea los días no hábiles y recalcula el interés a esa fecha.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-03",
+      "modulo": "BOL",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Generar e imprimir la boleta.",
+      "resultadoEsperado": "Número, código de barras, QR y total con interés correctos.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-04",
+      "modulo": "BOL",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Pagar la cuota 2 de un plan con la cuota 1 impaga.",
+      "resultadoEsperado": "No lo permite, salvo que las dos vayan en la misma boleta.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-05",
+      "modulo": "BOL",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Boleta de deuda vencida.",
+      "resultadoEsperado": "Incluye solo obligaciones vencidas.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-06",
+      "modulo": "BOL",
+      "numero": 6,
+      "perfil": "P",
+      "queProbar": "Boleta digital sin iniciar sesión por número de padrón.",
+      "resultadoEsperado": "Pide la verificación, limita los pedidos y entrega la boleta con su clave de acceso.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-07",
+      "modulo": "BOL",
+      "numero": 7,
+      "perfil": "C",
+      "queProbar": "Pagar en línea con tarjeta, DEBIN o QR.",
+      "resultadoEsperado": "Se registra la orden de pago con su estado.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-08",
+      "modulo": "BOL",
+      "numero": 8,
+      "perfil": "S",
+      "queProbar": "Confirmación del pago en línea.",
+      "resultadoEsperado": "En pocos minutos la boleta queda pagada y la deuda imputada.",
+      "pagina": 9
+    },
+    {
+      "codigo": "BOL-09",
+      "modulo": "BOL",
+      "numero": 9,
+      "perfil": "O",
+      "queProbar": "Boletas emitidas.",
+      "resultadoEsperado": "Lista las boletas con su estado (emitida, pagada, vencida).",
+      "pagina": 10
+    },
+    {
+      "codigo": "BOL-10",
+      "modulo": "BOL",
+      "numero": 10,
+      "perfil": "O",
+      "queProbar": "Pagar una boleta en un banco o red de cobro y esperar la rendición.",
+      "resultadoEsperado": "Cuando se procesa el archivo de cobranza, la boleta queda pagada e imputada.",
+      "pagina": 10
+    },
+    {
+      "codigo": "INT-01",
+      "modulo": "INT",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Comparar el interés a una fecha de una obligación vencida con el cálculo de la DIM o del PGM.",
+      "resultadoEsperado": "Coincide con la tasa vigente en cada tramo.",
+      "pagina": 10
+    },
+    {
+      "codigo": "INT-02",
+      "modulo": "INT",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Interés de una obligación con pagos parciales.",
+      "resultadoEsperado": "Corre solo sobre el saldo impago.",
+      "pagina": 10
+    },
+    {
+      "codigo": "INT-03",
+      "modulo": "INT",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Interés en la boleta y en el plan para la misma deuda y fecha.",
+      "resultadoEsperado": "Da lo mismo en los dos.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-01",
+      "modulo": "PLA",
+      "numero": 1,
+      "perfil": "A",
+      "queProbar": "Configurar un plan: cuotas, interés de financiación, mínimos y vigencia.",
+      "resultadoEsperado": "Queda disponible para asignar dentro de su vigencia.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-02",
+      "modulo": "PLA",
+      "numero": 2,
+      "perfil": "A",
+      "queProbar": "Tributos permitidos, reglas de caída y quitas de interés.",
+      "resultadoEsperado": "El plan solo toma esos tributos y aplica las quitas con su tope.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-03",
+      "modulo": "PLA",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Asignar un plan: ver la deuda incluible.",
+      "resultadoEsperado": "Incluye los períodos TEM omitidos y excluye los que esperan refinanciación.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-04",
+      "modulo": "PLA",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Simular las cuotas.",
+      "resultadoEsperado": "Las cuotas y el interés de financiación son los del plan configurado.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-05",
+      "modulo": "PLA",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Confirmar el plan.",
+      "resultadoEsperado": "Queda pendiente de aceptación y las obligaciones incluidas quedan en el plan.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-06",
+      "modulo": "PLA",
+      "numero": 6,
+      "perfil": "C",
+      "queProbar": "Aceptar el plan.",
+      "resultadoEsperado": "Queda activo, con comprobante y solicitud de acogimiento en PDF.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-07",
+      "modulo": "PLA",
+      "numero": 7,
+      "perfil": "O",
+      "queProbar": "Cancelar, reactivar y dar de baja un plan.",
+      "resultadoEsperado": "Cambia el estado y las obligaciones vuelven a su situación cuando corresponde.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-08",
+      "modulo": "PLA",
+      "numero": 8,
+      "perfil": "O",
+      "queProbar": "Confirmar el decaimiento de un plan.",
+      "resultadoEsperado": "Los pagos se imputan a los períodos originales y el plan queda caído.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-09",
+      "modulo": "PLA",
+      "numero": 9,
+      "perfil": "C",
+      "queProbar": "Plan autogestionado (RG 13/2025): ver tributos y deuda elegibles.",
+      "resultadoEsperado": "Las opciones de cuotas por debajo del mínimo aparecen deshabilitadas.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-10",
+      "modulo": "PLA",
+      "numero": 10,
+      "perfil": "C",
+      "queProbar": "Adherir sin tener paga la última posición vencida.",
+      "resultadoEsperado": "No lo deja adherir.",
+      "pagina": 10
+    },
+    {
+      "codigo": "PLA-11",
+      "modulo": "PLA",
+      "numero": 11,
+      "perfil": "C",
+      "queProbar": "Simular y confirmar el plan autogestionado.",
+      "resultadoEsperado": "Queda el plan, con su acuse y DDJJ en PDF.",
+      "pagina": 11
+    },
+    {
+      "codigo": "PLA-12",
+      "modulo": "PLA",
+      "numero": 12,
+      "perfil": "C",
+      "queProbar": "Refinanciar un plan caído.",
+      "resultadoEsperado": "Una sola vez, 12 cuotas, sin descuentos y solo por los períodos con saldo.",
+      "pagina": 11
+    },
+    {
+      "codigo": "PLA-13",
+      "modulo": "PLA",
+      "numero": 13,
+      "perfil": "S",
+      "queProbar": "Estados diarios de los planes.",
+      "resultadoEsperado": "Pendiente sin aceptar → cancelado; atrasado ↔ en mora; todas pagas → finalizado.",
+      "pagina": 11
+    },
+    {
+      "codigo": "EXE-01",
+      "modulo": "EXE",
+      "numero": 1,
+      "perfil": "A",
+      "queProbar": "Buscar exenciones de un contribuyente o bien.",
+      "resultadoEsperado": "Las mismas que el PGM, con su vigencia.",
+      "pagina": 11
+    },
+    {
+      "codigo": "EXE-02",
+      "modulo": "EXE",
+      "numero": 2,
+      "perfil": "A",
+      "queProbar": "Dar de alta una exención con tipo, porcentaje, vigencia, carácter y expediente.",
+      "resultadoEsperado": "Las obligaciones del período se liquidan con la exención.",
+      "pagina": 11
+    },
+    {
+      "codigo": "EXE-03",
+      "modulo": "EXE",
+      "numero": 3,
+      "perfil": "A",
+      "queProbar": "Editar y eliminar una exención.",
+      "resultadoEsperado": "Las liquidaciones siguientes reflejan el cambio.",
+      "pagina": 11
+    },
+    {
+      "codigo": "EXE-04",
+      "modulo": "EXE",
+      "numero": 4,
+      "perfil": "A",
+      "queProbar": "Exención TEM de profesional.",
+      "resultadoEsperado": "Crea también la exención espejo en publicidad.",
+      "pagina": 11
+    },
+    {
+      "codigo": "EXE-05",
+      "modulo": "EXE",
+      "numero": 5,
+      "perfil": "A",
+      "queProbar": "Exención retroactiva sobre períodos ya liquidados.",
+      "resultadoEsperado": "Genera los créditos y los imputa a esas obligaciones.",
+      "pagina": 11
+    },
+    {
+      "codigo": "EXE-06",
+      "modulo": "EXE",
+      "numero": 6,
+      "perfil": "A",
+      "queProbar": "Exención masiva por tributo.",
+      "resultadoEsperado": "Informa cuántos alcanza, la procesa en segundo plano y deja el resultado en una orden.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-01",
+      "modulo": "AGE",
+      "numero": 1,
+      "perfil": "A",
+      "queProbar": "Buscar agentes por tipo y estado.",
+      "resultadoEsperado": "Los mismos agentes que el 180.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-02",
+      "modulo": "AGE",
+      "numero": 2,
+      "perfil": "A",
+      "queProbar": "Dar de alta un agente.",
+      "resultadoEsperado": "Toma el próximo número de padrón de la serie.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-03",
+      "modulo": "AGE",
+      "numero": 3,
+      "perfil": "A",
+      "queProbar": "Editar, suspender y dar de baja un agente.",
+      "resultadoEsperado": "El cambio queda con su vigencia en la línea de tiempo.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-04",
+      "modulo": "AGE",
+      "numero": 4,
+      "perfil": "A",
+      "queProbar": "Resumen del agente: movimientos, retenciones y expedientes.",
+      "resultadoEsperado": "Coincide con el 180 para el mismo período.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-05",
+      "modulo": "AGE",
+      "numero": 5,
+      "perfil": "A",
+      "queProbar": "Pagos a cuenta y reporte de agentes en Excel.",
+      "resultadoEsperado": "Listan y exportan los datos filtrados.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-06",
+      "modulo": "AGE",
+      "numero": 6,
+      "perfil": "C",
+      "queProbar": "DDJJ del agente subiendo el archivo de retenciones.",
+      "resultadoEsperado": "Genera la obligación del agente y un movimiento por cada retenido.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-07",
+      "modulo": "AGE",
+      "numero": 7,
+      "perfil": "C",
+      "queProbar": "Subir un archivo con errores.",
+      "resultadoEsperado": "No presenta y emite un PDF con cada error.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-08",
+      "modulo": "AGE",
+      "numero": 8,
+      "perfil": "C",
+      "queProbar": "Rectificar o descartar la DDJJ del agente.",
+      "resultadoEsperado": "La rectificativa anula los movimientos de la anterior.",
+      "pagina": 11
+    },
+    {
+      "codigo": "AGE-09",
+      "modulo": "AGE",
+      "numero": 9,
+      "perfil": "O",
+      "queProbar": "Cargar la DDJJ por el agente.",
+      "resultadoEsperado": "Da el mismo resultado que la del agente.",
+      "pagina": 12
+    },
+    {
+      "codigo": "AGE-10",
+      "modulo": "AGE",
+      "numero": 10,
+      "perfil": "S",
+      "queProbar": "Retención en la cuenta del retenido.",
+      "resultadoEsperado": "Aparece precargada en la DDJJ TEM del retenido.",
+      "pagina": 12
+    },
+    {
+      "codigo": "ADH-01",
+      "modulo": "ADH",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Buscar las adhesiones de un bien.",
+      "resultadoEsperado": "Las mismas que el PGM: medio, entidad y vigencia.",
+      "pagina": 12
+    },
+    {
+      "codigo": "ADH-02",
+      "modulo": "ADH",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Alta de débito automático con tarjeta o CBU.",
+      "resultadoEsperado": "Queda vigente desde la fecha cargada.",
+      "pagina": 12
+    },
+    {
+      "codigo": "ADH-03",
+      "modulo": "ADH",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Alta de cesión de haberes con la repartición.",
+      "resultadoEsperado": "Queda vigente para ese bien.",
+      "pagina": 12
+    },
+    {
+      "codigo": "ADH-04",
+      "modulo": "ADH",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Dar de baja una adhesión con fecha de fin.",
+      "resultadoEsperado": "Deja de estar vigente desde esa fecha.",
+      "pagina": 12
+    },
+    {
+      "codigo": "ADH-05",
+      "modulo": "ADH",
+      "numero": 5,
+      "perfil": "S",
+      "queProbar": "Procesar el archivo de rendición de Macro o VISA.",
+      "resultadoEsperado": "Imputa las cuotas cobradas y registra los rechazos.",
+      "pagina": 12
+    },
+    {
+      "codigo": "JUD-01",
+      "modulo": "JUD",
+      "numero": 1,
+      "perfil": "A",
+      "queProbar": "Crear una cuenta judicial con obligaciones vencidas.",
+      "resultadoEsperado": "Las obligaciones pasan a judicial y se crea el expediente.",
+      "pagina": 12
+    },
+    {
+      "codigo": "JUD-02",
+      "modulo": "JUD",
+      "numero": 2,
+      "perfil": "A",
+      "queProbar": "Ver una cuenta judicial migrada y comparar con el legacy.",
+      "resultadoEsperado": "La deuda de cada cuota coincide con la cuenta judicial de origen.",
+      "pagina": 12
+    },
+    {
+      "codigo": "JUD-03",
+      "modulo": "JUD",
+      "numero": 3,
+      "perfil": "A",
+      "queProbar": "Desbloquear con motivo.",
+      "resultadoEsperado": "Las obligaciones vuelven a normal y el expediente queda inhabilitado.",
+      "pagina": 12
+    },
+    {
+      "codigo": "JUD-04",
+      "modulo": "JUD",
+      "numero": 4,
+      "perfil": "A",
+      "queProbar": "Reaprobar una cuenta y dar de baja una cargada por error.",
+      "resultadoEsperado": "Cambia el estado de la cuenta y de sus obligaciones.",
+      "pagina": 12
+    },
+    {
+      "codigo": "JUD-05",
+      "modulo": "JUD",
+      "numero": 5,
+      "perfil": "A",
+      "queProbar": "Orden de pago de una cuenta judicial.",
+      "resultadoEsperado": "Se crea la orden y la deuda queda publicada para pagar.",
+      "pagina": 12
+    },
+    {
+      "codigo": "JUD-06",
+      "modulo": "JUD",
+      "numero": 6,
+      "perfil": "A",
+      "queProbar": "Expedientes: buscar, crear e inhabilitar.",
+      "resultadoEsperado": "Quedan registrados con su número.",
+      "pagina": 12
+    },
+    {
+      "codigo": "DFE-01",
+      "modulo": "DFE",
+      "numero": 1,
+      "perfil": "C",
+      "queProbar": "Constituir el domicilio fiscal electrónico.",
+      "resultadoEsperado": "Queda constituido después de validar el correo.",
+      "pagina": 12
+    },
+    {
+      "codigo": "DFE-02",
+      "modulo": "DFE",
+      "numero": 2,
+      "perfil": "C",
+      "queProbar": "Cambiar el correo y validar desde el enlace.",
+      "resultadoEsperado": "El correo nuevo queda validado.",
+      "pagina": 12
+    },
+    {
+      "codigo": "DFE-03",
+      "modulo": "DFE",
+      "numero": 3,
+      "perfil": "A",
+      "queProbar": "Enviar una notificación a un contribuyente, con adjunto.",
+      "resultadoEsperado": "Llega a su bandeja con el adjunto.",
+      "pagina": 13
+    },
+    {
+      "codigo": "DFE-04",
+      "modulo": "DFE",
+      "numero": 4,
+      "perfil": "C",
+      "queProbar": "Leer y responder la notificación.",
+      "resultadoEsperado": "Queda registrada la fecha de lectura; el operador ve la respuesta.",
+      "pagina": 13
+    },
+    {
+      "codigo": "DFE-05",
+      "modulo": "DFE",
+      "numero": 5,
+      "perfil": "A",
+      "queProbar": "Notificación masiva.",
+      "resultadoEsperado": "Llega a todos los destinatarios elegidos.",
+      "pagina": 13
+    },
+    {
+      "codigo": "DFE-06",
+      "modulo": "DFE",
+      "numero": 6,
+      "perfil": "S",
+      "queProbar": "Notificación no leída a los 10 días hábiles.",
+      "resultadoEsperado": "Queda perfeccionada sola.",
+      "pagina": 13
+    },
+    {
+      "codigo": "DFE-07",
+      "modulo": "DFE",
+      "numero": 7,
+      "perfil": "A",
+      "queProbar": "Listado y estadísticas de contribuyentes con domicilio electrónico.",
+      "resultadoEsperado": "Coinciden con las altas hechas.",
+      "pagina": 13
+    },
+    {
+      "codigo": "DFE-08",
+      "modulo": "DFE",
+      "numero": 8,
+      "perfil": "S",
+      "queProbar": "Correos del sistema (registro, clave, domicilio electrónico, cambio de estado de una orden).",
+      "resultadoEsperado": "Llegan al destinatario correcto.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-01",
+      "modulo": "REC",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "Movimientos bancarios: buscar y ver los cobros asociados.",
+      "resultadoEsperado": "Muestra los movimientos y su conciliación.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-02",
+      "modulo": "REC",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "Movimientos de recaudación por entidad.",
+      "resultadoEsperado": "Lista los cobros de cada entidad con su detalle.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-03",
+      "modulo": "REC",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "Imputar un cobro a obligaciones pendientes y anular la imputación.",
+      "resultadoEsperado": "La deuda baja y vuelve a subir al anular.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-04",
+      "modulo": "REC",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "Conciliar contra un movimiento bancario y deshacerlo.",
+      "resultadoEsperado": "El movimiento queda conciliado y vuelve atrás al deshacer.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-05",
+      "modulo": "REC",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Nota contable de ajuste.",
+      "resultadoEsperado": "Ajusta el saldo con su motivo.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-06",
+      "modulo": "REC",
+      "numero": 6,
+      "perfil": "S",
+      "queProbar": "Archivo de cobranza (Pago Fácil, Rapipago, Banco Santiago del Estero, Banelco, Naranja).",
+      "resultadoEsperado": "Genera los cobros, los cruza con la boleta y los imputa.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-07",
+      "modulo": "REC",
+      "numero": 7,
+      "perfil": "S",
+      "queProbar": "Archivo de deuda para Banelco o VISA.",
+      "resultadoEsperado": "Queda para descargar en la orden con el formato de la entidad.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-08",
+      "modulo": "REC",
+      "numero": 8,
+      "perfil": "A",
+      "queProbar": "Entidades recaudadoras: alta con CUIT y cuentas.",
+      "resultadoEsperado": "Valida el CUIT en ARCA y el CBU o alias de cada cuenta.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-09",
+      "modulo": "REC",
+      "numero": 9,
+      "perfil": "A",
+      "queProbar": "Comisiones de la cuenta de la entidad.",
+      "resultadoEsperado": "Quedan cargadas con su vigencia.",
+      "pagina": 13
+    },
+    {
+      "codigo": "REC-10",
+      "modulo": "REC",
+      "numero": 10,
+      "perfil": "S",
+      "queProbar": "Bonificación de la cuota de diciembre.",
+      "resultadoEsperado": "Crédito para quien pagó de enero a noviembre en término.",
+      "pagina": 13
+    },
+    {
+      "codigo": "AUT-01",
+      "modulo": "AUT",
+      "numero": 1,
+      "perfil": "S",
+      "queProbar": "Vencimientos de la noche.",
+      "resultadoEsperado": "Al día siguiente del vencimiento, las obligaciones impagas aparecen vencidas.",
+      "pagina": 14
+    },
+    {
+      "codigo": "AUT-02",
+      "modulo": "AUT",
+      "numero": 2,
+      "perfil": "S",
+      "queProbar": "Conciliación de pagos en línea.",
+      "resultadoEsperado": "Un pago en línea aparece imputado en pocos minutos.",
+      "pagina": 14
+    },
+    {
+      "codigo": "AUT-03",
+      "modulo": "AUT",
+      "numero": 3,
+      "perfil": "S",
+      "queProbar": "Consultas a ARCA en segundo plano.",
+      "resultadoEsperado": "Las consultas pedidas tienen respuesta en el día.",
+      "pagina": 14
+    },
+    {
+      "codigo": "AUT-04",
+      "modulo": "AUT",
+      "numero": 4,
+      "perfil": "S",
+      "queProbar": "Carga semanal del 180 (lunes).",
+      "resultadoEsperado": "Los cobros y las DDJJ de agentes del 180 aparecen en DIM360 la semana siguiente.",
+      "pagina": 14
+    },
+    {
+      "codigo": "AUT-05",
+      "modulo": "AUT",
+      "numero": 5,
+      "perfil": "S",
+      "queProbar": "Actualización nocturna desde el PGM y el SIAC (TEM, CISI, Otros Tributos, cementerio).",
+      "resultadoEsperado": "Un pago hecho en el sistema de origen aparece en DIM360 al día hábil siguiente.",
+      "pagina": 14
+    },
+    {
+      "codigo": "AUT-06",
+      "modulo": "AUT",
+      "numero": 6,
+      "perfil": "S",
+      "queProbar": "Tareas que quedaron pendientes en la cola.",
+      "resultadoEsperado": "Se reintentan solas y no quedan trabadas.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-01",
+      "modulo": "MIG",
+      "numero": 1,
+      "perfil": "O",
+      "queProbar": "TEM: elegir 10 CUIT y comparar la deuda mes por mes con el PGM.",
+      "resultadoEsperado": "Misma deuda en cada mes, o diferencia explicada.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-02",
+      "modulo": "MIG",
+      "numero": 2,
+      "perfil": "O",
+      "queProbar": "TEM: para esos CUIT, comparar las DDJJ presentadas y sus importes.",
+      "resultadoEsperado": "Las mismas DDJJ, con el mismo importe y la misma fecha.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-03",
+      "modulo": "MIG",
+      "numero": 3,
+      "perfil": "O",
+      "queProbar": "TEM: comparar retenciones y exenciones aplicadas.",
+      "resultadoEsperado": "Mismos créditos aplicados que en el PGM.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-04",
+      "modulo": "MIG",
+      "numero": 4,
+      "perfil": "O",
+      "queProbar": "CISI: elegir 10 padrones y comparar la deuda por año con el PGM.",
+      "resultadoEsperado": "Misma deuda por año.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-05",
+      "modulo": "MIG",
+      "numero": 5,
+      "perfil": "O",
+      "queProbar": "Cementerio: elegir 10 legajos y comparar las cuotas con el SIAC.",
+      "resultadoEsperado": "Mismas cuotas, pagas e impagas.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-06",
+      "modulo": "MIG",
+      "numero": 6,
+      "perfil": "O",
+      "queProbar": "Otros Tributos: elegir 10 bienes y comparar la deuda por año con el PGM.",
+      "resultadoEsperado": "Misma deuda por año.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-07",
+      "modulo": "MIG",
+      "numero": 7,
+      "perfil": "O",
+      "queProbar": "Agentes: elegir 5 agentes y comparar sus DDJJ e importes con el 180.",
+      "resultadoEsperado": "Mismas DDJJ e importes.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-08",
+      "modulo": "MIG",
+      "numero": 8,
+      "perfil": "O",
+      "queProbar": "Planes: elegir 10 planes vigentes y comparar cuotas pagas e impagas con el PGM.",
+      "resultadoEsperado": "Mismo estado de cada cuota.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-09",
+      "modulo": "MIG",
+      "numero": 9,
+      "perfil": "O",
+      "queProbar": "Cuentas judiciales: elegir 5 y comparar la deuda en juicio con el legacy.",
+      "resultadoEsperado": "Misma deuda por cuota.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-10",
+      "modulo": "MIG",
+      "numero": 10,
+      "perfil": "O",
+      "queProbar": "Pagos recientes: tomar 10 pagos de la última semana en el PGM o el 180.",
+      "resultadoEsperado": "Están en DIM360, imputados a la misma obligación.",
+      "pagina": 14
+    },
+    {
+      "codigo": "MIG-11",
+      "modulo": "MIG",
+      "numero": 11,
+      "perfil": "O",
+      "queProbar": "Casos reclamados por la DIM (p. ej. LM Inversiones): revisar cada uno.",
+      "resultadoEsperado": "Reflejan lo que la DIM espera; si no, anotar qué falta.",
+      "pagina": 14
+    }
+  ]
+}

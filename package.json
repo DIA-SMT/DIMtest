@@ -1,0 +1,52 @@
+{
+  "name": "dim360-qa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Relevamiento funcional de DIM360: el personal de la DIM prueba y deja observaciones; el equipo de la DIA prioriza y corrige.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integracion": "vitest run --config vitest.integracion.config.mts",
+    "verificar": "npm run typecheck && npm run lint && npm test && npm run test:integracion && npm run build",
+    "catalogo:extraer": "node scripts/catalogo-extraer.mjs",
+    "catalogo:verificar": "node scripts/catalogo-extraer.mjs --verificar",
+    "db:migrar": "node --env-file-if-exists=.env.local scripts/migrar.mjs",
+    "db:semilla": "node --env-file-if-exists=.env.local scripts/semilla.mjs",
+    "db:local:reiniciar": "node -e \"require('fs').rmSync('.local/pgdata',{recursive:true,force:true});console.log('Base local borrada: se vuelve a crear al iniciar npm run dev.')\"",
+    "admin:crear": "node --env-file-if-exists=.env.local scripts/admin-crear.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.16",
+    "@fontsource-variable/inter": "5.3.0",
+    "@react-pdf/renderer": "4.9.0",
+    "exceljs": "4.4.0",
+    "jose": "6.2.12",
+    "lucide-react": "1.59.0",
+    "next": "16.4.2",
+    "postgres": "3.4.9",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1",
+    "sharp": "0.35.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.2",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "pdfjs-dist": "6.5.438",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}
