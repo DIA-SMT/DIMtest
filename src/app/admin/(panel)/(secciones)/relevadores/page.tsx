@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Users } from "lucide-react";
 import { Aviso, EncabezadoPagina, EstadoVacio, Tarjeta } from "@/components/ui";
+import { puede } from "@/domain/permisos";
 import { listarRelevadores } from "@/features/admin/consultas";
+import { BorrarRelevador } from "@/features/admin/components/borrar-relevador";
 import { CLASE_TABLA, CLASE_TD, CLASE_TH, CLASE_THEAD } from "@/features/admin/components/filtros";
 import { exigirAdmin } from "@/lib/auth/admin";
 import { conBase } from "@/lib/db";
@@ -10,7 +12,8 @@ import { fechaHora } from "@/lib/fechas";
 export const metadata = { title: "Relevadores" };
 
 export default async function Relevadores() {
-  await exigirAdmin();
+  const admin = await exigirAdmin();
+  const puedeBorrar = puede(admin.rol, "usuarios.gestionar");
   const filas = await conBase((q) => listarRelevadores(q));
   const conHomonimos = filas.filter((f) => f.homonimos > 1).length;
   return (
@@ -18,7 +21,7 @@ export default async function Relevadores() {
       <EncabezadoPagina
         antetitulo="Personal de la DIM"
         titulo="Relevadores"
-        descripcion="Cada relevador se identificó solo con nombre y apellido: es un nombre declarado, no una identidad verificada. Cada ejecución queda atada además a la sesión interna desde la que se hizo."
+        descripcion={`Cada relevador se identificó solo con nombre y apellido: es un nombre declarado, no una identidad verificada. Cada ejecución queda atada además a la sesión interna desde la que se hizo.${puedeBorrar ? " Se puede borrar a quien todavía no registró pruebas." : ""}`}
       />
       {conHomonimos > 0 ? (
         <Aviso tipo="advertencia" titulo="Hay perfiles con el mismo nombre">
@@ -41,6 +44,11 @@ export default async function Relevadores() {
                   <th scope="col" className={CLASE_TH}>Primer ingreso</th>
                   <th scope="col" className={CLASE_TH}>Último ingreso</th>
                   <th scope="col" className={CLASE_TH}>Última prueba</th>
+                  {puedeBorrar ? (
+                    <th scope="col" className={CLASE_TH}>
+                      Acciones
+                    </th>
+                  ) : null}
                 </tr>
               </thead>
               <tbody className="divide-y divide-borde">
@@ -62,6 +70,15 @@ export default async function Relevadores() {
                     <td className={`${CLASE_TD} whitespace-nowrap`}>{fechaHora(r.creado_at)}</td>
                     <td className={`${CLASE_TD} whitespace-nowrap`}>{fechaHora(r.ultimo_ingreso_at)}</td>
                     <td className={`${CLASE_TD} whitespace-nowrap`}>{r.ultima_ejecucion ? fechaHora(r.ultima_ejecucion) : "—"}</td>
+                    {puedeBorrar ? (
+                      <td className={CLASE_TD}>
+                        {r.ejecuciones === 0 ? (
+                          <BorrarRelevador id={r.id} nombre={r.nombre} />
+                        ) : (
+                          <span className="text-xs text-texto-secundario">Tiene pruebas: se conserva</span>
+                        )}
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>

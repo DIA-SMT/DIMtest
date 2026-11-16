@@ -76,7 +76,7 @@ Lo verifican `src/domain/dominio.test.ts` (sobre el JSON) y `tests/integracion/c
 ## 4. Pruebas
 
 - **Unitarios** (`npm test`): catálogo, nombres, resultados, estados de prueba, ciclo de incidencias, prioridades y permisos.
-- **Integración** (`npm run test:integracion`): Luis ingresa solo con su nombre, la segunda vez lo elige de la lista de su navegador, toma ACC-01, Agustín no puede tomarla a la vez, el resultado fallido exige explicación, el historial no se puede sobrescribir, el equipo convierte la observación en incidencia, la prioriza, la asigna, la corrige, la prueba pasa a «Requiere nueva validación», Agustín la revalida y el equipo la cierra (y la reabre). Además, todas las consultas del panel y los 8 informes.
+- **Integración** (`npm run test:integracion`): Luis ingresa solo con su nombre, la segunda vez lo elige de la lista de su navegador, el equipo borra a quien no registró pruebas pero no a Luis, toma ACC-01, Agustín no puede tomarla a la vez, el resultado fallido exige explicación, el historial no se puede sobrescribir, el equipo convierte la observación en incidencia, la prioriza, la asigna, la corrige, la prueba pasa a «Requiere nueva validación», Agustín la revalida y el equipo la cierra (y la reabre). Además, todas las consultas del panel y los 8 informes.
 
 ```bash
 PRUEBAS_DATABASE_URL=postgres://postgres@localhost:54360/postgres npm run test:integracion   # ¡borra el esquema public de esa base!

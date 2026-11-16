@@ -102,6 +102,29 @@ export async function ingresarConocido(q: Consulta, id: string, conocidos: strin
   return { tipo: "listo", sesionId: await crearSesion(q, r.id), relevadorId: r.id, nombre: r.nombre, nuevo: false };
 }
 
+export type BorradoRelevador = { tipo: "borrado"; sesiones: number } | { tipo: "con_pruebas"; ejecuciones: number } | { tipo: "inexistente" };
+
+/**
+ * Borra un relevador que **no registró ninguna prueba** (por ejemplo, alguien del equipo que
+ * entró a mirar el portal): sus sesiones, su reserva vigente y su perfil. Si registró pruebas,
+ * no se borra: el historial es solo inserción y cada ejecución apunta a su perfil.
+ */
+export async function borrarRelevador(q: Consulta, id: string): Promise<BorradoRelevador> {
+  // Bloquea la fila: una ejecución nueva de esta persona espera a que termine el borrado (y después falla).
+  const [r] = await q<{ ejecuciones: number; incidencias: number }>(
+    `select (select count(*)::int from ejecuciones e where e.relevador_id = r.id) as ejecuciones,
+            (select count(*)::int from incidencias i where i.reportada_por_relevador_id = r.id) as incidencias
+       from relevadores r where r.id = $1 for update`,
+    [id],
+  );
+  if (!r) return { tipo: "inexistente" };
+  if (r.ejecuciones > 0 || r.incidencias > 0) return { tipo: "con_pruebas", ejecuciones: r.ejecuciones };
+  await q("delete from reservas where relevador_id = $1", [id]);
+  const sesiones = await q("delete from sesiones_relevador where relevador_id = $1 returning id", [id]);
+  await q("delete from relevadores where id = $1", [id]);
+  return { tipo: "borrado", sesiones: sesiones.length };
+}
+
 export async function cerrarSesion(q: Consulta, sesionId: string) {
   await q("delete from reservas where sesion_id = $1", [sesionId]);
   await q("update sesiones_relevador set cerrada_at = now() where id = $1 and cerrada_at is null", [sesionId]);

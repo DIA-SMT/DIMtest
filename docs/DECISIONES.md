@@ -4,6 +4,18 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-013 · Borrar relevadores sin pruebas
+
+**Fecha:** 2026-11-16 · **Pidió:** DIA
+
+**Contexto.** Quienes entran al portal solo a mirarlo (por ejemplo, el equipo de la DIA) quedan en la lista de relevadores.
+
+**Decisión.** Desde Relevadores, un administrador (`usuarios.gestionar`) puede borrar a un relevador que **no registró pruebas ni reportó incidencias**. Se borran su perfil, sus sesiones y su reserva vigente, con un paso de confirmación y una fila en `auditoria` (`relevador.borrar`, con el id, sin el nombre). Quien registró pruebas no se puede borrar: el historial es solo inserción y cada ejecución apunta a su perfil.
+
+**Consecuencias.** Si la persona tenía la sesión abierta, la pierde y vuelve al ingreso; si vuelve a entrar con su nombre, es un perfil nuevo.
+
+---
+
 ## D-012 · Segundo ingreso: elegir el nombre de una lista
 
 **Fecha:** 2026-11-16 · **Pidió:** DIA
