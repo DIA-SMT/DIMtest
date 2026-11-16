@@ -4,6 +4,18 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-010 · Contraseña del panel a elección de cada persona (excepción al estándar 03)
+
+**Fecha:** 2026-11-16 · **Pidió:** DIA
+
+**Contexto.** El panel exigía 12 caracteres, al menos 5 distintos, que no fuera una contraseña común ni contuviera el usuario. El equipo pidió poder elegir cualquier contraseña, incluso una corta como `123456`.
+
+**Decisión.** La contraseña nueva solo tiene que no estar vacía y no superar 128 caracteres (tope que protege al servidor, no a la cuenta). Se mantienen el cifrado con scrypt, el límite de intentos (5 cada 15 minutos por cuenta y 20 por IP), la sesión de 60 minutos y la contraseña temporal que obliga a elegir una propia.
+
+**Consecuencias.** Se advirtió que el panel está publicado en internet y que una contraseña corta o común se adivina en los primeros intentos, antes de que actúe el límite. Si una cuenta de administrador queda expuesta, puede crear cuentas y descargar todos los informes. Revisar esta decisión si el panel pasa a tener más usuarios o datos sensibles.
+
+---
+
 ## D-008 · La estética sigue a Applaza, no a CementerIA (excepción al estándar 04)
 
 **Fecha:** 2026-11-15 · **Pidió:** DIA

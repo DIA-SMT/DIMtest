@@ -97,7 +97,7 @@ export async function cambiarClaveAccion(_previo: EstadoAccion, formData: FormDa
   const nueva = String(formData.get("nueva") ?? "");
   const repetida = String(formData.get("repetida") ?? "");
   const errores: Record<string, string> = {};
-  const problemas = problemasDeClave(nueva, u.usuario);
+  const problemas = problemasDeClave(nueva);
   if (problemas.length) errores.nueva = problemas.join(" ");
   if (nueva !== repetida) errores.repetida = "Las dos contraseñas nuevas no coinciden.";
   if (nueva && nueva === actual) errores.nueva = "Tiene que ser distinta de la actual.";

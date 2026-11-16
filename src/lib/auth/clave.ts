@@ -14,7 +14,6 @@ export interface ParametrosScrypt {
 /** OWASP: N = 2^15, r = 8, p = 3 (32 MiB, ~160 ms en una PC de oficina). */
 export const PARAMETROS_ACTUALES: Readonly<ParametrosScrypt> = Object.freeze({ N: 2 ** 15, r: 8, p: 3 });
 
-export const LARGO_MINIMO_CLAVE = 12;
 export const LARGO_MAXIMO_CLAVE = 128;
 
 const COTAS = { N: [2 ** 10, 2 ** 20], r: [1, 32], p: [1, 16] } as const;
@@ -88,24 +87,13 @@ export function generarClaveTemporal(): string {
   return grupos.join("-");
 }
 
-const CLAVES_COMUNES = [
-  "password", "contrasena", "clave", "qwerty", "asdfgh", "admin", "administrador", "usuario",
-  "bienvenido", "cambiar", "secreto", "municipalidad", "sanmiguel", "tucuman", "argentina",
-  "dim", "dimqa", "dimlocal",
-];
-
-function soloLetras(texto: string) {
-  return texto.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-zñ]/g, "");
-}
-
-/** Lo que no cumple una contraseña nueva, en palabras (vacío = cumple). */
-export function problemasDeClave(clave: string, usuario: string): string[] {
-  const problemas: string[] = [];
-  if (clave.length < LARGO_MINIMO_CLAVE) problemas.push(`Tiene que tener al menos ${LARGO_MINIMO_CLAVE} caracteres.`);
-  if (clave.length > LARGO_MAXIMO_CLAVE) problemas.push(`No puede tener más de ${LARGO_MAXIMO_CLAVE} caracteres.`);
-  if (new Set(clave).size < 5) problemas.push("Usá al menos 5 caracteres distintos.");
-  const letras = soloLetras(clave);
-  if (letras && CLAVES_COMUNES.includes(letras)) problemas.push("Es una contraseña común: elegí otra.");
-  if (usuario && clave.toLowerCase().includes(usuario.toLowerCase())) problemas.push("No puede contener tu usuario.");
-  return problemas;
+/**
+ * Lo que no cumple una contraseña nueva, en palabras (vacío = cumple). Cada persona elige la que
+ * quiera (D-010): solo no puede estar vacía ni superar 128 caracteres, un tope
+ * que evita que alguien haga trabajar de más al servidor con una contraseña gigante.
+ */
+export function problemasDeClave(clave: string): string[] {
+  if (!clave) return ["Escribí la contraseña nueva."];
+  if (clave.length > LARGO_MAXIMO_CLAVE) return [`No puede tener más de ${LARGO_MAXIMO_CLAVE} caracteres.`];
+  return [];
 }
