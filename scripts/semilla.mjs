@@ -1,7 +1,7 @@
 // Carga (o actualiza) el catálogo de pruebas del PDF en la base. No crea resultados.
 //   npm run db:semilla
-// La app ya lo hace sola al arrancar; este script sirve para hacerlo a mano después
-// de `npm run catalogo:extraer` sin reiniciar el servidor.
+// En modo local la app lo hace sola al crear la base; en producción lo hace `npm run db:migrar`.
+// Este script sirve para recargarlo a mano después de `npm run catalogo:extraer`.
 import { sembrarCatalogo } from "../src/lib/db/esquema.ts";
 import { conectar, leerCatalogo } from "./lib.mjs";
 

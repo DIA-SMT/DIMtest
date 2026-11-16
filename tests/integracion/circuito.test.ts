@@ -9,6 +9,8 @@ import {
   guardarEjecucion,
   historialDePrueba,
   identificar,
+  ingresarConocido,
+  relevadoresConocidos,
   tomarPrueba,
 } from "@/features/relevamiento/servicio";
 import { baseDePrueba, crearAdmin } from "./base";
@@ -81,6 +83,23 @@ describe("circuito de relevamiento y corrección", () => {
     // No se puede elegir a alguien con otro nombre.
     const truco = await base.tx((q) => confirmarIdentidad(q, "Otra Persona", luis.relevadorId));
     if (truco.tipo === "listo") expect(truco.relevadorId).not.toBe(luis.relevadorId);
+  });
+
+  it("la segunda vez Luis elige su nombre de la lista del navegador, y nadie toma un perfil ajeno", async () => {
+    const otraPersona = await base.tx((q) => identificar(q, "Marta Ruiz", []));
+    if (otraPersona.tipo !== "listo") throw new Error("Marta debería ingresar directo");
+
+    const lista = await base.tx((q) => relevadoresConocidos(q, [luis.relevadorId]));
+    expect(lista).toEqual([{ id: luis.relevadorId, nombre: "Luis Pérez" }]);
+    expect(await base.tx((q) => relevadoresConocidos(q, []))).toEqual([]);
+
+    const elegido = await base.tx((q) => ingresarConocido(q, luis.relevadorId, [luis.relevadorId]));
+    expect(elegido).toMatchObject({ tipo: "listo", relevadorId: luis.relevadorId, nombre: "Luis Pérez", nuevo: false });
+    if (elegido?.tipo === "listo") expect(elegido.sesionId).not.toBe(luis.sesionId);
+
+    // Un id que no está en la cookie de este navegador no sirve, aunque exista.
+    expect(await base.tx((q) => ingresarConocido(q, otraPersona.relevadorId, [luis.relevadorId]))).toBeNull();
+    expect(await base.tx((q) => ingresarConocido(q, "00000000-0000-4000-8000-000000000000", ["00000000-0000-4000-8000-000000000000"]))).toBeNull();
   });
 
   it("Luis toma ACC-01 y Agustín no puede tomarla a la vez", async () => {

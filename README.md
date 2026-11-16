@@ -10,7 +10,7 @@ Desarrollado por la Dirección de Inteligencia Artificial.
 | Pieza | Estado |
 |---|---|
 | Catálogo de 217 pruebas extraído del PDF y cargado solo en la base | ✅ |
-| Portal de relevamiento (`/`): ingreso solo con nombre y apellido, módulos, reservas, resultados, evidencias, revalidación | ✅ |
+| Portal de relevamiento (`/`): ingreso solo con nombre y apellido (la segunda vez, se elige de una lista del navegador), módulos, reservas, resultados, evidencias, revalidación | ✅ |
 | Panel de administración (`/admin`): tablero, pruebas, observaciones, incidencias, prioridades, informes, relevadores, equipo | ✅ |
 | Informes en Excel y PDF (8 tipos) | ✅ |
 | Ingreso del equipo con correo y contraseña propios (D-003, D-009) | ✅ |
@@ -61,6 +61,7 @@ Sin `.env.local` arranca en **modo local**: base PGlite en `.local/pgdata` (se c
 | `npm run db:migrar` | Aplica migraciones pendientes y asegura el catálogo (producción) |
 | `npm run db:semilla` | Carga o actualiza el catálogo en la base (producción) |
 | `npm run admin:crear -- --usuario correo@smt.gob.ar --nombre "…"` | Crea una cuenta del equipo con contraseña temporal |
+| `npm run almacenamiento:preparar` | Crea o ajusta el bucket privado de evidencias en Supabase y lo prueba |
 
 ## 3. El catálogo
 
@@ -75,7 +76,7 @@ Lo verifican `src/domain/dominio.test.ts` (sobre el JSON) y `tests/integracion/c
 ## 4. Pruebas
 
 - **Unitarios** (`npm test`): catálogo, nombres, resultados, estados de prueba, ciclo de incidencias, prioridades y permisos.
-- **Integración** (`npm run test:integracion`): Luis ingresa solo con su nombre, toma ACC-01, Agustín no puede tomarla a la vez, el resultado fallido exige explicación, el historial no se puede sobrescribir, el equipo convierte la observación en incidencia, la prioriza, la asigna, la corrige, la prueba pasa a «Requiere nueva validación», Agustín la revalida y el equipo la cierra (y la reabre). Además, todas las consultas del panel y los 8 informes.
+- **Integración** (`npm run test:integracion`): Luis ingresa solo con su nombre, la segunda vez lo elige de la lista de su navegador, toma ACC-01, Agustín no puede tomarla a la vez, el resultado fallido exige explicación, el historial no se puede sobrescribir, el equipo convierte la observación en incidencia, la prioriza, la asigna, la corrige, la prueba pasa a «Requiere nueva validación», Agustín la revalida y el equipo la cierra (y la reabre). Además, todas las consultas del panel y los 8 informes.
 
 ```bash
 PRUEBAS_DATABASE_URL=postgres://postgres@localhost:54360/postgres npm run test:integracion   # ¡borra el esquema public de esa base!
@@ -89,6 +90,7 @@ PRUEBAS_DATABASE_URL=postgres://postgres@localhost:54360/postgres npm run test:i
 
 ```bash
 npm run db:migrar
+npm run almacenamiento:preparar   # si las evidencias van a Supabase Storage
 npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido"
 ```
 
@@ -100,14 +102,20 @@ npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido"
 | `DIRECT_URL` | No | Conexión directa para `db:migrar` (si la app usa un pooler) | Sí |
 | `DATABASE_SSL` | No | `requerido` o `desactivado` (por defecto: requerido salvo localhost) | No |
 | `SESSION_SECRET` | Sí en producción | Firma de las sesiones (32+ caracteres) | Sí |
-| `CARPETA_ARCHIVOS` | No | Dónde guardar las evidencias (por defecto `.local/archivos`) | No |
+| `SUPABASE_URL` | En Vercel | URL del proyecto (`https://<ref>.supabase.co`), para el bucket de evidencias | No |
+| `SUPABASE_SECRET_KEY` | En Vercel | Clave secreta de Supabase (`sb_secret_…` o la `service_role`), solo en el servidor | **Sí** |
+| `SUPABASE_BUCKET` | No | Nombre del bucket (por defecto `evidencias`) | No |
+| `CARPETA_ARCHIVOS` | No | Dónde guardar las evidencias si no hay bucket (por defecto `.local/archivos`) | No |
 | `RESERVA_MINUTOS` | No | Duración de la reserva de una prueba (por defecto 30) | No |
 | `ENCABEZADOS_SEGURIDAD` | No | `nginx` si los encabezados de seguridad los pone el proxy | No |
 
-Las evidencias se guardan en disco: en un servidor sin disco persistente (Vercel) hay que montar un volumen o pasar a un bucket privado (pendiente).
+### Evidencias (D-011)
+
+- **Con `SUPABASE_URL` y `SUPABASE_SECRET_KEY`** (y una base real): van a un **bucket privado** de Supabase Storage. Es lo que hace falta en Vercel, que no tiene disco persistente. El bucket no tiene URL pública: la app lo lee con la clave secreta y sirve cada archivo por `/evidencias/<id>`, solo a quien tiene sesión.
+- **Sin ellas, o en modo local**: van a disco (`CARPETA_ARCHIVOS`). En la computadora nunca se sube nada al bucket, aunque `.env.local` tenga la clave (la usan los scripts).
+- `npm run almacenamiento:preparar` crea el bucket (privado, 8 MB por archivo, JPG, PNG, WebP y PDF) y prueba subir, leer y borrar.
 
 ## Pendientes
 
 - Unificar a mano perfiles de relevadores que resulten ser la misma persona (hoy se muestran y se marcan, pero no se fusionan).
 - Pruebas e2e con Playwright para el circuito del portal a 375 px.
-- Almacenamiento de evidencias en bucket privado para despliegues sin disco.

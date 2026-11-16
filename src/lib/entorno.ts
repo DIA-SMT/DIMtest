@@ -17,6 +17,10 @@ const esquema = z.object({
   SESSION_SECRET: z.string().min(32, "SESSION_SECRET tiene que tener 32 caracteres o más").optional(),
   CARPETA_ARCHIVOS: z.string().min(1).optional(),
   RESERVA_MINUTOS: z.coerce.number().int().min(5).max(240).default(30),
+  // Evidencias en un bucket privado de Supabase Storage (D-011). Sin estas dos, van a disco.
+  SUPABASE_URL: z.string().url("SUPABASE_URL tiene que ser la URL del proyecto, https://<ref>.supabase.co").optional(),
+  SUPABASE_SECRET_KEY: z.string().min(20, "SUPABASE_SECRET_KEY no parece una clave secreta de Supabase").optional(),
+  SUPABASE_BUCKET: z.string().regex(/^[a-z0-9][a-z0-9_-]{2,62}$/, "SUPABASE_BUCKET: minúsculas, números, guion o guion bajo").default("evidencias"),
 });
 
 function leer() {
@@ -26,6 +30,9 @@ function leer() {
     SESSION_SECRET: process.env.SESSION_SECRET || undefined,
     CARPETA_ARCHIVOS: process.env.CARPETA_ARCHIVOS || undefined,
     DATABASE_SSL: process.env.DATABASE_SSL || undefined,
+    SUPABASE_URL: process.env.SUPABASE_URL || undefined,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY || undefined,
+    SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || undefined,
   });
   if (!r.success) {
     const variables = r.error.issues.map((i) => `${String(i.path[0])}: ${i.message}`).join("; ");
@@ -40,6 +47,10 @@ function leer() {
   if (produccion && !e.SESSION_SECRET && !construyendo) {
     throw new Error("Entorno mal configurado: SESSION_SECRET es obligatoria en producción.");
   }
+  // Solo importa con una base real: en modo local las evidencias van siempre a disco.
+  if (!modoLocal && !e.SUPABASE_URL !== !e.SUPABASE_SECRET_KEY) {
+    throw new Error("Entorno mal configurado: SUPABASE_URL y SUPABASE_SECRET_KEY van juntas (o ninguna de las dos).");
+  }
   return {
     ...e,
     produccion,
@@ -47,6 +58,12 @@ function leer() {
     // Solo fuera de producción hay un valor de desarrollo (es público: está en el repositorio).
     sessionSecret: e.SESSION_SECRET ?? "dim360-qa-secreto-de-desarrollo-local-no-usar",
     // turbopackIgnore: la carpeta es de datos, no de código; que el build no rastree todo el proyecto.
+    /**
+     * Dónde van las evidencias: el bucket de Supabase si está configurado y la app usa una base
+     * real. En modo local siempre disco, aunque .env.local tenga la clave (la usan los scripts):
+     * así las pruebas en la computadora nunca suben archivos al bucket de producción.
+     */
+    almacen: e.SUPABASE_URL && e.SUPABASE_SECRET_KEY && !modoLocal ? ("supabase" as const) : ("disco" as const),
     carpetaArchivos: path.resolve(/*turbopackIgnore: true*/ e.CARPETA_ARCHIVOS ?? path.join(process.cwd(), ".local", "archivos")),
   };
 }

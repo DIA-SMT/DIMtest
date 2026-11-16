@@ -39,12 +39,15 @@ export async function exigirRelevador(): Promise<Relevador> {
   return r;
 }
 
+/** Cuántos nombres recuerda un navegador (una computadora compartida de la oficina). */
+export const MAX_CONOCIDOS = 10;
+
 /** Solo en Server Actions o Route Handlers (escribe cookies). */
 export async function emitirSesionRelevador(sesionId: string, relevadorId: string) {
   const almacen = await cookies();
   almacen.set(COOKIE.relevador, await firmar("relevador", { sub: sesionId }, DURACION.relevador), opcionesCookie(DURACION.relevador));
   const conocidos = await relevadoresDelDispositivo();
-  const ids = [relevadorId, ...conocidos.filter((id) => id !== relevadorId)].slice(0, 5);
+  const ids = [relevadorId, ...conocidos.filter((id) => id !== relevadorId)].slice(0, MAX_CONOCIDOS);
   almacen.set(COOKIE.dispositivo, await firmar("dispositivo", { ids }, DURACION.dispositivo), opcionesCookie(DURACION.dispositivo));
 }
 

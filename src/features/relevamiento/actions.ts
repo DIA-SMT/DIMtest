@@ -24,6 +24,7 @@ import {
   confirmarIdentidad,
   guardarEjecucion,
   identificar,
+  ingresarConocido,
   liberarReserva,
   renovarReserva,
   tomarPrueba,
@@ -69,6 +70,16 @@ export async function confirmarIdentidadAccion(_previo: EstadoIngreso, formData:
     return { error: "Volvé a escribir tu nombre y apellido." };
   }
   return terminarIngreso(await conBase((q) => confirmarIdentidad(q, nombre, eleccion)));
+}
+
+/** Segundo ingreso: elige su nombre de la lista de este navegador. */
+export async function ingresarConocidoAccion(_previo: EstadoIngreso, formData: FormData): Promise<EstadoIngreso> {
+  const id = String(formData.get("relevador") ?? "");
+  if (!/^[0-9a-f-]{36}$/.test(id)) return { error: "Elegí tu nombre de la lista." };
+  const conocidos = await relevadoresDelDispositivo();
+  const r = await conBase((q) => ingresarConocido(q, id, conocidos));
+  if (!r) return { error: "Ese nombre ya no está disponible en este navegador. Escribí tu nombre y apellido." };
+  return terminarIngreso(r);
 }
 
 /** «Cambiar usuario»: cierra la sesión de este relevador y vuelve al ingreso. */
