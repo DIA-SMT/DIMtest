@@ -29,7 +29,7 @@ export default async function Usuarios() {
             <caption className="sr-only">Usuarios del equipo</caption>
             <thead className={CLASE_THEAD}>
               <tr>
-                <th scope="col" className={CLASE_TH}>Usuario</th>
+                <th scope="col" className={CLASE_TH}>Correo</th>
                 <th scope="col" className={CLASE_TH}>Rol</th>
                 <th scope="col" className={CLASE_TH}>Estado</th>
                 <th scope="col" className={`${CLASE_TH} text-right`}>Incid. asignadas</th>

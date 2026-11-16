@@ -29,8 +29,8 @@ export function NuevoUsuario() {
       {estado.error ? <Aviso tipo="error">{estado.error}</Aviso> : null}
       <ClaveTemporal estado={estado} />
       <div className="grid gap-4 md:grid-cols-3">
-        <Campo id="nu-usuario" etiqueta="Usuario" obligatorio error={e.usuario}>
-          <input id="nu-usuario" name="usuario" type="text" autoCapitalize="none" spellCheck={false} defaultValue={estado.valores?.usuario ?? ""} className={CLASE_CONTROL} placeholder="nombre.apellido" />
+        <Campo id="nu-usuario" etiqueta="Correo" obligatorio error={e.usuario}>
+          <input id="nu-usuario" name="usuario" type="email" inputMode="email" autoComplete="off" autoCapitalize="none" spellCheck={false} defaultValue={estado.valores?.usuario ?? ""} className={CLASE_CONTROL} placeholder="nombre@smt.gob.ar" />
         </Campo>
         <Campo id="nu-nombre" etiqueta="Nombre y apellido" obligatorio error={e.nombre}>
           <input id="nu-nombre" name="nombre" type="text" defaultValue={estado.valores?.nombre ?? ""} className={CLASE_CONTROL} />
@@ -47,7 +47,7 @@ export function NuevoUsuario() {
       </div>
       <BotonEnviar enviando="Creando…">
         <UserPlus aria-hidden="true" className="size-4" />
-        Crear usuario
+        Crear cuenta
       </BotonEnviar>
     </form>
   );

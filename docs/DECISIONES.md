@@ -16,6 +16,18 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-009 · El equipo ingresa al panel con su correo
+
+**Fecha:** 2026-11-16 · **Pidió:** DIA
+
+**Contexto.** D-003 dejó un ingreso propio con usuario y contraseña, y el usuario tenía la forma `nombre.apellido`. El equipo prefiere ingresar con el correo, como en sus otros sistemas.
+
+**Decisión.** El usuario del panel es un **correo** (en minúsculas, hasta 254 caracteres). Los usuarios cortos anteriores siguen valiendo. La regla está en `src/domain/usuario-admin.ts` y la misma, como check, en la base (`20261116120000_usuario_admin_con_correo.sql`). La contraseña sigue siendo la del panel (scrypt): **no** se usan las cuentas de Supabase Auth, y D-003 sigue vigente en todo lo demás. Las reglas de la contraseña están en D-010. El administrador local pasa a ser `admin@dim360.local`.
+
+**Consecuencias.** Las cuentas se siguen creando con `npm run admin:crear -- --usuario correo@… --nombre "…"` o desde Equipo. No se manda ningún correo: la contraseña temporal se muestra una sola vez a quien la crea.
+
+---
+
 ## D-008 · La estética sigue a Applaza, no a CementerIA (excepción al estándar 04)
 
 **Fecha:** 2026-11-15 · **Pidió:** DIA
