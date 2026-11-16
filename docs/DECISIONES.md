@@ -4,6 +4,21 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-014 · Evidencias en los informes: enlaces en Excel, imágenes en PDF
+
+**Fecha:** 2026-11-16 · **Pidió:** DIA
+
+**Contexto.** Los informes eran tablas de texto: no decían si había evidencias ni las mostraban.
+
+**Decisión.** Los informes con ejecuciones o incidencias (realizadas, fallidas, observaciones y los tres de incidencias) suman la columna «Evidencias» con la cantidad. De una incidencia se toman lo que adjuntó el equipo y lo que adjuntó el relevador en la ejecución que la originó; de las fallidas, las del último resultado.
+
+- **Excel:** una columna por archivo («Evidencia 1», «Evidencia 2»…) con el nombre y el enlace a `/evidencias/<id>` en el mismo sitio. El enlace pide ingresar con la cuenta del panel: el archivo no sale del sistema sin sesión.
+- **PDF:** un anexo al final con las imágenes, agrupadas por fila (tres por renglón, reducidas a 1200 px en JPEG). Los PDF adjuntos van como enlace. Se incluyen como máximo 150 imágenes; el resto también va como enlace.
+
+**Consecuencias.** El PDF tarda más y pesa más cuanto más fotos haya (la descarga tiene hasta 60 s en Vercel). Quien recibe el PDF ve las imágenes sin entrar al panel: compartirlo es compartir las capturas.
+
+---
+
 ## D-013 · Borrar relevadores sin pruebas
 
 **Fecha:** 2026-11-16 · **Pidió:** DIA

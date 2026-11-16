@@ -12,7 +12,7 @@ Desarrollado por la Dirección de Inteligencia Artificial.
 | Catálogo de 217 pruebas extraído del PDF y cargado solo en la base | ✅ |
 | Portal de relevamiento (`/`): ingreso solo con nombre y apellido (la segunda vez, se elige de una lista del navegador), módulos, reservas, resultados, evidencias, revalidación | ✅ |
 | Panel de administración (`/admin`): tablero, pruebas, observaciones, incidencias, prioridades, informes, relevadores, equipo | ✅ |
-| Informes en Excel y PDF (8 tipos) | ✅ |
+| Informes en Excel y PDF (8 tipos), con las evidencias: enlaces en el Excel y anexo de imágenes en el PDF (D-014) | ✅ |
 | Ingreso del equipo con correo y contraseña propios (D-003, D-009) | ✅ |
 | Pruebas e2e con Playwright | ⬜ Pendiente: el circuito se probó a mano en el navegador y con tests de integración |
 
@@ -76,7 +76,7 @@ Lo verifican `src/domain/dominio.test.ts` (sobre el JSON) y `tests/integracion/c
 ## 4. Pruebas
 
 - **Unitarios** (`npm test`): catálogo, nombres, resultados, estados de prueba, ciclo de incidencias, prioridades y permisos.
-- **Integración** (`npm run test:integracion`): Luis ingresa solo con su nombre, la segunda vez lo elige de la lista de su navegador, el equipo borra a quien no registró pruebas pero no a Luis, toma ACC-01, Agustín no puede tomarla a la vez, el resultado fallido exige explicación, el historial no se puede sobrescribir, el equipo convierte la observación en incidencia, la prioriza, la asigna, la corrige, la prueba pasa a «Requiere nueva validación», Agustín la revalida y el equipo la cierra (y la reabre). Además, todas las consultas del panel y los 8 informes.
+- **Integración** (`npm run test:integracion`): Luis ingresa solo con su nombre, la segunda vez lo elige de la lista de su navegador, el equipo borra a quien no registró pruebas pero no a Luis, toma ACC-01, Agustín no puede tomarla a la vez, el resultado fallido exige explicación, el historial no se puede sobrescribir, el equipo convierte la observación en incidencia, la prioriza, la asigna, la corrige, la prueba pasa a «Requiere nueva validación», Agustín la revalida y el equipo la cierra (y la reabre). Además, todas las consultas del panel y los 8 informes, con sus evidencias en el Excel y en el PDF.
 
 ```bash
 PRUEBAS_DATABASE_URL=postgres://postgres@localhost:54360/postgres npm run test:integracion   # ¡borra el esquema public de esa base!
