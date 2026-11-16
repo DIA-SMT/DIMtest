@@ -29,7 +29,7 @@ Escribir el nombre de un administrador en el portal **no** da acceso al panel: s
 
 ## Stack
 
-Next.js 16 · React 19 · TypeScript · Tailwind 4 · Postgres (PGlite en local, postgres.js en producción) · zod · jose · exceljs · @react-pdf/renderer · Vitest. Sigue los [estándares DIA](../estandares-dia/README.md).
+Next.js 16 · React 19 · TypeScript · Tailwind 4 · Postgres (PGlite en local, postgres.js en producción) · zod · jose · exceljs · @react-pdf/renderer · Vitest. Sigue los [estándares DIA](../estandares-dia/README.md), con la estética de Applaza (Outfit y DM Sans, barra superior blanca, portadas con ondas: [D-008](docs/DECISIONES.md)).
 
 ## 1. Correr en la computadora
 

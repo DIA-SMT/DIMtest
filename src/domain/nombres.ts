@@ -52,3 +52,12 @@ export function problemaNombre(entrada: string): string | null {
 export function primerNombre(nombre: string): string {
   return nombre.split(" ")[0] ?? nombre;
 }
+
+/** Dos iniciales para el avatar («Luis Pérez» → «LP»), ignorando paréntesis y signos. */
+export function iniciales(nombre: string): string {
+  const palabras = nombre.match(/\p{L}+/gu) ?? [];
+  const primera = palabras[0];
+  if (!primera) return "?";
+  const ultima = palabras.length > 1 ? (palabras.at(-1) ?? "").charAt(0) : primera.charAt(1);
+  return (primera.charAt(0) + ultima).toUpperCase();
+}

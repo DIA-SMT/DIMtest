@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { LogIn } from "lucide-react";
-import { BotonEnviar, Campo, CLASE_BOTON_PRIMARIO, CLASE_CONTROL } from "@/components/formulario";
+import { BotonEnviar, Campo, CLASE_BOTON_INGRESO,CLASE_CONTROL } from "@/components/formulario";
 import { Aviso } from "@/components/ui";
 import { ESTADO_INICIAL, type EstadoAccion } from "@/lib/accion";
 import { ingresarAdminAccion } from "../actions";
@@ -30,7 +30,7 @@ export function FormIngresoAdmin({ motivo }: { motivo?: string }) {
       <Campo id="clave" etiqueta="Contraseña" obligatorio error={e.clave}>
         <input id="clave" name="clave" type="password" autoComplete="current-password" required aria-invalid={e.clave ? true : undefined} className={CLASE_CONTROL} />
       </Campo>
-      <BotonEnviar enviando="Ingresando…" className={`${CLASE_BOTON_PRIMARIO} w-full`}>
+      <BotonEnviar enviando="Ingresando…" className={CLASE_BOTON_INGRESO}>
         <LogIn aria-hidden="true" className="size-4" />
         Ingresar al panel
       </BotonEnviar>

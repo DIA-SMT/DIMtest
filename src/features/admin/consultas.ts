@@ -130,6 +130,14 @@ export async function opcionesRelevadores(q: Consulta): Promise<Opcion[]> {
   return filas.map((f) => ({ valor: f.id, etiqueta: f.repetido ? `${f.nombre} · #${f.id.slice(0, 4)}` : f.nombre }));
 }
 
+/** Las 217 pruebas en el orden del PDF, para elegir a mano al crear una incidencia. */
+export async function opcionesPruebas(q: Consulta): Promise<Opcion[]> {
+  const filas = await q<{ codigo: string; que_probar: string }>(
+    "select p.codigo, p.que_probar from pruebas p join modulos m on m.codigo = p.modulo_codigo order by m.orden, p.numero",
+  );
+  return filas.map((p) => ({ valor: p.codigo, etiqueta: `${p.codigo} · ${p.que_probar}` }));
+}
+
 export async function opcionesResponsables(q: Consulta): Promise<Opcion[]> {
   const filas = await q<{ id: string; nombre: string; rol: string }>("select id, nombre, rol from usuarios_admin where activo order by nombre");
   return filas.map((f) => ({ valor: f.id, etiqueta: f.nombre }));

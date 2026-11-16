@@ -80,9 +80,9 @@ export default async function PaginaModulo({
       ) : null}
 
       <header className="space-y-3">
-        <div className="space-y-1">
-          <p className="font-mono text-xs font-bold tracking-wider text-primario-oscuro">{modulo.codigo}</p>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{modulo.nombre}</h1>
+        <div className="space-y-2">
+          <p className="antetitulo text-primario">Módulo {modulo.codigo}</p>
+          <h1 className="text-[1.75rem] leading-tight font-bold text-institucional sm:text-[2rem]">{modulo.nombre}</h1>
           {modulo.descripcion ? <p className="text-texto-secundario">{modulo.descripcion}</p> : null}
         </div>
         <div className="rounded-tarjeta border border-borde bg-superficie p-4 shadow-tarjeta">
@@ -102,7 +102,7 @@ export default async function PaginaModulo({
       </header>
 
       <nav aria-label="Filtrar pruebas" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <ul className="flex min-w-max gap-1 rounded-control border border-borde bg-superficie p-1">
+        <ul className="flex w-max gap-1 rounded-full border border-borde bg-superficie p-1 shadow-tarjeta">
           {VISTAS.map((v) => {
             const n = filtrar(filas, v.clave).length;
             const activa = v.clave === vista;
@@ -111,8 +111,8 @@ export default async function PaginaModulo({
                 <Link
                   href={`/relevamiento/${codigo}?ver=${v.clave}`}
                   aria-current={activa ? "page" : undefined}
-                  className={`flex min-h-10 items-center gap-1.5 rounded-[0.375rem] px-3 text-sm font-semibold transition-colors ${
-                    activa ? "bg-primario text-white" : "text-texto-secundario hover:bg-fondo hover:text-texto"
+                  className={`flex min-h-10 items-center gap-1.5 rounded-full px-4 text-sm font-bold transition-colors ${
+                    activa ? "bg-primario text-white" : "text-institucional hover:bg-superficie-azul hover:text-primario"
                   }`}
                 >
                   {v.nombre}
