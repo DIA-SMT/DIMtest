@@ -1,7 +1,7 @@
 // El circuito completo de los criterios de aceptación, contra la base real (PGlite).
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import catalogo from "@/domain/catalogo/catalogo-dim360.json";
-import { sembrarCatalogo, type CatalogoJson } from "@/lib/db/esquema";
+import { controlarCatalogo, sembrarCatalogo, type CatalogoJson } from "@/lib/db/esquema";
 import { asignarResponsable, cambiarEstado, cambiarPrioridad, clasificarObservacion, crearIncidencia } from "@/features/incidencias/servicio";
 import {
   confirmarIdentidad,
@@ -41,6 +41,14 @@ describe("catálogo", () => {
   it("volver a sembrar no duplica ni cambia nada", async () => {
     const r = await sembrarCatalogo(base.db, catalogo as CatalogoJson);
     expect(r).toEqual({ modulosNuevos: 0, pruebasNuevas: 0, pruebasActualizadas: 0, totalPruebas: 217 });
+  });
+
+  it("el control del arranque no escribe y detecta pruebas que faltan", async () => {
+    expect(await controlarCatalogo(base.db, catalogo as CatalogoJson)).toEqual({ esperadas: 217, faltantes: [] });
+    const conUnaDeMas = { ...catalogo, pruebas: [...catalogo.pruebas, { ...catalogo.pruebas[0]!, codigo: "ZZZ-99" }] } as CatalogoJson;
+    expect(await controlarCatalogo(base.db, conUnaDeMas)).toEqual({ esperadas: 218, faltantes: ["ZZZ-99"] });
+    const [{ n }] = await base.tx((q) => q<{ n: number }>("select count(*)::int as n from pruebas"));
+    expect(n).toBe(217);
   });
 });
 
