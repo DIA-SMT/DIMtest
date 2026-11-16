@@ -18,12 +18,44 @@ export interface Columna {
   ancho: number;
 }
 
+export interface EvidenciaInforme {
+  id: string;
+  nombre: string;
+  mime: string;
+  ruta: string;
+}
+
+/** Las evidencias de una fila, con un título para el anexo del PDF («ACC-03 · No funciona · …»). */
+export interface EvidenciasFila {
+  titulo: string;
+  archivos: EvidenciaInforme[];
+}
+
 export interface Informe {
   titulo: string;
   descripcion: string;
   columnas: Columna[];
   filas: Record<string, string | number>[];
   resumen: [string, string | number][];
+  /** Solo en los informes que tienen evidencias: una entrada por fila, en el mismo orden. */
+  evidencias?: EvidenciasFila[];
+}
+
+const COL_EVIDENCIAS: Columna = { clave: "evidencias", titulo: "Evidencias", ancho: 10 };
+const cantidad = (n: number) => (n > 0 ? n : "—");
+
+/** Evidencias de ejecuciones y de incidencias, agrupadas por id de origen. */
+async function evidenciasDe(q: Consulta, ejecuciones: string[], incidencias: string[] = []) {
+  const filas = await q<EvidenciaInforme & { origen: string }>(
+    `select id, nombre_original as nombre, tipo_mime as mime, ruta, coalesce(ejecucion_id, incidencia_id) as origen
+       from evidencias
+      where ejecucion_id = any($1::uuid[]) or incidencia_id = any($2::uuid[])
+      order by creada_at, nombre_original`,
+    [ejecuciones, incidencias],
+  );
+  const porOrigen = new Map<string, EvidenciaInforme[]>();
+  for (const { origen, ...ev } of filas) porOrigen.set(origen, [...(porOrigen.get(origen) ?? []), ev]);
+  return (id: string | null | undefined) => (id ? (porOrigen.get(id) ?? []) : []);
 }
 
 export const TIPOS_INFORME = {
@@ -45,6 +77,8 @@ export function esTipoInforme(v: string): v is TipoInforme {
 const resultado = (r: string | null) => (r ? (NOMBRE_RESULTADO[r as Resultado] ?? r) : "—");
 
 interface FilaInc {
+  id: string;
+  ejecucion_id: string | null;
   numero: number;
   prueba_codigo: string;
   modulo: string;
@@ -62,7 +96,7 @@ interface FilaInc {
 
 async function incidencias(q: Consulta, estados: string[] | null): Promise<FilaInc[]> {
   return q<FilaInc>(
-    `select i.numero, i.prueba_codigo, m.nombre as modulo, p.que_probar, i.descripcion, i.reportada_por, i.reportada_at,
+    `select i.id, i.ejecucion_id, i.numero, i.prueba_codigo, m.nombre as modulo, p.que_probar, i.descripcion, i.reportada_por, i.reportada_at,
             i.prioridad, i.estado, u.nombre as responsable, i.solucion_aplicada, i.cerrada_at, i.actualizada_at
        from incidencias i join pruebas p on p.codigo = i.prueba_codigo join modulos m on m.codigo = p.modulo_codigo
        left join usuarios_admin u on u.id = i.responsable_id
@@ -82,6 +116,7 @@ const COLS_INCIDENCIA: Columna[] = [
   { clave: "responsable", titulo: "Responsable", ancho: 18 },
   { clave: "estado", titulo: "Estado", ancho: 20 },
   { clave: "dias", titulo: "Días", ancho: 6 },
+  COL_EVIDENCIAS,
 ];
 
 function filaIncidencia(i: FilaInc) {
@@ -105,6 +140,7 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
 
   if (tipo === "realizadas" || tipo === "observaciones") {
     const filas = await q<{
+      id: string;
       numero: number;
       prueba_codigo: string;
       modulo: string;
@@ -118,7 +154,7 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
       clasificacion: string;
       incidencia: number | null;
     }>(
-      `select e.numero, e.prueba_codigo, m.nombre as modulo, p.que_probar, e.relevador_nombre, e.creada_at, e.resultado,
+      `select e.id, e.numero, e.prueba_codigo, m.nombre as modulo, p.que_probar, e.relevador_nombre, e.creada_at, e.resultado,
               e.observaciones, e.caso_usado, e.es_revalidacion, coalesce(r.clasificacion, 'sin_revisar') as clasificacion, i.numero as incidencia
          from ejecuciones e join pruebas p on p.codigo = e.prueba_codigo join modulos m on m.codigo = p.modulo_codigo
          left join revisiones_observacion r on r.ejecucion_id = e.id left join incidencias i on i.id = r.incidencia_id
@@ -126,6 +162,7 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
         order by e.creada_at desc, e.numero desc`,
       [tipo === "observaciones"],
     );
+    const deEjecucion = await evidenciasDe(q, filas.map((f) => f.id));
     const clasif = (c: string, n: number | null) =>
       c === "incidencia" && n ? `Incidencia ${numeroIncidencia(n)}` : c === "informativa" ? "Informativa" : "Sin revisar";
     return {
@@ -140,6 +177,7 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
         { clave: "observaciones", titulo: "Observaciones", ancho: 44 },
         { clave: "caso", titulo: "Caso usado", ancho: 18 },
         ...(tipo === "observaciones" ? [{ clave: "clasificacion", titulo: "Clasificación", ancho: 18 }] : [{ clave: "tipo", titulo: "Tipo", ancho: 14 }]),
+        COL_EVIDENCIAS,
       ],
       filas: filas.map((f) => ({
         codigo: f.prueba_codigo,
@@ -152,6 +190,11 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
         caso: f.caso_usado || "—",
         clasificacion: clasif(f.clasificacion, f.incidencia),
         tipo: f.es_revalidacion ? "Revalidación" : "Evaluación",
+        evidencias: cantidad(deEjecucion(f.id).length),
+      })),
+      evidencias: filas.map((f) => ({
+        titulo: `${f.prueba_codigo} · ${resultado(f.resultado)} · ${f.relevador_nombre} · ${fechaHora(f.creada_at)}`,
+        archivos: deEjecucion(f.id),
       })),
       resumen: [
         [tipo === "observaciones" ? "Observaciones" : "Ejecuciones", filas.length],
@@ -166,6 +209,19 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
       tipo === "pendientes" ? f.ejecuciones === 0 || f.estado === "revalidar" : f.ultima?.resultado === "no_funciona" || f.ultima?.resultado === "parcial",
     );
     const modulos = new Map((await listarModulos(q)).map((m) => [m.codigo, m.nombre]));
+    // Las evidencias del último resultado de cada prueba fallida (el mismo orden que estadoDePruebas).
+    const ultimas =
+      tipo === "fallidas"
+        ? new Map(
+            (
+              await q<{ prueba_codigo: string; id: string }>(
+                "select distinct on (prueba_codigo) prueba_codigo, id from ejecuciones order by prueba_codigo, creada_at desc, numero desc",
+              )
+            ).map((u) => [u.prueba_codigo, u.id]),
+          )
+        : new Map<string, string>();
+    const deEjecucion = await evidenciasDe(q, [...ultimas.values()]);
+    const deFila = (codigo: string) => deEjecucion(ultimas.get(codigo));
     return {
       ...base,
       columnas: [
@@ -181,6 +237,7 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
               { clave: "relevador", titulo: "Relevador", ancho: 18 },
               { clave: "fecha", titulo: "Fecha", ancho: 16 },
               { clave: "observaciones", titulo: "Observaciones", ancho: 40 },
+              COL_EVIDENCIAS,
             ]),
       ],
       filas: filas.map((f) => ({
@@ -194,7 +251,16 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
         relevador: f.ultima?.relevador ?? "—",
         fecha: f.ultima ? fechaHora(f.ultima.fecha) : "—",
         observaciones: f.ultima?.observaciones || "—",
+        evidencias: cantidad(deFila(f.codigo).length),
       })),
+      ...(tipo === "fallidas"
+        ? {
+            evidencias: filas.map((f) => ({
+              titulo: `${f.codigo} · ${resultado(f.ultima?.resultado ?? null)} · ${f.ultima?.relevador ?? ""} · ${f.ultima ? fechaHora(f.ultima.fecha) : ""}`,
+              archivos: deFila(f.codigo),
+            })),
+          }
+        : {}),
       resumen:
         tipo === "pendientes"
           ? [
@@ -211,14 +277,30 @@ export async function armarInforme(q: Consulta, tipo: TipoInforme): Promise<Info
   if (tipo === "correcciones-pendientes" || tipo === "correcciones-realizadas" || tipo === "prioridades") {
     const estados = tipo === "correcciones-pendientes" ? [...ESTADOS_ACTIVOS] : tipo === "correcciones-realizadas" ? ["corregida", "cerrada"] : null;
     const filas = await incidencias(q, estados);
+    // De cada incidencia: lo que adjuntó el equipo y lo que adjuntó el relevador en la ejecución que la originó.
+    const de = await evidenciasDe(
+      q,
+      filas.flatMap((f) => (f.ejecucion_id ? [f.ejecucion_id] : [])),
+      filas.map((f) => f.id),
+    );
+    const archivos = (f: FilaInc) => [...de(f.ejecucion_id), ...de(f.id)];
     const columnas =
       tipo === "correcciones-realizadas"
-        ? [...COLS_INCIDENCIA.filter((c) => c.clave !== "dias"), { clave: "solucion", titulo: "Solución aplicada", ancho: 40 }, { clave: "cerrada", titulo: "Cerrada", ancho: 16 }]
+        ? [
+            ...COLS_INCIDENCIA.filter((c) => c.clave !== "dias" && c.clave !== "evidencias"),
+            { clave: "solucion", titulo: "Solución aplicada", ancho: 40 },
+            { clave: "cerrada", titulo: "Cerrada", ancho: 16 },
+            COL_EVIDENCIAS,
+          ]
         : COLS_INCIDENCIA;
     return {
       ...base,
       columnas,
-      filas: filas.map(filaIncidencia),
+      filas: filas.map((f) => ({ ...filaIncidencia(f), evidencias: cantidad(archivos(f).length) })),
+      evidencias: filas.map((f) => ({
+        titulo: `Incidencia ${numeroIncidencia(f.numero)} · ${f.prueba_codigo} · ${f.prioridad} · ${NOMBRE_ESTADO[f.estado]}`,
+        archivos: archivos(f),
+      })),
       resumen: PRIORIDADES.map((p) => [`${p} · ${NOMBRE_PRIORIDAD[p]}`, filas.filter((f) => f.prioridad === p).length] as [string, number]),
     };
   }

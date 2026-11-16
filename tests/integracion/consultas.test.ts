@@ -14,11 +14,21 @@ import {
 } from "@/features/admin/consultas";
 import { cambiarEstado, crearIncidencia } from "@/features/incidencias/servicio";
 import { armarInforme, TIPOS_INFORME, type TipoInforme } from "@/features/informes/datos";
+import ExcelJS from "exceljs";
 import { generarExcel } from "@/features/informes/excel";
+import { generarPdf } from "@/features/informes/pdf";
 import { guardarEjecucion, identificar, tomarPrueba } from "@/features/relevamiento/servicio";
 import { baseDePrueba, crearAdmin } from "./base";
 
 let base: Awaited<ReturnType<typeof baseDePrueba>>;
+const SITIO = "https://dim360.test";
+// Un PNG real de 1 px: el anexo del PDF lo pasa por sharp.
+const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==", "base64");
+const leerFalso = async () => PNG;
+const EVIDENCIAS = [
+  { nombre: "pantalla-error.png", mime: "image/png", tamano: PNG.length, ruta: "2026-11/11111111-1111-4111-8111-111111111111.png" },
+  { nombre: "constancia.pdf", mime: "application/pdf", tamano: 100, ruta: "2026-11/22222222-2222-4222-8222-222222222222.pdf" },
+];
 
 beforeAll(async () => {
   base = await baseDePrueba();
@@ -26,11 +36,17 @@ beforeAll(async () => {
   const luis = await base.tx((q) => identificar(q, "Luis Pérez", []));
   const ana = await base.tx((q) => identificar(q, "Ana Díaz", []));
   if (luis.tipo !== "listo" || ana.tipo !== "listo") throw new Error("ingreso");
-  const registrar = async (quien: typeof luis, codigo: string, resultado: "funciona" | "no_funciona" | "parcial" | "no_probado", obs = "") => {
+  const registrar = async (
+    quien: typeof luis,
+    codigo: string,
+    resultado: "funciona" | "no_funciona" | "parcial" | "no_probado",
+    obs = "",
+    evidencias: typeof EVIDENCIAS = [],
+  ) => {
     await base.tx((q) => tomarPrueba(q, codigo, quien, { minutos: 30, repetir: true }));
-    return base.tx((q) => guardarEjecucion(q, quien, { codigo, resultado, observaciones: obs, casoUsado: "", prioridadSugerida: null, evidencias: [] }));
+    return base.tx((q) => guardarEjecucion(q, quien, { codigo, resultado, observaciones: obs, casoUsado: "", prioridadSugerida: null, evidencias }));
   };
-  const e1 = await registrar(luis, "PAD-01", "no_funciona", "No trae la ficha del PGM con el CUIT pedido.");
+  const e1 = await registrar(luis, "PAD-01", "no_funciona", "No trae la ficha del PGM con el CUIT pedido.", EVIDENCIAS);
   await registrar(luis, "PAD-02", "parcial", "Tarda mucho la respuesta de ARCA.");
   await registrar(ana, "TRA-08", "funciona");
   await registrar(ana, "INT-01", "no_probado", "Sin datos de prueba.");
@@ -119,7 +135,7 @@ describe("informes", () => {
     for (const tipo of Object.keys(TIPOS_INFORME) as TipoInforme[]) {
       const informe = await base.tx((q) => armarInforme(q, tipo));
       expect(informe.columnas.length, tipo).toBeGreaterThan(3);
-      const excel = await generarExcel(informe, new Date());
+      const excel = await generarExcel(informe, new Date(), { base: SITIO });
       expect(excel.subarray(0, 2).toString(), tipo).toBe("PK");
     }
     const pendientes = await base.tx((q) => armarInforme(q, "pendientes"));
@@ -127,5 +143,60 @@ describe("informes", () => {
     const avance = await base.tx((q) => armarInforme(q, "avance"));
     expect(avance.filas).toHaveLength(22);
     expect(avance.filas.reduce((a, f) => a + Number(f.total), 0)).toBe(217);
+  });
+  it("las evidencias van en los informes que las tienen, alineadas con cada fila", async () => {
+    for (const tipo of ["realizadas", "fallidas", "observaciones", "correcciones-pendientes", "prioridades"] as const) {
+      const informe = await base.tx((q) => armarInforme(q, tipo));
+      expect(informe.evidencias, tipo).toHaveLength(informe.filas.length);
+      const i = informe.filas.findIndex((f) => f.codigo === "PAD-01");
+      expect(informe.filas[i]?.evidencias, tipo).toBe(2);
+      expect(informe.evidencias?.[i]?.archivos.map((a) => a.nombre), tipo).toEqual(["constancia.pdf", "pantalla-error.png"]);
+      expect(informe.evidencias?.[i]?.titulo, tipo).toContain("PAD-01");
+      // Las filas sin evidencias muestran un guion.
+      expect(informe.filas.filter((f) => f.codigo !== "PAD-01").every((f) => f.evidencias === "—"), tipo).toBe(true);
+    }
+    expect((await base.tx((q) => armarInforme(q, "pendientes"))).evidencias).toBeUndefined();
+    expect((await base.tx((q) => armarInforme(q, "avance"))).evidencias).toBeUndefined();
+  });
+
+  it("el Excel suma una columna por evidencia con su enlace al panel", async () => {
+    const informe = await base.tx((q) => armarInforme(q, "realizadas"));
+    const libro = new ExcelJS.Workbook();
+    const excel = await generarExcel(informe, new Date(), { base: SITIO });
+    await libro.xlsx.load(excel.buffer.slice(excel.byteOffset, excel.byteOffset + excel.byteLength) as ArrayBuffer);
+    const hoja = libro.worksheets[0]!;
+    const titulos = (hoja.getRow(5).values as unknown[]).filter(Boolean);
+    expect(titulos.slice(-2)).toEqual(["Evidencia 1", "Evidencia 2"]);
+    const enlaces: { text: string; hyperlink: string }[] = [];
+    hoja.eachRow((fila) =>
+      fila.eachCell((celda) => {
+        const v = celda.value as { hyperlink?: string; text?: string } | null;
+        if (v && typeof v === "object" && v.hyperlink) enlaces.push({ text: String(v.text), hyperlink: v.hyperlink });
+      }),
+    );
+    expect(enlaces.map((e) => e.text)).toEqual(["constancia.pdf", "pantalla-error.png"]);
+    for (const e of enlaces) expect(e.hyperlink).toMatch(/^https:\/\/dim360\.test\/evidencias\/[0-9a-f-]{36}$/);
+  });
+
+  it("el PDF suma un anexo con las imágenes y el enlace a los PDF adjuntos", async () => {
+    const informe = await base.tx((q) => armarInforme(q, "fallidas"));
+    const leidas: string[] = [];
+    const pdf = await generarPdf(informe, new Date(), {
+      base: SITIO,
+      leer: async (ruta) => {
+        leidas.push(ruta);
+        return leerFalso();
+      },
+    });
+    expect(pdf.subarray(0, 5).toString()).toBe("%PDF-");
+    // Solo se lee la imagen: el PDF adjunto va como enlace.
+    expect(leidas).toEqual([EVIDENCIAS[0]!.ruta]);
+    const texto = pdf.toString("latin1");
+    expect(texto.match(/\/Subtype \/Image/g)?.length ?? 0).toBeGreaterThanOrEqual(2); // logo + evidencia
+    expect(texto).toMatch(/https:\/\/dim360\.test\/evidencias\/[0-9a-f-]{36}/);
+
+    // Si una imagen no se puede leer, el PDF sale igual.
+    const sinArchivos = await generarPdf(informe, new Date(), { base: SITIO, leer: () => Promise.reject(new Error("no está")) });
+    expect(sinArchivos.subarray(0, 5).toString()).toBe("%PDF-");
   });
 });
