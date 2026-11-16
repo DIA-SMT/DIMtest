@@ -4,6 +4,30 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-012 · Segundo ingreso: elegir el nombre de una lista
+
+**Fecha:** 2026-11-16 · **Pidió:** DIA
+
+**Contexto.** Los relevadores escribían su nombre cada vez que la sesión se cerraba o cambiaban de usuario.
+
+**Decisión.** La primera vez se escribe el nombre (D-002). Después, el ingreso muestra una lista desplegable con los nombres que **ya ingresaron desde ese navegador** (la cookie firmada del dispositivo, que ahora recuerda hasta 10 para una computadora compartida). «No estoy en la lista» vuelve a pedir el nombre. La lista no es de todos los relevadores: el ingreso está publicado en internet y no debe mostrar los nombres del personal, y elegir un id que no está en la cookie no sirve.
+
+**Consecuencias.** En otro navegador o con las cookies borradas, se vuelve a escribir el nombre y aplica el «¿Sos vos?» de D-002.
+
+---
+
+## D-011 · Evidencias en un bucket privado de Supabase Storage
+
+**Fecha:** 2026-11-16 · **Pidió:** DIA
+
+**Contexto.** Las evidencias (fotos y PDF) se guardaban en disco. Vercel no tiene disco persistente: adjuntar una evidencia fallaba en producción.
+
+**Decisión.** Con `SUPABASE_URL` y `SUPABASE_SECRET_KEY`, y una base real, las evidencias van a un **bucket privado** (`evidencias` por defecto) con el cliente oficial `@supabase/supabase-js`. El bucket admite 8 MB por archivo y solo JPG, PNG, WebP y PDF, los mismos límites que valida la app (`src/domain/evidencias.ts`). No hay URL pública ni firmada: el servidor lee el archivo con la clave secreta y lo sirve por `/evidencias/<id>` con la misma sesión, CSP y permisos de antes. La base sigue guardando solo la ruta relativa (`AAAA-MM/<uuid>.ext`), igual que en disco. En modo local siempre se usa el disco. `npm run almacenamiento:preparar` crea el bucket y lo prueba.
+
+**Consecuencias.** La clave secreta salta RLS en Supabase: va solo en el servidor (variable de Vercel marcada como sensible y `.env.local`), nunca con prefijo `NEXT_PUBLIC_`. Si borrar un archivo falla después de un error al guardar, queda un archivo huérfano en el bucket; se registra en el log (`almacen.borrar_fallo`).
+
+---
+
 ## D-010 · Contraseña del panel a elección de cada persona (excepción al estándar 03)
 
 **Fecha:** 2026-11-16 · **Pidió:** DIA

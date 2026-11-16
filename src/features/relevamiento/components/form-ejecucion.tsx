@@ -3,8 +3,8 @@
 import { useActionState, useEffect, useState } from "react";
 import { Clock, Paperclip, Save } from "lucide-react";
 import { BotonEnviar, Campo, CLASE_BOTON_SECUNDARIO, CLASE_CONTROL } from "@/components/formulario";
-import { Aviso } from "@/components/ui";
-import { PRIORIDADES, NOMBRE_PRIORIDAD } from "@/domain/prioridades";
+import { Aviso, InsigniaPrioridad } from "@/components/ui";
+import { AYUDA_PRIORIDAD, NOMBRE_PRIORIDAD, PRIORIDADES, type Prioridad } from "@/domain/prioridades";
 import { admitePrioridad, AYUDA_RESULTADO, NOMBRE_RESULTADO, PEDIDO_EXPLICACION, RESULTADOS, requiereExplicacion, type Resultado } from "@/domain/resultados";
 import { ESTADO_INICIAL, type EstadoAccion } from "@/lib/accion";
 import { guardarEjecucionAccion, liberarPruebaAccion, renovarReservaAccion } from "../actions";
@@ -15,6 +15,8 @@ const ESTILO_OPCION: Record<Resultado, string> = {
   parcial: "has-checked:border-advertencia-borde has-checked:bg-advertencia-fondo",
   no_probado: "has-checked:border-borde-control has-checked:bg-neutro-fondo",
 };
+/** P0 a P3 y, al final, «No sé» (valor vacío). */
+const OPCIONES_PRIORIDAD: (Prioridad | "")[] = [...PRIORIDADES, ""];
 const PUNTO: Record<Resultado, string> = {
   funciona: "bg-exito-solido",
   no_funciona: "bg-error",
@@ -128,19 +130,6 @@ export function FormEjecucion({ codigo, venceInicial, esRevalidacion }: { codigo
           <input id="caso" name="caso" type="text" maxLength={300} defaultValue={v.caso ?? ""} aria-describedby="caso-ayuda" className={CLASE_CONTROL} />
         </Campo>
 
-        {conPrioridad ? (
-          <Campo id="prioridad" etiqueta="¿Qué tan grave te parece?" ayuda="Es una sugerencia: la prioridad final la define el equipo.">
-            <select id="prioridad" name="prioridad" defaultValue={v.prioridad ?? ""} aria-describedby="prioridad-ayuda" className={CLASE_CONTROL}>
-              <option value="">No sé</option>
-              {PRIORIDADES.map((p) => (
-                <option key={p} value={p}>
-                  {p} · {NOMBRE_PRIORIDAD[p]}
-                </option>
-              ))}
-            </select>
-          </Campo>
-        ) : null}
-
         <Campo id="evidencias" etiqueta="Evidencias (opcional)" ayuda="Capturas o fotos (JPG, PNG, WebP) o PDF. Hasta 5 archivos de 8 MB." error={errores.evidencias}>
           <label
             htmlFor="evidencias"
@@ -160,6 +149,39 @@ export function FormEjecucion({ codigo, venceInicial, esRevalidacion }: { codigo
             onChange={(e) => setArchivos(Array.from(e.target.files ?? []).map((f) => f.name))}
           />
         </Campo>
+
+        {conPrioridad ? (
+          <fieldset className="space-y-2" aria-describedby="prioridad-ayuda">
+            <legend className="mb-1 text-sm font-semibold">¿Qué tan grave te parece?</legend>
+            <p id="prioridad-ayuda" className="text-sm text-texto-secundario">
+              Es una sugerencia: la prioridad final la define el equipo. Si tenés dudas, dejá «No sé».
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {OPCIONES_PRIORIDAD.map((p) => (
+                <label
+                  key={p || "no-se"}
+                  className={`flex cursor-pointer gap-3 rounded-tarjeta border-2 border-borde bg-superficie p-3 transition-colors hover:border-borde-control has-checked:border-primario has-checked:bg-superficie-azul ${p ? "" : "sm:col-span-2"}`}
+                >
+                  <input
+                    id={`prioridad-${p || "no-se"}`}
+                    type="radio"
+                    name="prioridad"
+                    value={p}
+                    defaultChecked={(v.prioridad ?? "") === p}
+                    className="mt-1 size-4 shrink-0 accent-primario"
+                  />
+                  <span className="min-w-0">
+                    <span className="flex items-center gap-2 font-semibold">
+                      {p ? <InsigniaPrioridad prioridad={p} corta /> : null}
+                      {p ? NOMBRE_PRIORIDAD[p] : "No sé"}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-texto-secundario">{p ? AYUDA_PRIORIDAD[p] : "El equipo la define al revisar la incidencia."}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
 
         <div className="flex flex-col gap-2 border-t border-borde pt-4 sm:flex-row sm:items-center">
           <BotonEnviar enviando="Guardando…" name="despues" value="seguir">

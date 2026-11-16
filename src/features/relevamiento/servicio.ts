@@ -80,6 +80,28 @@ export async function confirmarIdentidad(q: Consulta, nombreEscrito: string, ele
   return { tipo: "listo", sesionId: await crearSesion(q, candidato.id), relevadorId: candidato.id, nombre: candidato.nombre, nuevo: false };
 }
 
+export interface Conocido {
+  id: string;
+  nombre: string;
+}
+
+/** Quienes ya ingresaron desde este navegador (ids de la cookie del dispositivo), el más reciente primero. */
+export async function relevadoresConocidos(q: Consulta, ids: string[]): Promise<Conocido[]> {
+  if (ids.length === 0) return [];
+  return q<Conocido>("select id, nombre from relevadores where id = any($1::uuid[]) order by ultimo_ingreso_at desc", [ids]);
+}
+
+/**
+ * Segundo ingreso: la persona elige su nombre de la lista de este navegador. Solo vale un id
+ * que esté en la cookie del dispositivo: la lista no permite tomar el perfil de otra persona.
+ */
+export async function ingresarConocido(q: Consulta, id: string, conocidos: string[]): Promise<Identificacion | null> {
+  if (!conocidos.includes(id)) return null;
+  const [r] = await relevadoresConocidos(q, [id]);
+  if (!r) return null;
+  return { tipo: "listo", sesionId: await crearSesion(q, r.id), relevadorId: r.id, nombre: r.nombre, nuevo: false };
+}
+
 export async function cerrarSesion(q: Consulta, sesionId: string) {
   await q("delete from reservas where sesion_id = $1", [sesionId]);
   await q("update sesiones_relevador set cerrada_at = now() where id = $1 and cerrada_at is null", [sesionId]);

@@ -2,20 +2,23 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { EXTENSION, MAX_ARCHIVOS, MAX_BYTES, RE_RUTA, TIPOS_MIME, type Mime } from "@/domain/evidencias";
 import { entorno } from "@/lib/entorno";
 import { ErrorDominio } from "@/lib/errores";
+import { log } from "@/lib/log";
 
 /**
- * Evidencias en disco (CARPETA_ARCHIVOS; en modo local, .local/archivos). Se valida el
- * tipo real por la firma de bytes, no por la extensión. Las fotos pasan por sharp:
- * orientación corregida y 2000 px como máximo (estándar DIA 02 §7).
+ * Evidencias (fotos y PDF). Se valida el tipo real por la firma de bytes, no por la
+ * extensión. Las fotos pasan por sharp: orientación corregida y 2000 px como máximo
+ * (estándar DIA 02 §7). Se guardan en un **almacén**:
+ *   * Bucket privado de Supabase Storage si están SUPABASE_URL y SUPABASE_SECRET_KEY (D-011):
+ *     lo necesario en Vercel, que no tiene disco persistente.
+ *   * Disco en los demás casos (CARPETA_ARCHIVOS; en modo local, .local/archivos).
+ * La base guarda solo la ruta relativa (`2026-11/<uuid>.jpg`), igual en los dos.
  */
-export const MAX_ARCHIVOS = 5;
-export const MAX_BYTES = 8 * 1024 * 1024;
-export const TIPOS_ACEPTADOS = "image/jpeg,image/png,image/webp,application/pdf";
-
-type Mime = "image/jpeg" | "image/png" | "image/webp" | "application/pdf";
-const EXTENSION: Record<Mime, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "application/pdf": "pdf" };
+export { MAX_ARCHIVOS, MAX_BYTES };
+export const TIPOS_ACEPTADOS = TIPOS_MIME.join(",");
 
 export function tipoPorFirma(b: Uint8Array): Mime | null {
   if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
@@ -62,27 +65,92 @@ async function ajustarImagen(datos: Buffer, mime: Mime): Promise<Buffer> {
   }
 }
 
-/** Escribe el archivo y devuelve la ruta relativa que se guarda en la base. */
+// ---------------------------------------------------------------------------
+// Almacenes
+// ---------------------------------------------------------------------------
+
+export interface Almacen {
+  tipo: "disco" | "supabase";
+  guardar(ruta: string, datos: Buffer, mime: Mime): Promise<void>;
+  leer(ruta: string): Promise<Buffer>;
+  borrar(rutas: string[]): Promise<void>;
+}
+
+export function almacenDisco(carpeta: string): Almacen {
+  const base = path.resolve(carpeta);
+  const resolver = (ruta: string) => {
+    const destino = path.resolve(base, ruta);
+    if (!destino.startsWith(base + path.sep)) throw new Error("ruta_invalida");
+    return destino;
+  };
+  return {
+    tipo: "disco",
+    async guardar(ruta, datos) {
+      const destino = resolver(ruta);
+      await fs.mkdir(path.dirname(destino), { recursive: true });
+      await fs.writeFile(destino, datos, { flag: "wx" });
+    },
+    leer: async (ruta) => fs.readFile(resolver(ruta)),
+    async borrar(rutas) {
+      await Promise.all(rutas.map((r) => fs.rm(resolver(r), { force: true }).catch(() => {})));
+    },
+  };
+}
+
+/** Bucket privado: solo el servidor lo lee y escribe, con la clave secreta. Nunca hay URL pública. */
+export function almacenSupabase(cliente: Pick<SupabaseClient, "storage">, bucket: string): Almacen {
+  const b = () => cliente.storage.from(bucket);
+  return {
+    tipo: "supabase",
+    async guardar(ruta, datos, mime) {
+      const { error } = await b().upload(ruta, datos, { contentType: mime, upsert: false, cacheControl: "300" });
+      if (error) throw new Error(`almacen_guardar: ${error.message}`);
+    },
+    async leer(ruta) {
+      const { data, error } = await b().download(ruta);
+      if (error || !data) throw new Error(`almacen_leer: ${error?.message ?? "sin datos"}`);
+      return Buffer.from(await data.arrayBuffer());
+    },
+    async borrar(rutas) {
+      if (!rutas.length) return;
+      const { error } = await b().remove(rutas);
+      // Borrar es limpieza después de un error: si falla, queda un archivo huérfano, no un dato roto.
+      if (error) log("almacen.borrar_fallo", { cantidad: rutas.length, error: error.message });
+    },
+  };
+}
+
+let actual: Promise<Almacen> | undefined;
+
+function almacenActual(): Promise<Almacen> {
+  actual ??= (async () => {
+    if (entorno.almacen === "disco") return almacenDisco(entorno.carpetaArchivos);
+    const { createClient } = await import("@supabase/supabase-js");
+    const cliente = createClient(entorno.SUPABASE_URL!, entorno.SUPABASE_SECRET_KEY!, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    });
+    return almacenSupabase(cliente, entorno.SUPABASE_BUCKET);
+  })();
+  return actual;
+}
+
+/** Nueva ruta relativa para un archivo: mes de subida y un id al azar. */
+export function nuevaRuta(mime: Mime, fecha = new Date()): string {
+  return `${fecha.toISOString().slice(0, 7)}/${randomUUID()}.${EXTENSION[mime]}`;
+}
+
+/** Guarda el archivo y devuelve la ruta relativa que va a la base. */
 export async function guardarArchivo(archivo: ArchivoListo): Promise<string> {
-  const mes = new Date().toISOString().slice(0, 7);
-  const relativa = `${mes}/${randomUUID()}.${EXTENSION[archivo.mime]}`;
-  const destino = resolver(relativa);
-  await fs.mkdir(path.dirname(destino), { recursive: true });
-  await fs.writeFile(destino, archivo.datos, { flag: "wx" });
-  return relativa;
+  const ruta = nuevaRuta(archivo.mime);
+  await (await almacenActual()).guardar(ruta, archivo.datos, archivo.mime);
+  return ruta;
 }
 
-export async function leerArchivo(relativa: string): Promise<Buffer> {
-  return fs.readFile(resolver(relativa));
+export async function leerArchivo(ruta: string): Promise<Buffer> {
+  if (!RE_RUTA.test(ruta)) throw new Error("ruta_invalida");
+  return (await almacenActual()).leer(ruta);
 }
 
-export async function borrarArchivos(relativas: string[]) {
-  await Promise.all(relativas.map((r) => fs.rm(resolver(r), { force: true }).catch(() => {})));
-}
-
-function resolver(relativa: string): string {
-  const base = entorno.carpetaArchivos;
-  const destino = path.resolve(base, relativa);
-  if (!destino.startsWith(base + path.sep)) throw new Error("ruta_invalida");
-  return destino;
+export async function borrarArchivos(rutas: string[]) {
+  await (await almacenActual()).borrar(rutas.filter((r) => RE_RUTA.test(r)));
 }
