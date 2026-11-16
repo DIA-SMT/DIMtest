@@ -8,6 +8,7 @@ import {
   estadoDePruebas,
   guardarEjecucion,
   historialDePrueba,
+  borrarRelevador,
   identificar,
   ingresarConocido,
   relevadoresConocidos,
@@ -148,6 +149,32 @@ describe("circuito de relevamiento y corrección", () => {
     const confirmada = await base.tx((q) => tomarPrueba(q, "ACC-01", agustin, { minutos: 30, repetir: true }));
     expect(confirmada.tipo).toBe("tomada");
     await base.tx((q) => q("delete from reservas"));
+  });
+
+  it("el equipo borra a quien no registró pruebas, pero no a quien sí", async () => {
+    // Alguien del equipo entra a mirar el portal y toma una prueba, sin guardar nada.
+    const curioso = await base.tx((q) => identificar(q, "Persona Curiosa", []));
+    if (curioso.tipo !== "listo") throw new Error("debería ingresar directo");
+    expect((await base.tx((q) => tomarPrueba(q, "ACC-05", curioso, MIN))).tipo).toBe("tomada");
+
+    expect(await base.tx((q) => borrarRelevador(q, curioso.relevadorId))).toEqual({ tipo: "borrado", sesiones: 1 });
+    const [quedan] = await base.tx((q) =>
+      q<{ relevadores: number; sesiones: number; reservas: number }>(
+        `select (select count(*)::int from relevadores where id = $1) as relevadores,
+                (select count(*)::int from sesiones_relevador where relevador_id = $1) as sesiones,
+                (select count(*)::int from reservas where relevador_id = $1) as reservas`,
+        [curioso.relevadorId],
+      ),
+    );
+    expect(quedan).toEqual({ relevadores: 0, sesiones: 0, reservas: 0 });
+    // Ya no aparece en la lista de su navegador ni puede entrar con ella.
+    expect(await base.tx((q) => relevadoresConocidos(q, [curioso.relevadorId]))).toEqual([]);
+    expect(await base.tx((q) => ingresarConocido(q, curioso.relevadorId, [curioso.relevadorId]))).toBeNull();
+    expect(await base.tx((q) => borrarRelevador(q, curioso.relevadorId))).toEqual({ tipo: "inexistente" });
+
+    // Luis registró pruebas: se conserva con todo su historial.
+    expect(await base.tx((q) => borrarRelevador(q, luis.relevadorId))).toEqual({ tipo: "con_pruebas", ejecuciones: 1 });
+    expect(await base.tx((q) => relevadoresConocidos(q, [luis.relevadorId]))).toHaveLength(1);
   });
 
   it("el historial no se puede sobrescribir", async () => {

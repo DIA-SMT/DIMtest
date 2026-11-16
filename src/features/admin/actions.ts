@@ -24,6 +24,7 @@ import {
   comentar,
   crearIncidencia,
 } from "@/features/incidencias/servicio";
+import { borrarRelevador } from "@/features/relevamiento/servicio";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -338,3 +339,23 @@ export async function actualizarUsuarioAccion(_previo: EstadoAccion, formData: F
   return { error: "Operación inválida." };
 }
 
+
+// ---------------------------------------------------------------------------
+// Relevadores
+// ---------------------------------------------------------------------------
+
+/** Borra un relevador sin pruebas registradas (D-013). */
+export async function borrarRelevadorAccion(_previo: EstadoAccion, formData: FormData): Promise<EstadoAccion> {
+  const u = await adminConPermiso("usuarios.gestionar");
+  if (!u) return { error: mensajeError("sin_permiso") };
+  const id = String(formData.get("id") ?? "");
+  if (!UUID.test(id)) return { error: "Relevador inválido." };
+  const r = await conBase(async (q) => {
+    const borrado = await borrarRelevador(q, id);
+    if (borrado.tipo === "borrado") await auditar(q, u, "relevador.borrar", { id, sesiones: borrado.sesiones });
+    return borrado;
+  });
+  if (r.tipo === "con_pruebas") return { error: "Registró pruebas: no se puede borrar, el historial se conserva." };
+  revalidatePath("/admin/relevadores");
+  return r.tipo === "borrado" ? { ok: true, mensaje: "Relevador borrado." } : { error: "Ese relevador ya no existe." };
+}
