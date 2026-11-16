@@ -98,8 +98,8 @@ export function FormCambioClave() {
       <Campo id="actual" etiqueta="Contraseña actual" obligatorio error={e.actual}>
         <input id="actual" name="actual" type="password" autoComplete="current-password" className={CLASE_CONTROL} />
       </Campo>
-      <Campo id="nueva" etiqueta="Contraseña nueva" obligatorio error={e.nueva} ayuda="Al menos 12 caracteres. Una frase de varias palabras sirve y se recuerda mejor.">
-        <input id="nueva" name="nueva" type="password" autoComplete="new-password" aria-describedby="nueva-ayuda" className={CLASE_CONTROL} />
+      <Campo id="nueva" etiqueta="Contraseña nueva" obligatorio error={e.nueva}>
+        <input id="nueva" name="nueva" type="password" autoComplete="new-password" className={CLASE_CONTROL} />
       </Campo>
       <Campo id="repetida" etiqueta="Repetí la contraseña nueva" obligatorio error={e.repetida}>
         <input id="repetida" name="repetida" type="password" autoComplete="new-password" className={CLASE_CONTROL} />

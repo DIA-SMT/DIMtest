@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { problemasDeClave } from "@/lib/auth/clave";
 import datos from "./catalogo/catalogo-dim360.json";
 import { estadoPrueba, estaDisponible } from "./estado-prueba";
 import { ESTADOS_INCIDENCIA, transicionesDesde, validarTransicion, pideRevalidacion, cancelaRevalidacion } from "./incidencias";
@@ -148,5 +149,14 @@ describe("permisos", () => {
     expect(puede("desarrollador", "usuarios.gestionar")).toBe(false);
     expect(puede("desarrollador", "incidencias.gestionar")).toBe(true);
     expect(puede(null, "panel.ver")).toBe(false);
+  });
+});
+
+describe("contraseña del panel (D-010)", () => {
+  it("cada persona elige la que quiera: solo no puede estar vacía ni ser gigante", () => {
+    expect(problemasDeClave("123456")).toEqual([]);
+    expect(problemasDeClave("a")).toEqual([]);
+    expect(problemasDeClave("")).toEqual(["Escribí la contraseña nueva."]);
+    expect(problemasDeClave("x".repeat(129))).toHaveLength(1);
   });
 });

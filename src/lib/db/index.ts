@@ -4,13 +4,13 @@ import { entorno, modoLocal } from "@/lib/entorno";
 import { log, resumenError } from "@/lib/log";
 import catalogo from "@/domain/catalogo/catalogo-dim360.json";
 import type { CatalogoJson, Ejecutor } from "./esquema";
-import { sembrarCatalogo } from "./esquema";
+import { controlarCatalogo } from "./esquema";
 
 /**
  * Acceso a Postgres. Toda operación corre en una transacción (`conBase`).
  *   * Modo local (sin DATABASE_URL): PGlite en .local/pgdata, con migraciones y catálogo al crearse.
- *   * Producción: postgres.js. Las migraciones se aplican con `npm run db:migrar` antes del deploy;
- *     el catálogo se asegura también al arrancar (idempotente), así nunca falta.
+ *   * Producción: postgres.js. Las migraciones y el catálogo se cargan con `npm run db:migrar` antes
+ *     del deploy; al arrancar solo se controla (una consulta) y se avisa en el log si falta algo.
  *
  * Fechas: llegan como Date. Conteos: castear a ::int (postgres.js devuelve bigint como texto).
  * Parámetros jsonb: `$1::text::jsonb` con JSON.stringify(valor).
@@ -32,13 +32,14 @@ async function crearPostgres(): Promise<Ejecutor> {
   const ssl = entorno.DATABASE_SSL === "desactivado" || (local && entorno.DATABASE_SSL !== "requerido") ? false : "require";
   const sql = postgres(url, { prepare: false, max: 5, idle_timeout: 20, ssl, onnotice: () => {} });
   const db = ejecutorPostgres(sql);
-  try {
-    const r = await sembrarCatalogo(db, catalogo as CatalogoJson);
-    log("catalogo.asegurado", { total: r.totalPruebas, nuevas: r.pruebasNuevas, actualizadas: r.pruebasActualizadas });
-  } catch (error) {
-    // Sin tablas todavía: faltan las migraciones (npm run db:migrar).
-    log("catalogo.no_asegurado", { error: resumenError(error) });
-  }
+  // Solo controla, no escribe: cargar el catálogo es de `npm run db:migrar`. Antes se sembraba acá
+  // y cada arranque en frío de Vercel hacía más de 200 consultas antes de atender el pedido.
+  // No se espera: el control corre en paralelo y no demora a nadie.
+  void controlarCatalogo(db, catalogo as CatalogoJson)
+    .then((r) => {
+      if (r.faltantes.length) log("catalogo.incompleto", { esperadas: r.esperadas, faltan: r.faltantes.length, ayuda: "npm run db:migrar" });
+    })
+    .catch((error) => log("catalogo.no_controlado", { error: resumenError(error) }));
   return db;
 }
 

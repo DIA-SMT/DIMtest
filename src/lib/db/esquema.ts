@@ -127,3 +127,17 @@ export async function sembrarCatalogo(db: Ejecutor, catalogo: CatalogoJson): Pro
     return { modulosNuevos, pruebasNuevas, pruebasActualizadas, totalPruebas: total };
   });
 }
+
+/**
+ * Control barato del catálogo para el arranque en producción: una sola consulta, sin escribir.
+ * Cargarlo es tarea de `npm run db:migrar` (son más de 200 consultas: en un arranque en frío de
+ * Vercel trababan el primer pedido). Devuelve los códigos que faltan, si alguno.
+ */
+export async function controlarCatalogo(db: Ejecutor, catalogo: CatalogoJson): Promise<{ esperadas: number; faltantes: string[] }> {
+  const codigos = catalogo.pruebas.map((p) => p.codigo);
+  const faltan = await db.query<{ codigo: string }>(
+    "select c.codigo from unnest($1::text[]) as c(codigo) where not exists (select 1 from pruebas p where p.codigo = c.codigo) order by 1",
+    [codigos],
+  );
+  return { esperadas: codigos.length, faltantes: faltan.map((f) => f.codigo) };
+}
