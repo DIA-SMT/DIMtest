@@ -1,15 +1,18 @@
 // Crea un usuario del panel de administración con una contraseña temporal.
-//   npm run admin:crear -- --usuario nombre.apellido --nombre "Nombre Apellido" [--rol administrador|desarrollador]
+//   npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido" [--rol administrador|desarrollador]
 // La contraseña temporal se muestra una sola vez; al ingresar, el panel pide cambiarla.
-// Sirve para el primer administrador en producción (en modo local ya existe `admin`).
+// Sirve para el primer administrador en producción (en modo local ya existe admin@dim360.local).
+import { normalizarUsuario, problemaUsuario } from "../src/domain/usuario-admin.ts";
 import { generarClaveTemporal, hashearClave } from "../src/lib/auth/clave.ts";
 import { argumento, conectar } from "./lib.mjs";
 
-const usuario = (argumento("usuario") ?? "").trim().toLowerCase();
+const usuario = normalizarUsuario(argumento("usuario") ?? "");
 const nombre = (argumento("nombre") ?? "").trim();
 const rol = argumento("rol") ?? "administrador";
-if (!/^[a-z0-9._-]{3,40}$/.test(usuario) || nombre.length < 3 || !["administrador", "desarrollador"].includes(rol)) {
-  console.error('Uso: npm run admin:crear -- --usuario nombre.apellido --nombre "Nombre Apellido" [--rol administrador|desarrollador]');
+const problema = problemaUsuario(usuario);
+if (problema || nombre.length < 3 || !["administrador", "desarrollador"].includes(rol)) {
+  if (problema) console.error(problema);
+  console.error('Uso: npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido" [--rol administrador|desarrollador]');
   process.exit(1);
 }
 

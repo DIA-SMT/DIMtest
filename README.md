@@ -13,7 +13,7 @@ Desarrollado por la Dirección de Inteligencia Artificial.
 | Portal de relevamiento (`/`): ingreso solo con nombre y apellido, módulos, reservas, resultados, evidencias, revalidación | ✅ |
 | Panel de administración (`/admin`): tablero, pruebas, observaciones, incidencias, prioridades, informes, relevadores, equipo | ✅ |
 | Informes en Excel y PDF (8 tipos) | ✅ |
-| Ingreso del equipo con usuario y contraseña propios (D-003) | ✅ |
+| Ingreso del equipo con correo y contraseña propios (D-003, D-009) | ✅ |
 | Pruebas e2e con Playwright | ⬜ Pendiente: el circuito se probó a mano en el navegador y con tests de integración |
 
 ## Dos portales
@@ -22,7 +22,7 @@ Desarrollado por la Dirección de Inteligencia Artificial.
 |---|---|---|
 | Ruta | `/`, `/relevamiento/…` | `/admin/…` |
 | Para | Personal de la DIM | Equipo de la DIA |
-| Ingreso | Solo **nombre y apellido** (sin contraseña, correo ni registro) | **Usuario y contraseña** (scrypt, límite de intentos, sesión de 60 min) |
+| Ingreso | Solo **nombre y apellido** (sin contraseña, correo ni registro) | **Correo y contraseña** propios del panel, no de Supabase (scrypt, límite de intentos, sesión de 60 min) |
 | Sesión | Cookie `dim360-relevador` → `sesiones_relevador` (id interno) | Cookie `dim360-admin`, otra audiencia; rol leído de la base |
 
 Escribir el nombre de un administrador en el portal **no** da acceso al panel: son sesiones distintas y cada página del panel exige la suya.
@@ -42,9 +42,9 @@ npm run dev
 
 Sin `.env.local` arranca en **modo local**: base PGlite en `.local/pgdata` (se crea sola con las migraciones y las 217 pruebas, sin resultados), evidencias en `.local/archivos` y un usuario de administración de desarrollo:
 
-| Usuario | Contraseña | Solo en modo local |
+| Correo | Contraseña | Solo en modo local |
 |---|---|---|
-| `admin` | `dim360-local` | Se crea si la base no tiene ningún usuario del equipo, y nunca en producción (`NODE_ENV=production`) |
+| `admin@dim360.local` | `dim360-local` | Se crea si la base no tiene ningún usuario del equipo, y nunca en producción (`NODE_ENV=production`). Una base local creada antes de D-009 conserva el usuario `admin`. |
 
 `npm run db:local:reiniciar` borra la base local (con el servidor detenido).
 
@@ -60,7 +60,7 @@ Sin `.env.local` arranca en **modo local**: base PGlite en `.local/pgdata` (se c
 | `npm run catalogo:verificar` | Extrae de nuevo y muestra el control de cantidades por módulo |
 | `npm run db:migrar` | Aplica migraciones pendientes y asegura el catálogo (producción) |
 | `npm run db:semilla` | Carga o actualiza el catálogo en la base (producción) |
-| `npm run admin:crear -- --usuario x --nombre "…"` | Crea un usuario del equipo con contraseña temporal |
+| `npm run admin:crear -- --usuario correo@smt.gob.ar --nombre "…"` | Crea una cuenta del equipo con contraseña temporal |
 
 ## 3. El catálogo
 
@@ -89,7 +89,7 @@ PRUEBAS_DATABASE_URL=postgres://postgres@localhost:54360/postgres npm run test:i
 
 ```bash
 npm run db:migrar
-npm run admin:crear -- --usuario nombre.apellido --nombre "Nombre Apellido"
+npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido"
 ```
 
 ### Variables

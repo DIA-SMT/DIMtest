@@ -27,7 +27,7 @@ Sigue los estándares de la DIA (`estandares-dia`). Ante la duda, mandan ellos. 
 - `src/lib/db/esquema.ts`, `adaptadores.ts` y `src/lib/auth/clave.ts` no llevan `server-only` ni imports relativos con valor: los importan los scripts de Node.
 
 ## Seguridad
-- Dos sesiones distintas: relevador (solo nombre, `exigirRelevador()`) y equipo (usuario y contraseña, `exigirAdmin(permiso)`). El proxy no es la barrera: cada página, acción y route handler pide la suya.
+- Dos sesiones distintas: relevador (solo nombre, `exigirRelevador()`) y equipo (correo y contraseña propios del panel, `exigirAdmin(permiso)`). El proxy no es la barrera: cada página, acción y route handler pide la suya.
 - Un nombre declarado no es una identidad verificada: nunca se fusionan relevadores solos por el nombre.
 - `ejecuciones`, `incidencia_eventos` y `auditoria` son solo inserción (trigger). Un resultado nuevo es una fila nueva.
 - Marcar una incidencia como corregida **no** cambia el resultado de la prueba: abre un pedido en `revalidaciones`.

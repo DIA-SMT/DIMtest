@@ -13,11 +13,12 @@ export function FormIngresoAdmin({ motivo }: { motivo?: string }) {
   return (
     <form action={ingresar} className="space-y-4" noValidate>
       {estado.error ? <Aviso tipo="error">{estado.error}</Aviso> : motivo === "vencida" ? <Aviso tipo="info">Se venció tu sesión. Ingresá de nuevo.</Aviso> : null}
-      <Campo id="usuario" etiqueta="Usuario" obligatorio error={e.usuario}>
+      <Campo id="usuario" etiqueta="Correo" obligatorio error={e.usuario}>
         <input
           id="usuario"
           name="usuario"
-          type="text"
+          type="email"
+          inputMode="email"
           autoComplete="username"
           autoCapitalize="none"
           spellCheck={false}

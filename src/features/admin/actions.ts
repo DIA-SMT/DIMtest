@@ -6,6 +6,7 @@ import { z } from "zod";
 import { esEstadoIncidencia } from "@/domain/incidencias";
 import { esRol, ROLES } from "@/domain/permisos";
 import { PRIORIDADES } from "@/domain/prioridades";
+import { LARGO_MAXIMO_USUARIO, normalizarUsuario, problemaUsuario } from "@/domain/usuario-admin";
 import { leerFormulario, valoresDe, type EstadoAccion } from "@/lib/accion";
 import { borrarArchivos, guardarArchivo, prepararArchivos } from "@/lib/almacenamiento";
 import { adminConPermiso, borrarSesionAdmin, emitirSesionAdmin, exigirAdmin, ipDelPedido, leerAdmin } from "@/lib/auth/admin";
@@ -45,12 +46,12 @@ async function intentar(fn: () => Promise<void>, formData?: FormData): Promise<E
 const LIMITE_INTENTOS = 5;
 
 export async function ingresarAdminAccion(_previo: EstadoAccion, formData: FormData): Promise<EstadoAccion> {
-  const usuario = String(formData.get("usuario") ?? "").trim().toLowerCase().slice(0, 40);
+  const usuario = normalizarUsuario(String(formData.get("usuario") ?? "")).slice(0, LARGO_MAXIMO_USUARIO);
   const clave = String(formData.get("clave") ?? "").slice(0, 200);
   if (!usuario || !clave) {
     return {
       error: "Revisá los datos marcados.",
-      errores: { ...(usuario ? {} : { usuario: "Escribí tu usuario." }), ...(clave ? {} : { clave: "Escribí tu contraseña." }) },
+      errores: { ...(usuario ? {} : { usuario: "Escribí tu correo." }), ...(clave ? {} : { clave: "Escribí tu contraseña." }) },
       valores: { usuario },
     };
   }
@@ -263,9 +264,11 @@ export async function comentarAccion(_previo: EstadoAccion, formData: FormData):
 const esquemaUsuario = z.object({
   usuario: z
     .string()
-    .trim()
-    .toLowerCase()
-    .regex(/^[a-z0-9._-]{3,40}$/, "Entre 3 y 40 letras minúsculas, números, punto, guion o guion bajo."),
+    .transform(normalizarUsuario)
+    .superRefine((u, ctx) => {
+      const problema = problemaUsuario(u);
+      if (problema) ctx.addIssue({ code: "custom", message: problema });
+    }),
   nombre: z.string().trim().min(3, "Escribí el nombre y apellido.").max(80),
   rol: z.enum(ROLES, { error: "Elegí el rol." }),
 });
@@ -291,7 +294,7 @@ export async function crearUsuarioAccion(_previo: EstadoAccion, formData: FormDa
   });
   if (!r) return { error: "Revisá los datos marcados.", errores: { usuario: mensajeError("usuario_repetido") }, valores: valoresDe(formData) };
   revalidatePath("/admin/usuarios");
-  return { ok: true, mensaje: `Se creó el usuario ${d.usuario}.`, datos: { usuario: d.usuario, temporal } };
+  return { ok: true, mensaje: `Se creó la cuenta ${d.usuario}.`, datos: { usuario: d.usuario, temporal } };
 }
 
 export async function actualizarUsuarioAccion(_previo: EstadoAccion, formData: FormData): Promise<EstadoAccion> {

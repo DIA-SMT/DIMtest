@@ -9,7 +9,7 @@ import { ejecutorPglite } from "./adaptadores";
 import { aplicarMigraciones, sembrarCatalogo, type CatalogoJson, type Ejecutor } from "./esquema";
 
 /** Usuario de administración de desarrollo: solo existe en modo local (README). */
-export const ADMIN_LOCAL = { usuario: "admin", clave: "dim360-local", nombre: "Equipo DIA (local)" } as const;
+export const ADMIN_LOCAL = { usuario: "admin@dim360.local", clave: "dim360-local", nombre: "Equipo DIA (local)" } as const;
 
 // Una sola instancia por proceso, también entre recargas del servidor de desarrollo.
 const global = globalThis as typeof globalThis & { __dim360BaseLocal?: Promise<Ejecutor> };

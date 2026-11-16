@@ -4,6 +4,7 @@ import datos from "./catalogo/catalogo-dim360.json";
 import { estadoPrueba, estaDisponible } from "./estado-prueba";
 import { ESTADOS_INCIDENCIA, transicionesDesde, validarTransicion, pideRevalidacion, cancelaRevalidacion } from "./incidencias";
 import { claveNombre, iniciales, normalizarNombre, problemaNombre, primerNombre } from "./nombres";
+import { esCorreo, normalizarUsuario, problemaUsuario } from "./usuario-admin";
 import { puede } from "./permisos";
 import { compararPrioridad, prioridadMaxima, type Prioridad } from "./prioridades";
 import { requiereExplicacion, RESULTADOS } from "./resultados";
@@ -158,5 +159,21 @@ describe("contraseña del panel (D-010)", () => {
     expect(problemasDeClave("a")).toEqual([]);
     expect(problemasDeClave("")).toEqual(["Escribí la contraseña nueva."]);
     expect(problemasDeClave("x".repeat(129))).toHaveLength(1);
+  });
+});
+
+describe("usuario del panel (correo)", () => {
+  it("acepta correos y los usuarios cortos de antes, normalizados", () => {
+    expect(normalizarUsuario("  Direccion.IA@SMT.gob.ar ")).toBe("direccion.ia@smt.gob.ar");
+    expect(problemaUsuario("direccion.ia@smt.gob.ar")).toBeNull();
+    expect(problemaUsuario("admin@dim360.local")).toBeNull();
+    expect(problemaUsuario("nombre.apellido")).toBeNull();
+    expect(esCorreo("nombre.apellido")).toBe(false);
+  });
+
+  it("rechaza lo que no es un correo ni un usuario", () => {
+    for (const malo of ["", "ab", "sin-arroba@", "@smt.gob.ar", "a@b", "con espacio@smt.gob.ar", "MAYUS@smt.gob.ar", `${"a".repeat(65)}@smt.gob.ar`]) {
+      expect(problemaUsuario(malo), malo).not.toBeNull();
+    }
   });
 });
