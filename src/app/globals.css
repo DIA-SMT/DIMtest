@@ -1,34 +1,45 @@
 @import "tailwindcss";
 
 /*
- * Identidad municipal (estándar DIA 04): azul del logo para acciones, azul noche
- * institucional para barras y bandas, amarillo solo como acento (nunca texto sobre claro).
+ * Identidad municipal con el lenguaje visual de Applaza (D-008): azul del logo dominante,
+ * azul marino para títulos, celeste de apoyo, amarillo solo como acento (hojas, ondas,
+ * botón principal de las portadas), blanco como superficie. Verde y rojo solo para estados.
  * Los tokens llevan nombres de rol; en los componentes no hay colores sueltos.
- * Contrastes medidos en docs/diseno.md.
  */
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-sans: "DM Sans Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Outfit Variable", "DM Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
 
   /* Marca */
-  --color-institucional: #0f2f5d;
-  --color-institucional-hover: #163b70;
-  --color-institucional-activo: #1a4683;
-  --color-institucional-texto: #c7d6eb;
-  --color-primario: #0066ff;
-  --color-primario-oscuro: #0052cc;
-  --color-celeste: #2eb1ff;
+  --color-institucional: #09234c;
+  --color-institucional-hover: #0d2f63;
+  --color-institucional-activo: #123b78;
+  --color-institucional-texto: #c9dcf5;
+  --color-primario: #0166ff;
+  --color-primario-oscuro: #0047c2;
+  --color-celeste: #2db0ff;
+  --color-celeste-oscuro: #0479be;
   --color-amarillo: #f4dc00;
-  --color-amarillo-texto: #6e6300;
-  --color-superficie-azul: #e8f2ff;
+  --color-amarillo-texto: #7a5c00;
+  --color-superficie-azul: #eaf3ff;
+  --color-superficie-celeste: #e4f5ff;
+  --color-superficie-amarilla: #fff7d1;
+  --color-superficie-verde: #e6f7ec;
+  --color-azul-suave: #d3e4ff;
+  --color-azul-hover: #9bc9ff;
+  --color-portada-medio: #073a8f;
 
   /* Neutros */
-  --color-fondo: #f4f7fb;
+  --color-fondo: #f5f8fe;
   --color-superficie: #ffffff;
-  --color-texto: #172b4d;
-  --color-texto-secundario: #5f6878;
-  --color-borde: #dce3ec;
-  --color-borde-control: #7c8798;
+  --color-texto: #10284d;
+  --color-texto-secundario: #51647c;
+  --color-texto-portada: #e4efff;
+  --color-texto-ingreso: #33496b;
+  --color-borde: #d8e4f5;
+  --color-borde-control: #7186a6;
+  --color-icono: #7189ad;
 
   /* Estados */
   --color-exito: #166534;
@@ -42,34 +53,67 @@
   --color-error-fondo: #fdecec;
   --color-error-borde: #f2b8b5;
   --color-error-hover: #912018;
-  --color-info: #0052cc;
-  --color-info-fondo: #e8f2ff;
+  --color-info: #0047c2;
+  --color-info-fondo: #eaf3ff;
   --color-info-borde: #b5d3ff;
-  --color-neutro-fondo: #eef1f5;
+  --color-neutro-fondo: #eef2f8;
 
   /* Forma */
-  --radius-control: 0.5rem;
-  --radius-tarjeta: 0.75rem;
-  --radius-panel: 1rem;
-  --shadow-tarjeta: 0 1px 2px rgb(15 47 93 / 0.05), 0 1px 3px rgb(15 47 93 / 0.07);
-  --shadow-elevada: 0 4px 12px rgb(15 47 93 / 0.08), 0 1px 3px rgb(15 47 93 / 0.06);
+  --radius-control: 0.75rem;
+  --radius-tarjeta: 1.125rem;
+  --radius-panel: 1.375rem;
+  --shadow-tarjeta: 0 2px 12px rgb(9 35 76 / 0.04);
+  --shadow-elevada: 0 6px 24px rgb(9 35 76 / 0.08);
+  --shadow-flotante: 0 20px 50px rgb(9 35 76 / 0.1);
 
   /* Movimiento */
   --ease-salida: cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Filete tricolor corto, bajo los antetítulos. */
-@utility filete {
-  display: block;
-  height: 3px;
-  width: 3.5rem;
-  border-radius: 9999px;
-  background: linear-gradient(
-    90deg,
-    var(--color-primario) 0 46%,
-    var(--color-celeste) 46% 78%,
-    var(--color-amarillo) 78%
-  );
+/* La hoja amarilla de la marca: antecede antetítulos y títulos de sección. */
+@utility hoja {
+  display: inline-block;
+  width: 26px;
+  height: 14px;
+  flex: none;
+  border-radius: 14px 2px 14px 2px;
+  background: var(--color-amarillo);
+  transform: rotate(-8deg);
+}
+
+/* Antetítulo en mayúsculas con la hoja delante. */
+@utility antetitulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  &::before {
+    content: "";
+    width: 26px;
+    height: 14px;
+    flex: none;
+    border-radius: 14px 2px 14px 2px;
+    background: var(--color-amarillo);
+    transform: rotate(-8deg);
+  }
+}
+
+/* Portada (héroe) azul de las páginas de inicio. */
+@utility fondo-portada {
+  background:
+    radial-gradient(ellipse at 85% 20%, rgb(45 176 255 / 0.5), transparent 50%),
+    linear-gradient(115deg, var(--color-institucional) 0%, var(--color-portada-medio) 42%, var(--color-primario) 100%);
+}
+
+/* Portada clara de las pantallas de ingreso. */
+@utility fondo-ingreso {
+  background:
+    radial-gradient(circle at 88% 10%, rgb(45 176 255 / 0.22), transparent 42%),
+    linear-gradient(165deg, #ffffff 0%, #eef5ff 55%, #d9eaff 100%);
 }
 
 @layer base {
@@ -80,13 +124,19 @@
     background: var(--color-fondo);
     color: var(--color-texto);
   }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
   :focus-visible {
-    outline: 2px solid var(--color-primario);
+    outline: 3px solid var(--color-primario);
     outline-offset: 2px;
   }
   /* Los resultados son radios grandes: el foco se ve en la tarjeta. */
   .opcion-resultado:has(input:focus-visible) {
-    outline: 2px solid var(--color-primario);
+    outline: 3px solid var(--color-primario);
     outline-offset: 2px;
   }
 }

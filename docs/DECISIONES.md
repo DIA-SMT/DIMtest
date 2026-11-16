@@ -4,6 +4,26 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-008 · La estética sigue a Applaza, no a CementerIA (excepción al estándar 04)
+
+**Fecha:** 2026-11-15 · **Pidió:** DIA
+
+**Contexto.** El estándar 04 toma CementerIA como referente visual (barra lateral azul noche, Inter). El área prefiere el lenguaje de Applaza para DIM360 QA.
+
+**Decisión.** Se adopta el kit visual de Applaza (`Applaza/app/globals.css`, sección «Rediseño identidad municipal»):
+
+- Paleta: azul `#0166ff` dominante, marino `#09234c` para títulos, celeste `#2db0ff`, amarillo `#f4dc00` solo como acento, fondo `#f5f8fe`. Siguen siendo tokens con nombre de rol en `src/app/globals.css`.
+- Tipografía: **Outfit** para títulos y **DM Sans** para el texto, autoalojadas con `@fontsource-variable/*` (nunca Google Fonts).
+- Barra superior blanca con la marca combinada (isologo + «Ciudad San Miguel de Tucumán» + DIM360 QA) en lugar de la barra lateral; debajo de 1280 px, menú que entra desde la derecha.
+- Portadas azules con ondas celeste, amarilla y blanca en los inicios del portal y del panel; pantallas de ingreso con portada clara y tarjeta con filete amarillo.
+- Tarjetas de 18 px de radio, botones píldora, antetítulos y títulos de sección con la hoja amarilla.
+
+No se trae a Migue: es la mascota de Applaza.
+
+**Consecuencias.** El estándar 04 sigue valiendo en todo lo demás (contraste, foco visible, 375 px sin desplazamiento horizontal, sin colores sueltos en componentes). Los informes PDF conservan su diseño.
+
+---
+
 ## D-007 · Reserva temporal de pruebas de 30 minutos
 
 **Fecha:** 2026-11-13 · **Decidió:** DIA

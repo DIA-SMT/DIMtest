@@ -61,11 +61,11 @@ export default async function PaginaPrueba({
       <article className="overflow-hidden rounded-panel border border-borde bg-superficie shadow-tarjeta">
         <header className="space-y-3 border-b border-borde bg-superficie-azul/60 p-4 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-control bg-primario px-2.5 py-1 font-mono text-sm font-bold text-white">{fila.codigo}</span>
+            <span className="rounded-full bg-primario px-3 py-1 font-mono text-sm font-bold text-white">{fila.codigo}</span>
             <InsigniaEstadoPrueba estado={fila.estado} />
             <InsigniaPerfil perfil={fila.perfil} />
           </div>
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{fila.queProbar}</h1>
+          <h1 className="text-[1.5rem] leading-tight font-bold text-institucional sm:text-[1.75rem]">{fila.queProbar}</h1>
         </header>
         <dl className="grid gap-4 p-4 sm:grid-cols-2 sm:p-6">
           <div className="space-y-1">

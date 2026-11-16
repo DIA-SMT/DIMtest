@@ -9,6 +9,7 @@ import {
   listarRelevadores,
   listarUsuarios,
   metricas,
+  opcionesPruebas,
   opcionesRelevadores,
 } from "@/features/admin/consultas";
 import { cambiarEstado, crearIncidencia } from "@/features/incidencias/servicio";
@@ -61,6 +62,16 @@ describe("tablero", () => {
     });
     expect((await base.tx((q) => incidenciasActivasPorPrioridad(q))).find((p) => p.prioridad === "P0")?.activas).toBe(1);
     expect((await base.tx((q) => actividadReciente(q, 10))).length).toBeGreaterThan(4);
+  });
+});
+
+describe("opciones", () => {
+  it("las 217 pruebas para elegir al crear una incidencia, en el orden del PDF", async () => {
+    const pruebas = await base.tx((q) => opcionesPruebas(q));
+    expect(pruebas).toHaveLength(217);
+    expect(pruebas[0]).toMatchObject({ valor: "ACC-01" });
+    expect(pruebas[0].etiqueta.startsWith("ACC-01 · ")).toBe(true);
+    expect(pruebas.at(-1)?.valor).toBe("MIG-11");
   });
 });
 

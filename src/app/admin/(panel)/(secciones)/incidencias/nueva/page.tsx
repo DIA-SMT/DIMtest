@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { EncabezadoPagina, InsigniaPrioridad, InsigniaResultado, Tarjeta } from "@/components/ui";
 import { FormIncidencia } from "@/features/admin/components/form-incidencia";
-import { ejecucionParaIncidencia, opcionesResponsables, pruebaAdmin, type Opcion } from "@/features/admin/consultas";
+import { ejecucionParaIncidencia, opcionesPruebas, opcionesResponsables, pruebaAdmin, type Opcion } from "@/features/admin/consultas";
 import { exigirAdmin } from "@/lib/auth/admin";
 import { conBase } from "@/lib/db";
 import { fechaHora } from "@/lib/fechas";
@@ -20,12 +20,7 @@ export default async function NuevaIncidencia({ searchParams }: { searchParams: 
   const d = await conBase(async (q) => {
     const ej = ejecucionId ? await ejecucionParaIncidencia(q, ejecucionId) : null;
     const pr = !ej && codigo ? await pruebaAdmin(q, codigo) : null;
-    const pruebas: Opcion[] | null =
-      ej || pr
-        ? null
-        : (await q<{ codigo: string; que_probar: string }>("select codigo, que_probar from pruebas p join modulos m on m.codigo = p.modulo_codigo order by m.orden, p.numero")).map(
-            (p) => ({ valor: p.codigo, etiqueta: `${p.codigo} · ${p.que_probar}` }),
-          );
+    const pruebas: Opcion[] | null = ej || pr ? null : await opcionesPruebas(q);
     return { ej, pr, pruebas, responsables: await opcionesResponsables(q) };
   });
   if (ejecucionId && !d.ej) notFound();

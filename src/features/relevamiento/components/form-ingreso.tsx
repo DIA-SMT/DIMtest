@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { ArrowRight, UserRound, UserRoundPlus } from "lucide-react";
-import { BotonEnviar, Campo, CLASE_BOTON_FANTASMA, CLASE_CONTROL } from "@/components/formulario";
+import { BotonEnviar, Campo, CLASE_BOTON_FANTASMA, CLASE_BOTON_INGRESO, CLASE_CONTROL } from "@/components/formulario";
 import { Aviso } from "@/components/ui";
 import { confirmarIdentidadAccion, ingresarAccion, type EstadoIngreso } from "../actions";
 
@@ -84,7 +84,7 @@ function Pasos({ reiniciar }: { reiniciar: () => void }) {
           placeholder="Por ejemplo, Luis Pérez"
         />
       </Campo>
-      <BotonEnviar enviando="Ingresando…" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-primario px-4 py-3 text-base font-semibold text-white shadow-xs transition-colors hover:bg-primario-oscuro focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primario disabled:opacity-60">
+      <BotonEnviar enviando="Ingresando…" className={CLASE_BOTON_INGRESO}>
         Comenzar relevamiento
         <ArrowRight aria-hidden="true" className="size-5" />
       </BotonEnviar>

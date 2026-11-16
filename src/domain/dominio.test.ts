@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import datos from "./catalogo/catalogo-dim360.json";
 import { estadoPrueba, estaDisponible } from "./estado-prueba";
 import { ESTADOS_INCIDENCIA, transicionesDesde, validarTransicion, pideRevalidacion, cancelaRevalidacion } from "./incidencias";
-import { claveNombre, normalizarNombre, problemaNombre, primerNombre } from "./nombres";
+import { claveNombre, iniciales, normalizarNombre, problemaNombre, primerNombre } from "./nombres";
 import { puede } from "./permisos";
 import { compararPrioridad, prioridadMaxima, type Prioridad } from "./prioridades";
 import { requiereExplicacion, RESULTADOS } from "./resultados";
@@ -75,6 +75,9 @@ describe("nombres de relevadores", () => {
     expect(problemaNombre("Luis <script>")).not.toBeNull();
     expect(problemaNombre("Luis Pérez")).toBeNull();
     expect(primerNombre("Luis Pérez")).toBe("Luis");
+    expect(iniciales("Luis Pérez")).toBe("LP");
+    expect(iniciales("Equipo (desarrollo local)")).toBe("EL");
+    expect(iniciales("Ágata")).toBe("ÁG");
   });
 });
 
