@@ -1,0 +1,82 @@
+# Integración continua: lo mismo que `npm run verificar`, en dos jobs paralelos
+# para que la base no tape un error de tipos (estándar DIA 06 §6).
+#
+# No hace falta ningún secreto: el build corre sin variables, los tests de
+# integración usan PGlite en memoria y, además, un PostgreSQL 15 efímero del
+# propio runner (el motor de producción, postgres.js).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# Un push nuevo a la misma rama cancela la corrida anterior.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Los tests se fuerzan a UTC en su configuración; el resto, como el servidor.
+  TZ: America/Argentina/Tucuman
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  verificar:
+    name: Tipos, lint, unitarios, catálogo y build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      # El JSON versionado tiene que seguir coincidiendo con el PDF oficial (217 pruebas).
+      - run: npm run catalogo:verificar
+      - run: npx next build
+
+  integracion:
+    name: Integración (PGlite y PostgreSQL 15)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Base descartable del runner: no es un secreto.
+      URL_POSTGRES: postgres://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Circuito completo sobre PGlite
+        run: npm run test:integracion
+      - name: Migraciones y catálogo con los scripts de producción
+        run: npm run db:migrar
+        env:
+          DATABASE_URL: ${{ env.URL_POSTGRES }}
+      - name: Circuito completo sobre PostgreSQL (postgres.js)
+        run: npm run test:integracion
+        env:
+          PRUEBAS_DATABASE_URL: ${{ env.URL_POSTGRES }}

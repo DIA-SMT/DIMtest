@@ -81,6 +81,8 @@ Lo verifican `src/domain/dominio.test.ts` (sobre el JSON) y `tests/integracion/c
 PRUEBAS_DATABASE_URL=postgres://postgres@localhost:54360/postgres npm run test:integracion   # ¡borra el esquema public de esa base!
 ```
 
+- **CI** (`.github/workflows/ci.yml`): en cada PR y en cada push a `main` corre tipos, lint, unitarios, el control del catálogo contra el PDF y el build; en paralelo, la integración sobre PGlite y sobre un PostgreSQL 15 efímero (con `npm run db:migrar` incluido). No necesita secretos.
+
 ## 5. Puesta en producción
 
 **Primero migrar, después desplegar.**
