@@ -9,6 +9,7 @@ import {
   listarRelevadores,
   listarUsuarios,
   metricas,
+  observacionDetalle,
   opcionesPruebas,
   opcionesRelevadores,
 } from "@/features/admin/consultas";
@@ -127,6 +128,40 @@ describe("filtros", () => {
   it("relevadores y equipo", async () => {
     expect((await base.tx((q) => listarRelevadores(q))).map((r) => r.nombre).sort()).toEqual(["Ana Díaz", "Luis Pérez"]);
     expect((await base.tx((q) => listarUsuarios(q)))[0].asignadas).toBe(1);
+  });
+});
+
+describe("detalle de una observación", () => {
+  it("trae la prueba, la observación, su clasificación y sus evidencias", async () => {
+    const lista = await base.tx((q) =>
+      listarObservaciones(q, { busqueda: "PAD-01", orden: "recientes", pagina: 1, porPagina: 10 }),
+    );
+    const fila = lista.find((o) => o.prueba_codigo === "PAD-01");
+    expect(fila?.evidencias).toBe(2);
+
+    const o = await base.tx((q) => observacionDetalle(q, fila!.numero));
+    expect(o).toMatchObject({
+      id: fila!.id,
+      prueba_codigo: "PAD-01",
+      relevador_nombre: "Luis Pérez",
+      resultado: "no_funciona",
+      observaciones: "No trae la ficha del PGM con el CUIT pedido.",
+      clasificacion: "incidencia",
+      es_revalidacion: false,
+    });
+    expect(o?.resultado_esperado.length).toBeGreaterThan(0);
+    expect(o?.incidencia_numero).toBeGreaterThan(0);
+    expect(o?.evidencias.map((v) => ({ nombre: v.nombre, mime: v.mime }))).toEqual([
+      { nombre: "constancia.pdf", mime: "application/pdf" },
+      { nombre: "pantalla-error.png", mime: "image/png" },
+    ]);
+    expect(o?.evidencias[0]?.id).toMatch(/^[0-9a-f-]{36}$/);
+
+    // Una sin evidencias trae la lista vacía, y un número que no existe, nada.
+    const [sinArchivos] = await base.tx((q) => listarObservaciones(q, { busqueda: "ARCA", orden: "recientes", pagina: 1, porPagina: 10 }));
+    expect(sinArchivos?.prueba_codigo).toBe("PAD-02");
+    expect((await base.tx((q) => observacionDetalle(q, sinArchivos!.numero)))?.evidencias).toEqual([]);
+    expect(await base.tx((q) => observacionDetalle(q, 999_999))).toBeNull();
   });
 });
 

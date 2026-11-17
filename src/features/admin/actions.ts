@@ -131,7 +131,8 @@ export async function clasificarObservacionAccion(formData: FormData) {
   const id = String(formData.get("ejecucion") ?? "");
   const clasificacion = formData.get("clasificacion") === "informativa" ? "informativa" : "sin_revisar";
   if (UUID.test(id)) await conBase((q) => clasificarObservacion(q, u, id, clasificacion));
-  revalidatePath("/admin/observaciones");
+  // La bandeja y el detalle de cada observación.
+  revalidatePath("/admin/observaciones", "layout");
 }
 
 // ---------------------------------------------------------------------------

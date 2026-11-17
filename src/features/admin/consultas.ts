@@ -403,6 +403,41 @@ export async function listarObservaciones(q: Consulta, f: FiltrosObservaciones):
   );
 }
 
+export interface EvidenciaDetalle {
+  id: string;
+  nombre: string;
+  mime: string;
+  tamano: number;
+}
+
+export interface ObservacionDetalle extends Omit<FilaObservacion, "evidencias" | "total"> {
+  resultado_esperado: string;
+  perfil: string;
+  es_revalidacion: boolean;
+  repetida: boolean;
+  evidencias: EvidenciaDetalle[];
+}
+
+/** Una ejecución con todo lo que hace falta para revisarla: la prueba, la observación y sus evidencias. */
+export async function observacionDetalle(q: Consulta, numero: number): Promise<ObservacionDetalle | null> {
+  const [o] = await q<Omit<ObservacionDetalle, "evidencias"> & { evidencias: string }>(
+    `select e.id, e.numero, e.prueba_codigo, p.que_probar, p.resultado_esperado, p.perfil, m.codigo as modulo_codigo, m.nombre as modulo,
+            e.relevador_nombre, e.creada_at, e.resultado, e.observaciones, e.caso_usado, e.prioridad_sugerida, e.es_revalidacion, e.repetida,
+            coalesce(r.clasificacion, 'sin_revisar') as clasificacion, r.revisada_por, i.numero as incidencia_numero,
+            coalesce((select json_agg(json_build_object('id', v.id, 'nombre', v.nombre_original, 'mime', v.tipo_mime, 'tamano', v.tamano_bytes)
+                                order by v.creada_at, v.nombre_original)
+                        from evidencias v where v.ejecucion_id = e.id)::text, '[]') as evidencias
+       from ejecuciones e
+       join pruebas p on p.codigo = e.prueba_codigo
+       join modulos m on m.codigo = p.modulo_codigo
+       left join revisiones_observacion r on r.ejecucion_id = e.id
+       left join incidencias i on i.id = r.incidencia_id
+      where e.numero = $1`,
+    [numero],
+  );
+  return o ? { ...o, evidencias: JSON.parse(o.evidencias) as EvidenciaDetalle[] } : null;
+}
+
 export interface EjecucionParaIncidencia {
   id: string;
   prueba_codigo: string;
