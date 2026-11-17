@@ -13,7 +13,7 @@ export default defineConfig({
     ],
   },
   test: {
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "agente/**/*.test.mjs"],
     environment: "node",
     // El código no puede depender de la zona de la máquina: los tests corren en UTC.
     env: { TZ: "UTC" },

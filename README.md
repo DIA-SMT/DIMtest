@@ -62,6 +62,7 @@ Sin `.env.local` arranca en **modo local**: base PGlite en `.local/pgdata` (se c
 | `npm run db:semilla` | Carga o actualiza el catálogo en la base (producción) |
 | `npm run admin:crear -- --usuario correo@smt.gob.ar --nombre "…"` | Crea una cuenta del equipo con contraseña temporal |
 | `npm run almacenamiento:preparar` | Crea o ajusta el bucket privado de evidencias en Supabase y lo prueba |
+| `npm run agente` | El agente Claude (solo en su máquina; `-- --revisar` para el diagnóstico, `-- --una-vez` para un trabajo). Ver [agente/README.md](agente/README.md) |
 
 ## 3. El catálogo
 
@@ -123,7 +124,7 @@ npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido"
 Corrige incidencias de DIM360 desde una máquina de la red municipal y publica en el servidor de test. Arranca **apagado**.
 
 1. **Panel → Agente:** generá el token de la máquina (se muestra una vez) y elegí la configuración: encendido, si puede publicar, si se le piden solas las incidencias nuevas y de qué prioridades.
-2. **En la máquina del agente:** el token va en `AGENTE_TOKEN`. El protocolo con el panel está en [docs/AGENTE.md](docs/AGENTE.md).
+2. **En la máquina del agente:** el programa está en [agente/](agente/README.md), con la guía de instalación; el token va en `AGENTE_TOKEN`. El protocolo con el panel está en [docs/AGENTE.md](docs/AGENTE.md).
 3. **Avisos por WhatsApp:** cada persona carga su número en **Mi cuenta**. Para enviarlos hacen falta `WHATSAPP_TOKEN` y `WHATSAPP_NUMERO_ID` (WhatsApp Cloud API de Meta, número dedicado) y una plantilla aprobada `aviso_dim360` con un parámetro `{{1}}`. Sin eso, los avisos quedan registrados en la página del agente.
 
 ## Pendientes

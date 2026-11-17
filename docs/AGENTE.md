@@ -11,6 +11,10 @@ Content-Type: application/json
 
 Sin token, o con uno revocado, la respuesta es `401 {"error":"no_autorizado"}`. Los errores esperables vuelven como `409 {"error":"<clave>","mensaje":"…"}`, y los datos mal formados como `400`.
 
+## 0. Estado (sin tomar nada)
+
+`GET /api/agente/estado` → `{"activo", "publicar", "automatico", "pendientes", "enCurso"}`. Lo usa el diagnóstico de la máquina para confirmar que el token vale.
+
 ## 1. Pedir trabajo
 
 `POST /api/agente/tomar`

@@ -30,3 +30,7 @@ npm-debug.log*
 
 # herramientas locales (configuración del entorno de cada persona)
 /.claude/
+
+# agente Claude (en la máquina de la red): trabajos, registro y su .env
+/agente/trabajos/
+/agente/registro.log

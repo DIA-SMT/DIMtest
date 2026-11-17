@@ -20,7 +20,8 @@
     "db:semilla": "node --env-file-if-exists=.env.local scripts/semilla.mjs",
     "db:local:reiniciar": "node -e \"require('fs').rmSync('.local/pgdata',{recursive:true,force:true});console.log('Base local borrada: se vuelve a crear al iniciar npm run dev.')\"",
     "admin:crear": "node --env-file-if-exists=.env.local scripts/admin-crear.mjs",
-    "almacenamiento:preparar": "node --env-file-if-exists=.env.local scripts/almacenamiento-preparar.mjs"
+    "almacenamiento:preparar": "node --env-file-if-exists=.env.local scripts/almacenamiento-preparar.mjs",
+    "agente": "node --env-file-if-exists=agente/.env agente/agente.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.16",
