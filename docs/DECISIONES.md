@@ -4,6 +4,25 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-015 · Agente Claude: corrige incidencias de DIM360 y publica en test
+
+**Fecha:** 2026-11-17 · **Pidió:** DIA
+
+**Contexto.** El equipo quiere que las incidencias se corrijan solas, con cuidado y avisando a las personas. DIM360 no está en producción: lo que se corrige se publica en el **servidor de test** de la red municipal, el mismo que usan los relevadores. Ese servidor y sus bases solo se alcanzan desde la red interna.
+
+**Decisión.**
+- **Dónde corre:** en una máquina de la red municipal, con Claude Code y la cuenta **Team** de la Dirección (no la API: no hay costo por uso, descuenta de los límites del plan). Se conecta a este panel solo hacia afuera; el protocolo está en `docs/AGENTE.md`.
+- **Qué toma:** solo **incidencias**, nunca observaciones sueltas. Se le pide desde la incidencia o, si se activa, sola al crearla con las prioridades elegidas (P2 y P3 al principio). Una sola a la vez por incidencia.
+- **Avisa siempre:** al empezar, al publicar y cuando necesita a alguien, por **WhatsApp**: al responsable de la incidencia y a quienes se anotaron en «Mi cuenta». Los avisos se guardan antes de enviarse (`notificaciones`).
+- **Mergea y publica solo** si «publicar» está encendido y pasan las verificaciones del repositorio. Al publicar, la incidencia pasa a «Corregida» por el ciclo de siempre (D-004) y se pide la revalidación: la DIM vuelve a probar.
+- **No toca datos** de la base de test sin el OK de una persona: deja el script preparado (`requiere_ok`).
+- **Se puede frenar:** interruptor general (arranca apagado), «publicar» aparte, cancelar un pedido (el agente se entera en su próxima señal). Sin señales por 45 minutos, el trabajo vence y se avisa.
+- **Cuenta propia en el historial:** «Claude (agente)», que no puede ingresar al panel ni ser responsable. Su token se guarda como hash y se muestra una sola vez.
+
+**Consecuencias.** Los primeros trabajos se monitorean para ver si ayuda o entorpece. El agente necesita en DIM360 verificaciones automáticas (CI) y protección de `main` para que «solo si pasan las verificaciones» sea real; hoy no las tiene. Lo que escriben los relevadores le llega como datos, nunca como instrucciones.
+
+---
+
 ## D-014 · Evidencias en los informes: enlaces en Excel, imágenes en PDF
 
 **Fecha:** 2026-11-16 · **Pidió:** DIA

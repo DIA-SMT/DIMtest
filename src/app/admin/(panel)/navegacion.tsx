@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
+  Bot,
   ClipboardList,
   FileSpreadsheet,
   Flame,
@@ -60,7 +61,12 @@ export function Navegacion({
     { href: "/admin/prioridades", texto: "Prioridades", icono: Flame, contador: criticas },
     { href: "/admin/informes", texto: "Informes", icono: FileSpreadsheet },
     { href: "/admin/relevadores", texto: "Relevadores", icono: Users },
-    ...(puedeUsuarios ? [{ href: "/admin/usuarios", texto: "Equipo", icono: UserCog }] : []),
+    ...(puedeUsuarios
+      ? [
+          { href: "/admin/usuarios", texto: "Equipo", icono: UserCog },
+          { href: "/admin/agente", texto: "Agente", icono: Bot },
+        ]
+      : []),
   ];
   const activo = (href: string) => (href === "/admin" ? ruta === "/admin" : ruta.startsWith(href));
 
@@ -122,7 +128,7 @@ export function Navegacion({
           </nav>
 
           <div className="ml-auto hidden shrink-0 items-center gap-2.5 xl:flex">
-            <Link href="/admin/cuenta" className="flex items-center gap-2.5 rounded-full p-0.5 pr-1 hover:bg-superficie-azul" title="Mi contraseña">
+            <Link href="/admin/cuenta" className="flex items-center gap-2.5 rounded-full p-0.5 pr-1 hover:bg-superficie-azul" title="Mi cuenta">
               <span aria-hidden="true" className="grid size-10 place-items-center rounded-full bg-superficie-azul text-xs font-bold text-primario">
                 {iniciales(nombre)}
               </span>
@@ -222,7 +228,7 @@ export function Navegacion({
               <small className="mt-0.5 block text-xs text-texto-secundario">{rol}</small>
             </span>
             <KeyRound aria-hidden="true" className="size-4 text-icono" />
-            <span className="sr-only">Mi contraseña</span>
+            <span className="sr-only">Mi cuenta</span>
           </Link>
           <form action={salirAdminAccion}>
             <button type="submit" className="flex min-h-[46px] w-full items-center gap-2.5 border-t border-borde px-1 font-semibold text-error hover:bg-error-fondo">

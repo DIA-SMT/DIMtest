@@ -24,6 +24,7 @@ import {
   comentar,
   crearIncidencia,
 } from "@/features/incidencias/servicio";
+import { pedirSiCorresponde } from "@/features/agente/servicio";
 import { borrarRelevador } from "@/features/relevamiento/servicio";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -66,7 +67,8 @@ export async function ingresarAdminAccion(_previo: EstadoAccion, formData: FormD
     );
     if (fallidos_usuario >= LIMITE_INTENTOS || fallidos_ip >= LIMITE_INTENTOS * 4) return { error: "limite_intentos" as const };
     const [u] = await q<{ id: string; nombre: string; clave_hash: string; activo: boolean; sesion_version: number }>(
-      "select id, nombre, clave_hash, activo, sesion_version from usuarios_admin where usuario = $1",
+      // La cuenta del agente nunca ingresa al panel (D-015).
+      "select id, nombre, clave_hash, activo, sesion_version from usuarios_admin where usuario = $1 and not es_agente",
       [usuario],
     );
     const ok = await verificarClave(clave, u?.clave_hash);
@@ -168,6 +170,8 @@ export async function crearIncidenciaAccion(_previo: EstadoAccion, formData: For
         responsableId: d.responsable || null,
       });
       await auditar(q, u, "incidencia.crear", { numero: i.numero, prueba: d.prueba });
+      // Si el agente está encendido en modo automático para esta prioridad, entra a su cola (D-015).
+      await pedirSiCorresponde(q, i.id);
       return i;
     });
     numero = r.numero;
@@ -306,6 +310,9 @@ export async function actualizarUsuarioAccion(_previo: EstadoAccion, formData: F
   const operacion = String(formData.get("operacion") ?? "");
   if (!UUID.test(id)) return { error: "Usuario inválido." };
   if (id === u.id && operacion !== "restablecer") return { error: "No podés cambiar tu propio rol ni desactivarte." };
+  // La cuenta del agente no se toca desde Equipo: se maneja desde la página del agente.
+  const [esAgente] = await conBase((q) => q("select 1 from usuarios_admin where id = $1 and es_agente", [id]));
+  if (esAgente) return { error: "Usuario inválido." };
 
   if (operacion === "restablecer") {
     const temporal = generarClaveTemporal();

@@ -29,7 +29,7 @@ async function crear(): Promise<Ejecutor> {
   const db = ejecutorPglite(pg);
   const aplicadas = await aplicarMigraciones(db);
   const siembra = await sembrarCatalogo(db, catalogo as CatalogoJson);
-  const [{ hay }] = await db.query<{ hay: boolean }>("select exists (select 1 from usuarios_admin) as hay");
+  const [{ hay }] = await db.query<{ hay: boolean }>("select exists (select 1 from usuarios_admin where not es_agente) as hay");
   // La contraseña del usuario de desarrollo es pública (README): nunca se crea en producción.
   const crearAdmin = !hay && process.env.NODE_ENV !== "production";
   if (crearAdmin) {

@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CircleDot, FileText, Image as ImagenIcono, RotateCcw } from "lucide-react";
+import { ArrowLeft, Bot, CircleDot, FileText, Image as ImagenIcono, RotateCcw } from "lucide-react";
 import { Aviso, EncabezadoPagina, InsigniaEstadoIncidencia, InsigniaPrioridad, InsigniaResultado, Tarjeta } from "@/components/ui";
+import { incidenciaElegible, NOMBRE_RESULTADO_AGENTE } from "@/domain/agente";
 import { esEstadoIncidencia, NOMBRE_ESTADO } from "@/domain/incidencias";
+import { puede } from "@/domain/permisos";
 import { esResultado, NOMBRE_RESULTADO } from "@/domain/resultados";
 import { CambioEstado, CambioPrioridad, CambioResponsable, NuevoComentario } from "@/features/admin/components/gestion-incidencia";
 import { eventosIncidencia, evidenciasIncidencia, incidenciaPorNumero, opcionesResponsables, revalidacionesDePrueba, type EventoIncidencia } from "@/features/admin/consultas";
+import { PedirAgente } from "@/features/agente/components/formularios";
+import { ListaTrabajos } from "@/features/agente/components/lista-trabajos";
+import { leerConfig, listarTrabajos } from "@/features/agente/servicio";
 import { ultimaRevalidacion } from "@/features/incidencias/servicio";
 import { exigirAdmin } from "@/lib/auth/admin";
 import { conBase } from "@/lib/db";
@@ -15,6 +20,16 @@ import { numeroIncidencia, tamanoArchivo } from "@/lib/formato";
 export async function generateMetadata({ params }: { params: Promise<{ numero: string }> }) {
   return { title: numeroIncidencia(Number((await params).numero) || 0) };
 }
+
+/** Lo que registra el agente (D-015), por el valor del evento. */
+const AGENTE_DICE: Record<string, string> = {
+  pedido: "Pedido al agente",
+  cancelado: "Canceló el pedido al agente",
+  en_curso: "El agente empezó a trabajar",
+  avance: "Avance del agente",
+  fallido: "El agente no pudo terminar",
+  ...NOMBRE_RESULTADO_AGENTE,
+};
 
 function describirEvento(e: EventoIncidencia): string {
   const estado = (v: string | null) => (v && esEstadoIncidencia(v) ? NOMBRE_ESTADO[v] : (v ?? "—"));
@@ -37,6 +52,8 @@ function describirEvento(e: EventoIncidencia): string {
       return e.valor_nuevo === "pedida"
         ? "Pidió una nueva validación a la DIM"
         : `Revalidó la prueba: ${e.valor_nuevo && esResultado(e.valor_nuevo) ? NOMBRE_RESULTADO[e.valor_nuevo] : e.valor_nuevo}`;
+    case "agente":
+      return AGENTE_DICE[e.valor_nuevo ?? ""] ?? "Agente";
     default:
       return e.tipo;
   }
@@ -57,10 +74,14 @@ export default async function DetalleIncidencia({ params, searchParams }: { para
       responsables: await opcionesResponsables(q),
       revalidaciones: (await revalidacionesDePrueba(q, i.prueba_codigo)).filter((r) => r.incidencia_numero === i.numero),
       ultima: await ultimaRevalidacion(q, i.id),
+      trabajos: await listarTrabajos(q, { incidenciaId: i.id, limite: 10 }),
+      agenteActivo: (await leerConfig(q)).activo,
     };
   });
   if (!d) notFound();
-  const { i, eventos, evidencias, responsables, revalidaciones, ultima } = d;
+  const { i, eventos, evidencias, responsables, revalidaciones, ultima, trabajos, agenteActivo } = d;
+  const puedeGestionar = puede(admin.rol, "incidencias.gestionar");
+  const trabajoVivo = trabajos.some((t) => t.estado === "pendiente" || t.estado === "en_curso");
 
   return (
     <div className="space-y-6">
@@ -213,6 +234,26 @@ export default async function DetalleIncidencia({ params, searchParams }: { para
           </Tarjeta>
           <Tarjeta className="p-5">
             <NuevoComentario id={i.id} numero={i.numero} />
+          </Tarjeta>
+          <Tarjeta className="space-y-3 p-5">
+            <h2 className="flex items-center gap-2 text-base font-bold">
+              <Bot aria-hidden="true" className="size-5 text-primario" />
+              Agente Claude
+            </h2>
+            {puedeGestionar && !trabajoVivo && incidenciaElegible(i.estado) ? (
+              <>
+                <p className="text-sm text-texto-secundario">
+                  Diagnostica la incidencia en el código de DIM360 y, si corresponde, la corrige, la publica en test y pide la revalidación.
+                  Avisa por WhatsApp al responsable antes de empezar.
+                  {agenteActivo ? "" : " Ahora está apagado: el pedido queda en la cola."}
+                </p>
+                <PedirAgente incidenciaId={i.id} numero={i.numero} />
+              </>
+            ) : null}
+            {trabajos.length ? <ListaTrabajos trabajos={trabajos} conIncidencia={false} puedeCancelar={puedeGestionar} /> : null}
+            {!trabajos.length && !(puedeGestionar && incidenciaElegible(i.estado)) ? (
+              <p className="text-sm text-texto-secundario">No se le pidió nada al agente.</p>
+            ) : null}
           </Tarjeta>
           {revalidaciones.length ? (
             <Tarjeta className="p-5">

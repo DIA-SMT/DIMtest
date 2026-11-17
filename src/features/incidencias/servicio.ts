@@ -179,11 +179,15 @@ export async function cambiarPrioridad(q: Consulta, actor: Actor, id: string, pr
 export async function asignarResponsable(q: Consulta, actor: Actor, id: string, responsableId: string | null) {
   const i = await bloquear(q, id);
   if (i.responsable_id === responsableId) return false;
-  const nombres = await q<{ id: string; nombre: string }>("select id, nombre from usuarios_admin where id = any($1::uuid[])", [
-    [i.responsable_id, responsableId].filter(Boolean),
-  ]);
+  const nombres = await q<{ id: string; nombre: string; es_agente: boolean }>(
+    "select id, nombre, es_agente from usuarios_admin where id = any($1::uuid[])",
+    [[i.responsable_id, responsableId].filter(Boolean)],
+  );
   const nombre = (x: string | null) => nombres.find((n) => n.id === x)?.nombre ?? null;
-  if (responsableId && !nombre(responsableId)) throw new ErrorDominio("sin_permiso");
+  // El responsable es una persona: al agente se le pide trabajo desde su propia sección.
+  if (responsableId && (!nombre(responsableId) || nombres.find((n) => n.id === responsableId)?.es_agente)) {
+    throw new ErrorDominio("sin_permiso");
+  }
   await q("update incidencias set responsable_id = $2, actualizada_at = now() where id = $1", [id, responsableId]);
   await evento(q, id, actor, "responsable", { anterior: nombre(i.responsable_id), nuevo: nombre(responsableId) });
   return true;

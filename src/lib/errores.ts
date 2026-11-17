@@ -23,6 +23,13 @@ const ERRORES: Record<string, string> = {
   archivo_tamano: "Cada archivo puede pesar hasta 8 MB.",
   archivo_cantidad: "Podés adjuntar hasta 5 archivos por vez.",
   solo_insercion: "Este registro es histórico y no se puede modificar.",
+  // Agente Claude (D-015)
+  agente_no_elegible: "Esta incidencia ya está resuelta: no se le puede pedir al agente.",
+  agente_ya_pedido: "El agente ya tiene esta incidencia en su cola o la está trabajando.",
+  trabajo_inexistente: "Ese trabajo del agente no existe.",
+  trabajo_no_en_curso: "Ese trabajo ya no está en curso (lo cancelaron o venció).",
+  agente_sin_publicar: "Publicar está apagado: el agente solo puede dejar el PR abierto.",
+  whatsapp_invalido: "Escribí el número con el código de país, por ejemplo +54 9 381 555 1234.",
 };
 
 export function mensajeError(clave: string | null | undefined): string {
