@@ -1,15 +1,14 @@
 import Link from "next/link";
-import { Info, MessageSquareText, Paperclip, Plus, Undo2 } from "lucide-react";
+import { Eye, MessageSquareText, Paperclip } from "lucide-react";
 import { CLASE_BOTON_COMPACTO } from "@/components/formulario";
 import { EncabezadoPagina, EstadoVacio, InsigniaPrioridad, InsigniaResultado, Tarjeta } from "@/components/ui";
 import { RESULTADOS, NOMBRE_RESULTADO, esResultado } from "@/domain/resultados";
-import { clasificarObservacionAccion } from "@/features/admin/actions";
+import { AccionesObservacion } from "@/features/admin/components/acciones-observacion";
 import { listarObservaciones, opcionesModulos, opcionesRelevadores, ORDENES_OBSERVACIONES, type OrdenObservaciones } from "@/features/admin/consultas";
 import { aBusqueda, BarraFiltros, FiltroSelect, FiltroTexto, Paginacion, param } from "@/features/admin/components/filtros";
 import { exigirAdmin } from "@/lib/auth/admin";
 import { conBase } from "@/lib/db";
 import { fechaHora } from "@/lib/fechas";
-import { numeroIncidencia } from "@/lib/formato";
 
 export const metadata = { title: "Observaciones" };
 const POR_PAGINA = 30;
@@ -93,10 +92,13 @@ export default async function BandejaObservaciones({ searchParams }: { searchPar
                     </span>
                   ) : null}
                   {o.evidencias ? (
-                    <span className="flex items-center gap-1 text-xs text-texto-secundario">
+                    <Link
+                      href={`/admin/observaciones/${o.numero}#evidencias`}
+                      className="flex items-center gap-1 rounded-full border border-borde px-2 py-0.5 text-xs font-semibold text-primario-oscuro hover:border-primario hover:bg-superficie-azul"
+                    >
                       <Paperclip aria-hidden="true" className="size-3" />
-                      {o.evidencias}
-                    </span>
+                      {o.evidencias === 1 ? "1 evidencia" : `${o.evidencias} evidencias`}
+                    </Link>
                   ) : null}
                 </div>
                 <p className="mt-1 text-xs text-texto-secundario">
@@ -105,35 +107,11 @@ export default async function BandejaObservaciones({ searchParams }: { searchPar
                 <blockquote className="mt-3 border-l-2 border-borde pl-3 text-sm whitespace-pre-line">{o.observaciones}</blockquote>
                 {o.caso_usado ? <p className="mt-2 text-xs text-texto-secundario">Caso usado: {o.caso_usado}</p> : null}
                 <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-borde pt-3">
-                  {o.clasificacion === "incidencia" && o.incidencia_numero ? (
-                    <Link href={`/admin/incidencias/${o.incidencia_numero}`} className="text-sm font-semibold text-primario-oscuro hover:underline">
-                      Convertida en {numeroIncidencia(o.incidencia_numero)} →
-                    </Link>
-                  ) : (
-                    <>
-                      <Link href={`/admin/incidencias/nueva?ejecucion=${o.id}`} className={CLASE_BOTON_COMPACTO}>
-                        <Plus aria-hidden="true" className="size-3.5" />
-                        Convertir en incidencia
-                      </Link>
-                      <form action={clasificarObservacionAccion}>
-                        <input type="hidden" name="ejecucion" value={o.id} />
-                        {o.clasificacion === "informativa" ? (
-                          <button type="submit" name="clasificacion" value="sin_revisar" className={CLASE_BOTON_COMPACTO}>
-                            <Undo2 aria-hidden="true" className="size-3.5" />
-                            Volver a «sin revisar»
-                          </button>
-                        ) : (
-                          <button type="submit" name="clasificacion" value="informativa" className={CLASE_BOTON_COMPACTO}>
-                            <Info aria-hidden="true" className="size-3.5" />
-                            Es un comentario informativo
-                          </button>
-                        )}
-                      </form>
-                      <span className="text-xs text-texto-secundario">
-                        {o.clasificacion === "informativa" ? `Informativa · revisó ${o.revisada_por}` : "Sin revisar"}
-                      </span>
-                    </>
-                  )}
+                  <Link href={`/admin/observaciones/${o.numero}`} className={CLASE_BOTON_COMPACTO}>
+                    <Eye aria-hidden="true" className="size-3.5" />
+                    Ver detalle
+                  </Link>
+                  <AccionesObservacion id={o.id} clasificacion={o.clasificacion} revisadaPor={o.revisada_por} incidenciaNumero={o.incidencia_numero} />
                 </div>
               </Tarjeta>
             </li>
