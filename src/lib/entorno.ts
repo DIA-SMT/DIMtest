@@ -21,6 +21,12 @@ const esquema = z.object({
   SUPABASE_URL: z.string().url("SUPABASE_URL tiene que ser la URL del proyecto, https://<ref>.supabase.co").optional(),
   SUPABASE_SECRET_KEY: z.string().min(20, "SUPABASE_SECRET_KEY no parece una clave secreta de Supabase").optional(),
   SUPABASE_BUCKET: z.string().regex(/^[a-z0-9][a-z0-9_-]{2,62}$/, "SUPABASE_BUCKET: minúsculas, números, guion o guion bajo").default("evidencias"),
+  // Avisos del agente por WhatsApp Cloud API (D-015). Sin token y número, los avisos quedan registrados sin enviarse.
+  WHATSAPP_TOKEN: z.string().min(20, "WHATSAPP_TOKEN no parece un token de acceso de Meta").optional(),
+  WHATSAPP_NUMERO_ID: z.string().regex(/^\d{5,30}$/, "WHATSAPP_NUMERO_ID es el id numérico del número en Meta").optional(),
+  WHATSAPP_PLANTILLA: z.string().regex(/^[a-z0-9_]{1,512}$/, "WHATSAPP_PLANTILLA: minúsculas, números y guion bajo").default("aviso_dim360"),
+  WHATSAPP_IDIOMA: z.string().regex(/^[a-z]{2}(_[A-Z]{2})?$/, "WHATSAPP_IDIOMA: por ejemplo es_AR").default("es_AR"),
+  WHATSAPP_VERSION_API: z.string().regex(/^v\d+\.\d+$/, "WHATSAPP_VERSION_API: por ejemplo v23.0").default("v23.0"),
 });
 
 function leer() {
@@ -33,6 +39,11 @@ function leer() {
     SUPABASE_URL: process.env.SUPABASE_URL || undefined,
     SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY || undefined,
     SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || undefined,
+    WHATSAPP_TOKEN: process.env.WHATSAPP_TOKEN || undefined,
+    WHATSAPP_NUMERO_ID: process.env.WHATSAPP_NUMERO_ID || undefined,
+    WHATSAPP_PLANTILLA: process.env.WHATSAPP_PLANTILLA || undefined,
+    WHATSAPP_IDIOMA: process.env.WHATSAPP_IDIOMA || undefined,
+    WHATSAPP_VERSION_API: process.env.WHATSAPP_VERSION_API || undefined,
   });
   if (!r.success) {
     const variables = r.error.issues.map((i) => `${String(i.path[0])}: ${i.message}`).join("; ");
@@ -50,6 +61,9 @@ function leer() {
   // Solo importa con una base real: en modo local las evidencias van siempre a disco.
   if (!modoLocal && !e.SUPABASE_URL !== !e.SUPABASE_SECRET_KEY) {
     throw new Error("Entorno mal configurado: SUPABASE_URL y SUPABASE_SECRET_KEY van juntas (o ninguna de las dos).");
+  }
+  if (!e.WHATSAPP_TOKEN !== !e.WHATSAPP_NUMERO_ID) {
+    throw new Error("Entorno mal configurado: WHATSAPP_TOKEN y WHATSAPP_NUMERO_ID van juntas (o ninguna de las dos).");
   }
   return {
     ...e,

@@ -139,7 +139,7 @@ export async function opcionesPruebas(q: Consulta): Promise<Opcion[]> {
 }
 
 export async function opcionesResponsables(q: Consulta): Promise<Opcion[]> {
-  const filas = await q<{ id: string; nombre: string; rol: string }>("select id, nombre, rol from usuarios_admin where activo order by nombre");
+  const filas = await q<{ id: string; nombre: string; rol: string }>("select id, nombre, rol from usuarios_admin where activo and not es_agente order by nombre");
   return filas.map((f) => ({ valor: f.id, etiqueta: f.nombre }));
 }
 
@@ -573,13 +573,16 @@ export interface UsuarioAdminFila {
   creado_at: Date;
   ultimo_ingreso_at: Date | null;
   asignadas: number;
+  whatsapp: string | null;
+  avisos_agente: boolean;
 }
 
 export async function listarUsuarios(q: Consulta): Promise<UsuarioAdminFila[]> {
   return q<UsuarioAdminFila>(
     `select u.id, u.usuario, u.nombre, u.rol, u.activo, u.debe_cambiar_clave, u.creado_at, u.ultimo_ingreso_at,
+            u.whatsapp, u.avisos_agente,
             (select count(*)::int from incidencias i where i.responsable_id = u.id and i.estado = any($1::text[])) as asignadas
-       from usuarios_admin u order by u.activo desc, u.nombre`,
+       from usuarios_admin u where not u.es_agente order by u.activo desc, u.nombre`,
     [activos],
   );
 }

@@ -26,7 +26,7 @@ export const leerAdmin = cache(async (): Promise<UsuarioAdmin | null> => {
   const filas = await conBase((q) =>
     q<{ id: string; usuario: string; nombre: string; rol: string; debe_cambiar_clave: boolean }>(
       `select id, usuario, nombre, rol, debe_cambiar_clave from usuarios_admin
-        where id = $1 and activo and sesion_version = $2`,
+        where id = $1 and activo and not es_agente and sesion_version = $2`,
       [datos.sub, datos.sv],
     ),
   );

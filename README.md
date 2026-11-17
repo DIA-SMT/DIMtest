@@ -105,6 +105,9 @@ npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido"
 | `SUPABASE_URL` | En Vercel | URL del proyecto (`https://<ref>.supabase.co`), para el bucket de evidencias | No |
 | `SUPABASE_SECRET_KEY` | En Vercel | Clave secreta de Supabase (`sb_secret_…` o la `service_role`), solo en el servidor | **Sí** |
 | `SUPABASE_BUCKET` | No | Nombre del bucket (por defecto `evidencias`) | No |
+| `WHATSAPP_TOKEN` | Para los avisos del agente | Token de acceso de WhatsApp Cloud API (Meta) | **Sí** |
+| `WHATSAPP_NUMERO_ID` | Junto con el token | Id del número de WhatsApp en Meta | No |
+| `WHATSAPP_PLANTILLA` / `WHATSAPP_IDIOMA` / `WHATSAPP_VERSION_API` | No | Plantilla aprobada (`aviso_dim360`), idioma (`es_AR`) y versión de la API (`v23.0`) | No |
 | `CARPETA_ARCHIVOS` | No | Dónde guardar las evidencias si no hay bucket (por defecto `.local/archivos`) | No |
 | `RESERVA_MINUTOS` | No | Duración de la reserva de una prueba (por defecto 30) | No |
 | `ENCABEZADOS_SEGURIDAD` | No | `nginx` si los encabezados de seguridad los pone el proxy | No |
@@ -114,6 +117,14 @@ npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido"
 - **Con `SUPABASE_URL` y `SUPABASE_SECRET_KEY`** (y una base real): van a un **bucket privado** de Supabase Storage. Es lo que hace falta en Vercel, que no tiene disco persistente. El bucket no tiene URL pública: la app lo lee con la clave secreta y sirve cada archivo por `/evidencias/<id>`, solo a quien tiene sesión.
 - **Sin ellas, o en modo local**: van a disco (`CARPETA_ARCHIVOS`). En la computadora nunca se sube nada al bucket, aunque `.env.local` tenga la clave (la usan los scripts).
 - `npm run almacenamiento:preparar` crea el bucket (privado, 8 MB por archivo, JPG, PNG, WebP y PDF) y prueba subir, leer y borrar.
+
+### Agente Claude (D-015)
+
+Corrige incidencias de DIM360 desde una máquina de la red municipal y publica en el servidor de test. Arranca **apagado**.
+
+1. **Panel → Agente:** generá el token de la máquina (se muestra una vez) y elegí la configuración: encendido, si puede publicar, si se le piden solas las incidencias nuevas y de qué prioridades.
+2. **En la máquina del agente:** el token va en `AGENTE_TOKEN`. El protocolo con el panel está en [docs/AGENTE.md](docs/AGENTE.md).
+3. **Avisos por WhatsApp:** cada persona carga su número en **Mi cuenta**. Para enviarlos hacen falta `WHATSAPP_TOKEN` y `WHATSAPP_NUMERO_ID` (WhatsApp Cloud API de Meta, número dedicado) y una plantilla aprobada `aviso_dim360` con un parámetro `{{1}}`. Sin eso, los avisos quedan registrados en la página del agente.
 
 ## Pendientes
 
