@@ -93,6 +93,7 @@ export async function cancelarTrabajoAccion(formData: FormData) {
   if (Number.isInteger(numero) && numero > 0) await conBase((q) => cancelarTrabajo(q, u, numero));
   revalidatePath(volverA(formData));
   revalidatePath("/admin/agente");
+  revalidatePath("/admin/correcciones");
 }
 
 // ---------------------------------------------------------------------------

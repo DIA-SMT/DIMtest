@@ -126,7 +126,8 @@ Corrige incidencias de DIM360 desde una máquina de la red municipal y publica e
 1. **Panel → Agente:** generá el token de la máquina (se muestra una vez) y elegí la configuración: encendido, si puede publicar, si se le piden solas las incidencias nuevas y de qué prioridades.
 2. **En la máquina del agente:** el programa está en [agente/](agente/README.md), con la guía de instalación; el token va en `AGENTE_TOKEN`. El protocolo con el panel está en [docs/AGENTE.md](docs/AGENTE.md).
 3. **Avisos por WhatsApp:** cada persona carga su número en **Mi cuenta**. Para enviarlos hacen falta `WHATSAPP_TOKEN` y `WHATSAPP_NUMERO_ID` (WhatsApp Cloud API de Meta, número dedicado) y una plantilla aprobada `aviso_dim360` con un parámetro `{{1}}`. Sin eso, los avisos quedan registrados en la página del agente.
-4. **Panel → Correcciones** (todo el equipo): lo que terminó el agente, con su resumen, sus PR y cómo salió la revalidación de la DIM (confirmada, volvió a fallar o pendiente).
+4. **Panel → Correcciones** (todo el equipo): la cola del agente (lo que está haciendo y lo que espera, en el orden en que lo va a tomar) y lo que terminó, con su resumen, sus PR y cómo salió la revalidación de la DIM (confirmada, volvió a fallar o pendiente).
+5. **Del lado de los relevadores:** lo que se publicó en test aparece en el portal como «Para volver a probar» (en la barra de todas las páginas y al principio del inicio), con qué se corrigió y sin enlaces internos. A quien lo reportó le llega un aviso propio. Al volver a probarla, el resultado vuelve al equipo y a «Correcciones».
 
 ## Pendientes
 

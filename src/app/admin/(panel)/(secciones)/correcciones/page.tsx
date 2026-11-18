@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { Bot, CircleCheck, CircleX, GitPullRequest, Hand, Rocket, TriangleAlert } from "lucide-react";
-import { Aviso, EncabezadoPagina, EstadoVacio, Indicador } from "@/components/ui";
+import { EncabezadoPagina, EstadoVacio, Indicador } from "@/components/ui";
 import {
   CIERRES_AGENTE,
   cierresDelFiltro,
@@ -14,8 +13,10 @@ import { puede } from "@/domain/permisos";
 import { esPrioridad, etiquetaPrioridad, PRIORIDADES } from "@/domain/prioridades";
 import { opcionesModulos } from "@/features/admin/consultas";
 import { aBusqueda, BarraFiltros, FiltroSelect, FiltroTexto, Paginacion, param } from "@/features/admin/components/filtros";
-import { listarCorrecciones, resumenCorrecciones } from "@/features/agente/consultas";
+import { colaAgente, listarCorrecciones, resumenCorrecciones } from "@/features/agente/consultas";
+import { ColaAgente } from "@/features/agente/components/cola";
 import { FichaCorreccion } from "@/features/agente/components/correcciones";
+import { leerConfig } from "@/features/agente/servicio";
 import { exigirAdmin } from "@/lib/auth/admin";
 import { conBase } from "@/lib/db";
 
@@ -37,7 +38,7 @@ export default async function Correcciones({ searchParams }: { searchParams: Pro
   const busqueda = param(sp, "q");
   const pagina = Math.max(1, Number(param(sp, "pagina")) || 1);
 
-  const { filas, resumen, modulos } = await conBase(async (q) => ({
+  const { filas, resumen, modulos, cola, config } = await conBase(async (q) => ({
     filas: await listarCorrecciones(q, {
       cierres: cierresDelFiltro(cierre) ?? undefined,
       revalidacion: esRevalidacionAgente(revalidacion) ? revalidacion : undefined,
@@ -49,37 +50,28 @@ export default async function Correcciones({ searchParams }: { searchParams: Pro
     }),
     resumen: await resumenCorrecciones(q),
     modulos: await opcionesModulos(q),
+    cola: await colaAgente(q),
+    config: await leerConfig(q),
   }));
   const total = filas[0]?.total ?? 0;
   const conFiltros = [cierre, revalidacion, modulo, prioridad, busqueda].some(Boolean);
   const r = resumen;
-  const enMarcha = r.en_curso + r.pendientes;
 
   return (
     <div className="space-y-6">
       <EncabezadoPagina
         antetitulo="Agente Claude"
         titulo="Correcciones del agente"
-        descripcion="Todo lo que terminó el agente: qué corrigió, los cambios que dejó en GitHub y si la DIM confirmó que funciona al revalidar."
+        descripcion="Lo que el agente tiene en la cola y todo lo que terminó: qué corrigió, los cambios que dejó en GitHub y si la DIM confirmó que funciona al revalidar."
       />
 
-      {enMarcha ? (
-        <Aviso
-          tipo="info"
-          titulo={r.en_curso ? "El agente está trabajando ahora" : "Hay pedidos en la cola del agente"}
-          accion={
-            puede(sesion.rol, "usuarios.gestionar") ? (
-              <Link href="/admin/agente" className="font-semibold text-primario-oscuro hover:underline">
-                Ver la cola del agente
-              </Link>
-            ) : null
-          }
-        >
-          {r.en_curso ? `${r.en_curso === 1 ? "1 trabajo en curso" : `${r.en_curso} trabajos en curso`}` : null}
-          {r.en_curso && r.pendientes ? " y " : null}
-          {r.pendientes ? `${r.pendientes === 1 ? "1 pedido esperando" : `${r.pendientes} pedidos esperando`}` : null}. Aparecen acá cuando terminan.
-        </Aviso>
-      ) : null}
+      <ColaAgente
+        cola={cola}
+        maquina={{ activo: config.activo, conectado: config.conectado, ultimoContactoAt: config.ultimoContactoAt }}
+        puedeCancelar={puede(sesion.rol, "incidencias.gestionar")}
+      />
+
+      <h2 className="font-display text-lg font-bold text-institucional">Lo que terminó</h2>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         <Indicador

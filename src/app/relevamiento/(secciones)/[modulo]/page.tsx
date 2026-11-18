@@ -32,11 +32,11 @@ export default async function PaginaModulo({
   searchParams,
 }: {
   params: Promise<{ modulo: string }>;
-  searchParams: Promise<{ ver?: string; guardada?: string }>;
+  searchParams: Promise<{ ver?: string; guardada?: string; revalidada?: string }>;
 }) {
   const relevador = await exigirRelevador();
   const { modulo: codigo } = await params;
-  const { ver, guardada } = await searchParams;
+  const { ver, guardada, revalidada } = await searchParams;
   if (!/^[A-Z]{2,4}$/.test(codigo)) notFound();
 
   const { modulos, filas } = await conBase(async (q) => ({ modulos: await listarModulos(q), filas: await estadoDePruebas(q, codigo) }));
@@ -61,7 +61,7 @@ export default async function PaginaModulo({
       {guardadaFila ? (
         <Aviso
           tipo="exito"
-          titulo={`Guardaste ${guardadaFila.codigo}. ¡Gracias!`}
+          titulo={revalidada ? `Gracias por volver a probar ${guardadaFila.codigo}` : `Guardaste ${guardadaFila.codigo}. ¡Gracias!`}
           accion={
             siguiente ? (
               <Link href={`/relevamiento/prueba/${siguiente.codigo}`} className={CLASE_BOTON_PRIMARIO}>
@@ -75,6 +75,13 @@ export default async function PaginaModulo({
             )
           }
         >
+          {revalidada ? (
+            <p className="mb-1">
+              {guardadaFila.ultima?.resultado === "funciona"
+                ? "Confirmaste que la corrección funciona: el equipo ya lo ve y puede cerrar el problema."
+                : "Quedó registrado que todavía no funciona del todo: el equipo lo vuelve a revisar con lo que anotaste."}
+            </p>
+          ) : null}
           {siguiente ? "Podés seguir con la próxima prueba pendiente de este módulo o elegir otra de la lista." : "No quedan pruebas pendientes en este módulo."}
         </Aviso>
       ) : null}

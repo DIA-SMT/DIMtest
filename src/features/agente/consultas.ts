@@ -98,8 +98,6 @@ export interface ResumenCorrecciones {
   para_revisar: number;
   necesitan_persona: number;
   fallidas: number;
-  en_curso: number;
-  pendientes: number;
 }
 
 /** Los números de arriba de la página: sobre todo lo que hizo el agente, sin filtros. */
@@ -112,10 +110,50 @@ export async function resumenCorrecciones(q: Consulta): Promise<ResumenCorreccio
             count(*) filter (where revalidacion = 'pendiente')::int as por_revalidar,
             count(*) filter (where cierre = 'pr_abierto')::int as para_revisar,
             count(*) filter (where cierre in ('requiere_ok', 'bloqueado'))::int as necesitan_persona,
-            count(*) filter (where cierre = 'fallido')::int as fallidas,
-            (select count(*)::int from trabajos_agente where estado = 'en_curso') as en_curso,
-            (select count(*)::int from trabajos_agente where estado = 'pendiente') as pendientes
+            count(*) filter (where cierre = 'fallido')::int as fallidas
        from c`,
   );
   return r!;
+}
+
+export interface FilaCola {
+  numero: number;
+  estado: "pendiente" | "en_curso";
+  origen: "manual" | "automatico";
+  pedido_por: string;
+  pedido_at: Date;
+  tomado_at: Date | null;
+  latido_at: Date | null;
+  incidencia_numero: number;
+  prioridad: Prioridad;
+  prueba_codigo: string;
+  que_probar: string;
+  modulo: string;
+  ultimo_avance: string | null;
+  ultimo_avance_at: Date | null;
+}
+
+/**
+ * Lo que espera el agente, en el orden en que lo va a tomar (el mismo de tomarTrabajo:
+ * prioridad y después antigüedad del pedido). Lo que está en curso va primero, con su
+ * último aviso de avance.
+ */
+export async function colaAgente(q: Consulta): Promise<FilaCola[]> {
+  return q<FilaCola>(
+    `select t.numero, t.estado, t.origen, t.pedido_por, t.pedido_at, t.tomado_at, t.latido_at,
+            i.numero as incidencia_numero, i.prioridad, i.prueba_codigo, p.que_probar, m.nombre as modulo,
+            a.comentario as ultimo_avance, a.creado_at as ultimo_avance_at
+       from trabajos_agente t
+       join incidencias i on i.id = t.incidencia_id
+       join pruebas p on p.codigo = i.prueba_codigo
+       join modulos m on m.codigo = p.modulo_codigo
+       left join lateral (
+         select e.comentario, e.creado_at from incidencia_eventos e
+          where t.estado = 'en_curso' and e.incidencia_id = t.incidencia_id and e.tipo = 'agente'
+            and e.valor_nuevo = 'avance' and e.creado_at >= t.tomado_at
+          order by e.creado_at desc, e.id desc limit 1
+       ) a on true
+      where t.estado in ('pendiente', 'en_curso')
+      order by (t.estado = 'en_curso') desc, i.prioridad, t.pedido_at, t.numero`,
+  );
 }

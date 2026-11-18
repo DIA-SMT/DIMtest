@@ -318,6 +318,74 @@ export async function revalidacionesPendientes(q: Consulta, codigo: string): Pro
   return filas.map((f) => ({ incidenciaNumero: f.numero, solicitadaAt: f.solicitada_at, solicitadaPor: f.solicitada_por, solucion: f.solucion_aplicada }));
 }
 
+/** Una prueba que el equipo corrigió y espera que un relevador vuelva a probar. */
+export interface ParaVolverAProbar {
+  codigo: string;
+  queProbar: string;
+  modulo: string;
+  /** El último pedido de revalidación de esa prueba. */
+  pedidaAt: Date;
+  /** Qué se corrigió (texto del equipo o del agente, sin limpiar). */
+  solucion: string;
+  /** La reportó este relevador: su observación dio origen a la incidencia. */
+  mia: boolean;
+  /** Alguien más la está probando ahora. */
+  probandoOtro: string | null;
+}
+
+/**
+ * Las pruebas con pedido de revalidación pendiente, para avisarle al relevador: primero las
+ * que reportó él, después las más recientes. Una prueba aparece una vez aunque tenga varias
+ * incidencias corregidas.
+ */
+export async function paraVolverAProbar(q: Consulta, relevadorId: string): Promise<ParaVolverAProbar[]> {
+  const filas = await q<{
+    codigo: string;
+    que_probar: string;
+    modulo: string;
+    pedida_at: Date;
+    solucion: string | null;
+    mia: boolean;
+    probando_otro: string | null;
+  }>(
+    `select v.prueba_codigo as codigo, p.que_probar, m.nombre as modulo,
+            max(v.solicitada_at) as pedida_at,
+            (array_agg(i.solucion_aplicada order by v.solicitada_at desc))[1] as solucion,
+            bool_or(
+              exists (select 1 from ejecuciones e where e.id = i.ejecucion_id and e.relevador_id = $1)
+              or exists (select 1 from revisiones_observacion r join ejecuciones e on e.id = r.ejecucion_id
+                          where r.incidencia_id = i.id and e.relevador_id = $1)
+            ) as mia,
+            (select r.relevador_nombre from reservas r
+              where r.prueba_codigo = v.prueba_codigo and r.vence_at > now() and r.relevador_id <> $1) as probando_otro
+       from revalidaciones v
+       join incidencias i on i.id = v.incidencia_id
+       join pruebas p on p.codigo = v.prueba_codigo
+       join modulos m on m.codigo = p.modulo_codigo
+      where v.ejecucion_id is null and v.cancelada_at is null
+      group by v.prueba_codigo, p.que_probar, m.nombre
+      order by mia desc, pedida_at desc, v.prueba_codigo`,
+    [relevadorId],
+  );
+  return filas.map((f) => ({
+    codigo: f.codigo,
+    queProbar: f.que_probar,
+    modulo: f.modulo,
+    pedidaAt: f.pedida_at,
+    solucion: f.solucion ?? "",
+    mia: f.mia,
+    probandoOtro: f.probando_otro,
+  }));
+}
+
+/** Cuántas pruebas esperan que alguien las vuelva a probar (para la barra del portal). */
+export async function cuantasParaVolverAProbar(q: Consulta): Promise<number> {
+  const [r] = await q<{ n: number }>(
+    "select count(distinct prueba_codigo)::int as n from revalidaciones where ejecucion_id is null and cancelada_at is null",
+  );
+  return r?.n ?? 0;
+}
+
 // ---------------------------------------------------------------------------
 // Reserva temporal
 // ---------------------------------------------------------------------------
