@@ -100,3 +100,61 @@ export function textoParaPlantilla(texto: string): string {
     .trim()
     .slice(0, 1000);
 }
+
+// ---------------------------------------------------------------------------
+// Correcciones del agente (lo que ya terminó)
+// ---------------------------------------------------------------------------
+
+/** Cómo terminó: un resultado del agente, o «fallido» si no pudo terminar por un problema suyo. */
+export const CIERRES_AGENTE = [...RESULTADOS_AGENTE, "fallido"] as const;
+export type CierreAgente = (typeof CIERRES_AGENTE)[number];
+
+export const NOMBRE_CIERRE_AGENTE: Record<CierreAgente, string> = {
+  desplegado: "Corregida y publicada en test",
+  ya_resuelto: "Ya estaba corregida: publicada en test",
+  pr_abierto: "Para revisar (PR abierto)",
+  requiere_ok: "Espera el OK para un cambio de datos",
+  bloqueado: "Necesita una persona",
+  fallido: "No pudo terminar",
+};
+
+export const esCierreAgente = (v: unknown): v is CierreAgente => typeof v === "string" && (CIERRES_AGENTE as readonly string[]).includes(v);
+
+/** Grupos para filtrar (los de los indicadores), además de cada cierre suelto. */
+export const GRUPOS_CIERRE = {
+  publicadas: { nombre: "Publicadas (todas)", cierres: ["desplegado", "ya_resuelto"] },
+  persona: { nombre: "Esperan a una persona", cierres: ["requiere_ok", "bloqueado"] },
+} as const satisfies Record<string, { nombre: string; cierres: readonly CierreAgente[] }>;
+
+/** El valor del filtro «Cómo terminó» a la lista de cierres que abarca. Null si no es válido. */
+export function cierresDelFiltro(v: unknown): CierreAgente[] | null {
+  if (typeof v === "string" && Object.hasOwn(GRUPOS_CIERRE, v)) return [...GRUPOS_CIERRE[v as keyof typeof GRUPOS_CIERRE].cierres];
+  return esCierreAgente(v) ? [v] : null;
+}
+
+/** Qué pasó con la revalidación que pidió el agente al publicar. */
+export const REVALIDACIONES_AGENTE = ["pendiente", "confirmada", "volvio_a_fallar", "sin_probar", "cancelada"] as const;
+export type RevalidacionAgente = (typeof REVALIDACIONES_AGENTE)[number];
+
+export const NOMBRE_REVALIDACION_AGENTE: Record<RevalidacionAgente, string> = {
+  pendiente: "Esperando la revalidación de la DIM",
+  confirmada: "La DIM confirmó que funciona",
+  volvio_a_fallar: "Volvió a fallar en la revalidación",
+  sin_probar: "La DIM no la pudo probar",
+  cancelada: "Revalidación cancelada",
+};
+
+export const esRevalidacionAgente = (v: unknown): v is RevalidacionAgente =>
+  typeof v === "string" && (REVALIDACIONES_AGENTE as readonly string[]).includes(v);
+
+/** «12 min», «1 h 05 min», «2 días 3 h». Null si falta alguna de las dos fechas. */
+export function duracionTrabajo(desde: Date | null, hasta: Date | null): string | null {
+  if (!desde || !hasta) return null;
+  const min = Math.max(0, Math.round((hasta.getTime() - desde.getTime()) / 60_000));
+  if (min < 1) return "menos de 1 min";
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h} h ${String(min % 60).padStart(2, "0")} min`;
+  const d = Math.floor(h / 24);
+  return `${d} ${d === 1 ? "día" : "días"} ${h % 24} h`;
+}

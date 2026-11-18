@@ -16,6 +16,7 @@ import {
   ShieldAlert,
   UserCog,
   Users,
+  Wrench,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -58,6 +59,7 @@ export function Navegacion({
     { href: "/admin/pruebas", texto: "Pruebas", icono: ClipboardList },
     { href: "/admin/observaciones", texto: "Observaciones", icono: MessageSquareText, contador: sinRevisar },
     { href: "/admin/incidencias", texto: "Incidencias", icono: ShieldAlert },
+    { href: "/admin/correcciones", texto: "Correcciones", icono: Wrench },
     { href: "/admin/prioridades", texto: "Prioridades", icono: Flame, contador: criticas },
     { href: "/admin/informes", texto: "Informes", icono: FileSpreadsheet },
     { href: "/admin/relevadores", texto: "Relevadores", icono: Users },
@@ -98,10 +100,10 @@ export function Navegacion({
       <header className="sticky top-0 z-40 border-b border-borde bg-superficie shadow-[0_1px_0_rgb(9_35_76/0.03)]">
         <div className="flex h-[72px] items-center gap-4 px-4 sm:px-6 2xl:px-10">
           <Link href="/admin" aria-label="DIM360 QA, ir al tablero" className="-ml-1 shrink-0 rounded-xl p-1">
-            <span className="xl:hidden 2xl:block">
+            <span className="xl:hidden 3xl:block">
               <MarcaCiudad subtitulo="Panel del equipo" />
             </span>
-            <span className="hidden xl:block 2xl:hidden">
+            <span className="hidden xl:block 3xl:hidden">
               <MarcaCiudad compacta subtitulo="Panel del equipo" />
             </span>
           </Link>
@@ -113,9 +115,9 @@ export function Navegacion({
                   <Link
                     href={i.href}
                     aria-current={activo(i.href) ? "page" : undefined}
-                    className={`relative flex h-[46px] items-center rounded-full px-3 text-[14.5px] font-semibold whitespace-nowrap transition-colors hover:bg-superficie-azul hover:text-primario ${
+                    className={`relative flex h-[46px] items-center rounded-full px-2 text-[14.5px] font-semibold 3xl:px-3 whitespace-nowrap transition-colors hover:bg-superficie-azul hover:text-primario ${
                       activo(i.href)
-                        ? "text-primario after:absolute after:inset-x-3 after:bottom-[3px] after:h-[3px] after:rounded-full after:bg-primario"
+                        ? "text-primario after:absolute after:inset-x-2 3xl:after:inset-x-3 after:bottom-[3px] after:h-[3px] after:rounded-full after:bg-primario"
                         : "text-institucional"
                     }`}
                   >
@@ -132,11 +134,11 @@ export function Navegacion({
               <span aria-hidden="true" className="grid size-10 place-items-center rounded-full bg-superficie-azul text-xs font-bold text-primario">
                 {iniciales(nombre)}
               </span>
-              <span className="hidden text-xs leading-tight 2xl:block">
+              <span className="hidden text-xs leading-tight 3xl:block">
                 <strong className="block text-institucional">{nombre}</strong>
                 <small className="mt-0.5 block text-[11px] text-texto-secundario">{rol}</small>
               </span>
-              <span className="sr-only 2xl:hidden">{nombre}, mi cuenta</span>
+              <span className="sr-only 3xl:hidden">{nombre}, mi cuenta</span>
             </Link>
             <form action={salirAdminAccion}>
               <button

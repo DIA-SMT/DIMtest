@@ -13,7 +13,7 @@ export function patronBusqueda(texto: string | undefined): string | null {
   const t = (texto ?? "").trim().toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").slice(0, 100);
   return t ? `%${t.replace(/[\\%_]/g, (c) => `\\${c}`)}%` : null;
 }
-const SIN_TILDES = (col: string) => `translate(lower(${col}), 'áéíóúüñ', 'aeiouun')`;
+export const SIN_TILDES = (col: string) => `translate(lower(${col}), 'áéíóúüñ', 'aeiouun')`;
 
 // ---------------------------------------------------------------------------
 // Tablero

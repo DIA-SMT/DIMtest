@@ -11,6 +11,9 @@
   --font-display: "Outfit Variable", "DM Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
 
+  /* Pantallas muy anchas: la barra del panel muestra la marca completa y el nombre (D-008). */
+  --breakpoint-3xl: 105rem;
+
   /* Marca */
   --color-institucional: #09234c;
   --color-institucional-hover: #0d2f63;
