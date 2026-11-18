@@ -1,7 +1,7 @@
 // Correcciones del agente (D-015): lo que terminó, filtrado, y cómo salió cada revalidación.
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { listarCorrecciones, resumenCorrecciones, type FiltrosCorrecciones } from "@/features/agente/consultas";
-import { cancelarTrabajo, fallarTrabajo, guardarConfig, listarTrabajos, pedirTrabajo, terminarTrabajo, tomarTrabajo } from "@/features/agente/servicio";
+import { colaAgente, listarCorrecciones, resumenCorrecciones, type FiltrosCorrecciones } from "@/features/agente/consultas";
+import { cancelarTrabajo, fallarTrabajo, guardarConfig, informarAvance, listarTrabajos, pedirTrabajo, terminarTrabajo, tomarTrabajo } from "@/features/agente/servicio";
 import { crearIncidencia } from "@/features/incidencias/servicio";
 import { guardarEjecucion, identificar } from "@/features/relevamiento/servicio";
 import type { Cierre } from "@/features/agente/servicio";
@@ -120,8 +120,40 @@ describe("correcciones del agente", () => {
       para_revisar: 1,
       necesitan_persona: 2,
       fallidas: 1,
-      en_curso: 0,
-      pendientes: 1,
     });
+  });
+});
+
+describe("cola del agente", () => {
+  const pedir = async (prueba: string, prioridad: Prioridad) => {
+    const i = await base.tx((q) =>
+      crearIncidencia(q, equipo, { pruebaCodigo: prueba, ejecucionId: null, descripcion: `Falla en ${prueba}`, resultadoEsperado: "", resultadoObservado: "", prioridad, responsableId: null }),
+    );
+    await base.tx((q) => pedirTrabajo(q, equipo, i.id));
+    n[prueba] = i.numero;
+  };
+  const orden = async () => (await base.tx((q) => colaAgente(q))).map((t) => `${t.estado} ${t.prueba_codigo}`);
+
+  it("muestra lo que espera en el orden en que el agente lo va a tomar, con lo que está haciendo primero", async () => {
+    // PAD-16 (P3) ya esperaba desde el principio.
+    expect(await orden()).toEqual(["pendiente PAD-16"]);
+    await pedir("PAD-18", "P3");
+    await pedir("PAD-19", "P1");
+    expect(await orden()).toEqual(["pendiente PAD-19", "pendiente PAD-16", "pendiente PAD-18"]);
+
+    const t = await base.tx((q) => tomarTrabajo(q));
+    expect(t?.prueba.codigo).toBe("PAD-19");
+    await base.tx((q) => informarAvance(q, t!.trabajo.numero, "Reproduje el error en local."));
+    await pedir("PAD-20", "P0");
+    expect(await orden()).toEqual(["en_curso PAD-19", "pendiente PAD-20", "pendiente PAD-16", "pendiente PAD-18"]);
+
+    const [enCurso] = await base.tx((q) => colaAgente(q));
+    expect(enCurso).toMatchObject({ incidencia_numero: n["PAD-19"], prioridad: "P1", ultimo_avance: "Reproduje el error en local." });
+    expect(enCurso!.tomado_at).not.toBeNull();
+
+    // Lo que termina sale de la cola y pasa a las correcciones.
+    await base.tx((q) => terminarTrabajo(q, t!.trabajo.numero, { resultado: "pr_abierto", resumen: "Listo para revisar." }));
+    expect(await orden()).toEqual(["pendiente PAD-20", "pendiente PAD-16", "pendiente PAD-18"]);
+    expect((await listar())[0]).toMatchObject({ prueba_codigo: "PAD-19", cierre: "pr_abierto" });
   });
 });

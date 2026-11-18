@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { problemaNombre, NOMBRE_MAX } from "@/domain/nombres";
@@ -168,8 +169,9 @@ export async function guardarEjecucionAccion(_previo: EstadoAccion, formData: Fo
     return { error: "Revisá los datos marcados.", errores: { evidencias: mensajeError(clave) }, valores: valoresDe(formData) };
   }
 
+  let esRevalidacion = false;
   try {
-    await conBase((q) =>
+    const guardada = await conBase((q) =>
       guardarEjecucion(q, relevador, {
         codigo: d.codigo,
         resultado: d.resultado,
@@ -179,6 +181,7 @@ export async function guardarEjecucionAccion(_previo: EstadoAccion, formData: Fo
         evidencias,
       }),
     );
+    esRevalidacion = guardada.esRevalidacion;
   } catch (error) {
     await borrarArchivos(rutas);
     rutas = [];
@@ -190,5 +193,7 @@ export async function guardarEjecucionAccion(_previo: EstadoAccion, formData: Fo
 
   log("ejecucion.guardada", { codigo: d.codigo, resultado: d.resultado, evidencias: evidencias.length });
   const modulo = d.codigo.split("-")[0];
-  redirect(`/relevamiento/${modulo}?guardada=${d.codigo}${d.despues === "modulo" ? "&ver=todas" : ""}`);
+  // La barra del portal cuenta lo que falta volver a probar: el layout no se vuelve a pedir solo.
+  if (esRevalidacion) revalidatePath("/relevamiento", "layout");
+  redirect(`/relevamiento/${modulo}?guardada=${d.codigo}${esRevalidacion ? "&revalidada=1" : ""}${d.despues === "modulo" ? "&ver=todas" : ""}`);
 }

@@ -16,6 +16,7 @@ import { conBase } from "@/lib/db";
 import { fechaHora, hora } from "@/lib/fechas";
 import { numeroIncidencia, tamanoArchivo } from "@/lib/formato";
 import { NOMBRE_PERFIL, type Perfil } from "@/domain/catalogo/catalogo";
+import { solucionParaRelevador } from "@/domain/revalidaciones";
 
 export async function generateMetadata({ params }: { params: Promise<{ codigo: string }> }) {
   return { title: (await params).codigo };
@@ -92,7 +93,9 @@ export default async function PaginaPrueba({
             {revalidaciones.map((r) => (
               <li key={r.incidenciaNumero}>
                 <strong>{numeroIncidencia(r.incidenciaNumero)}</strong> · pedido el {fechaHora(r.solicitadaAt)}
-                {r.solucion ? <span className="block text-texto-secundario">Solución aplicada: {r.solucion}</span> : null}
+                {solucionParaRelevador(r.solucion, 600) ? (
+                  <span className="block text-texto-secundario">Qué se corrigió: {solucionParaRelevador(r.solucion, 600)}</span>
+                ) : null}
               </li>
             ))}
           </ul>

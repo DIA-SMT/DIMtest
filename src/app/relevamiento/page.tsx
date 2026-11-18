@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Ban, ChevronRight, Clock, ListChecks, RotateCcw } from "lucide-react";
+import { ListaParaVolverAProbar } from "@/features/relevamiento/components/para-volver-a-probar";
 import { Aviso, BarraResultados, CLASE_PORTADA_PRINCIPAL, CLASE_PORTADA_SECUNDARIA, CONTENEDOR_ANGOSTO, LeyendaResultados, Portada, TituloSeccion } from "@/components/ui";
-import { estadoDePruebas, listarModulos, resumirPorModulo } from "@/features/relevamiento/servicio";
+import { estadoDePruebas, listarModulos, paraVolverAProbar, resumirPorModulo } from "@/features/relevamiento/servicio";
 import { exigirRelevador } from "@/lib/auth/relevador";
 import { conBase } from "@/lib/db";
 import { catalogo } from "@/domain/catalogo/catalogo";
@@ -14,7 +15,11 @@ export const metadata = { title: "Módulos" };
 
 export default async function InicioRelevamiento() {
   const relevador = await exigirRelevador();
-  const { modulos, filas } = await conBase(async (q) => ({ modulos: await listarModulos(q), filas: await estadoDePruebas(q) }));
+  const { modulos, filas, revalidar } = await conBase(async (q) => ({
+    modulos: await listarModulos(q),
+    filas: await estadoDePruebas(q),
+    revalidar: await paraVolverAProbar(q, relevador.relevadorId),
+  }));
   const resumen = resumirPorModulo(modulos, filas);
   const total = filas.length;
   const realizadas = filas.filter((f) => f.ejecuciones > 0).length;
@@ -25,8 +30,8 @@ export default async function InicioRelevamiento() {
     },
     { funciona: 0, no_funciona: 0, parcial: 0, no_probado: 0 } as Record<Resultado, number>,
   );
-  const mias = filas.filter((f) => f.reserva?.relevadorId === relevador.relevadorId);
-  const revalidar = filas.filter((f) => f.estado === "revalidar");
+  const empezadas = filas.filter((f) => f.reserva?.relevadorId === relevador.relevadorId);
+  const mias = revalidar.filter((r) => r.mia);
   const pendientes = filas.filter((f) => f.estado === "sin_realizar").length;
 
   return (
@@ -46,7 +51,7 @@ export default async function InicioRelevamiento() {
             {revalidar.length > 0 ? (
               <a href="#titulo-revalidar" className={CLASE_PORTADA_SECUNDARIA}>
                 <RotateCcw aria-hidden="true" className="size-[18px]" />
-                Revalidar ({revalidar.length})
+                Volver a probar ({revalidar.length})
               </a>
             ) : null}
           </>
@@ -76,9 +81,26 @@ export default async function InicioRelevamiento() {
         </section>
 
         {mias.length > 0 ? (
+          <Aviso tipo="exito" titulo={`${primerNombre(relevador.nombre)}, se corrigió lo que reportaste`}>
+            <p>
+              {mias.length === 1 ? "Ya está corregida " : "Ya están corregidas "}
+              {mias.map((r, k) => (
+                <span key={r.codigo}>
+                  {k > 0 ? (k === mias.length - 1 ? " y " : ", ") : null}
+                  <Link href={`/relevamiento/prueba/${r.codigo}`} className="font-semibold text-primario-oscuro underline underline-offset-2">
+                    {r.codigo}
+                  </Link>
+                </span>
+              ))}{" "}
+              en el sistema de prueba. Volvé a probar{mias.length === 1 ? "la" : "las"} y contanos si ahora funciona{mias.length === 1 ? "" : "n"}: tu respuesta es la que confirma la corrección.
+            </p>
+          </Aviso>
+        ) : null}
+
+        {empezadas.length > 0 ? (
           <Aviso tipo="advertencia" titulo="Tenés pruebas empezadas">
             <ul className="mt-1 space-y-1">
-              {mias.map((f) => (
+              {empezadas.map((f) => (
                 <li key={f.codigo}>
                   <Link href={`/relevamiento/prueba/${f.codigo}?paso=probar`} className="font-semibold text-primario-oscuro underline underline-offset-2">
                     {f.codigo}
@@ -90,26 +112,7 @@ export default async function InicioRelevamiento() {
           </Aviso>
         ) : null}
 
-        {revalidar.length > 0 ? (
-          <section aria-labelledby="titulo-revalidar" className="scroll-mt-24 space-y-3">
-            <TituloSeccion id="titulo-revalidar">Requieren nueva validación ({revalidar.length})</TituloSeccion>
-            <p className="text-sm text-texto-secundario">El equipo corrigió estos problemas. Volvé a probarlas para confirmar que ahora funcionan.</p>
-            <ul className="grid gap-2 sm:grid-cols-2">
-              {revalidar.map((f) => (
-                <li key={f.codigo}>
-                  <Link
-                    href={`/relevamiento/prueba/${f.codigo}`}
-                    className="flex items-center gap-3 rounded-tarjeta border-2 border-institucional bg-superficie p-3 shadow-tarjeta transition-colors hover:bg-superficie-azul"
-                  >
-                    <span className="rounded-control bg-institucional px-2 py-1 font-mono text-xs font-bold text-white">{f.codigo}</span>
-                    <span className="min-w-0 flex-1 text-sm">{f.queProbar}</span>
-                    <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-primario" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+        {revalidar.length > 0 ? <ListaParaVolverAProbar pruebas={revalidar} /> : null}
 
         <section aria-labelledby="titulo-modulos" className="space-y-3">
           <TituloSeccion id="titulo-modulos" className="scroll-mt-24">Módulos ({modulos.length})</TituloSeccion>
