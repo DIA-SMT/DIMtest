@@ -15,9 +15,11 @@ const mensaje = process.argv.slice(2).join(" ").trim().slice(0, 2000);
 try {
   const r = await clientePanel({ url: PANEL_URL.replace(/\/$/, ""), token: AGENTE_TOKEN }).avance(Number(AGENTE_TRABAJO), mensaje);
   console.log(JSON.stringify(r));
-  process.exit(r.seguir ? 0 : 3);
+  // exitCode y no process.exit(): en Windows (Node 24), salir a la fuerza con la conexión del
+  // fetch cerrándose revienta con «Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)» y código 127.
+  process.exitCode = r.seguir ? 0 : 3;
 } catch (e) {
   // Sin respuesta del panel no se sabe si sigue: por las dudas, no.
   console.log(JSON.stringify({ seguir: false, publicar: false, error: e.clave ?? e.message }));
-  process.exit(3);
+  process.exitCode = 3;
 }
