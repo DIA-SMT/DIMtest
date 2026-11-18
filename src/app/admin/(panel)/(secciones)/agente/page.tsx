@@ -1,4 +1,5 @@
-import { Bot, RefreshCw } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Bot, RefreshCw } from "lucide-react";
 import { CLASE_BOTON_COMPACTO } from "@/components/formulario";
 import { Aviso, EncabezadoPagina, Tarjeta } from "@/components/ui";
 import { reintentarAvisosAccion, revocarTokenAgenteAccion } from "@/features/agente/actions";
@@ -42,7 +43,13 @@ export default async function Agente() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="space-y-6">
           <Tarjeta className="p-5">
-            <h2 className="mb-3 text-base font-bold">Lo que se le pidió</h2>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-base font-bold">Lo que se le pidió</h2>
+              <Link href="/admin/correcciones" className="inline-flex items-center gap-1 text-sm font-semibold text-primario-oscuro hover:underline">
+                Ver todas las correcciones
+                <ArrowRight aria-hidden="true" className="size-3.5" />
+              </Link>
+            </div>
             <ListaTrabajos trabajos={trabajos} conIncidencia puedeCancelar />
           </Tarjeta>
 

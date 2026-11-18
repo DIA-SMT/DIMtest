@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   caminoHastaCorregida,
+  duracionTrabajo,
+  cierresDelFiltro,
+  esCierreAgente,
   incidenciaElegible,
   normalizarWhatsapp,
   pedirAutomaticamente,
@@ -68,5 +71,27 @@ describe("agente: avisos por WhatsApp", () => {
   it("deja el texto como lo acepta una plantilla", () => {
     expect(textoParaPlantilla("Línea 1\n\nLínea 2\tfin     x")).toBe("Línea 1 · Línea 2 fin   x");
     expect(textoParaPlantilla("x".repeat(1200))).toHaveLength(1000);
+  });
+});
+
+describe("agente: correcciones", () => {
+  it("cuenta cuánto tardó cada trabajo", () => {
+    const t = (min: number) => new Date(Date.UTC(2026, 10, 17, 12, 0) + min * 60_000);
+    expect(duracionTrabajo(t(0), t(0))).toBe("menos de 1 min");
+    expect(duracionTrabajo(t(0), t(12))).toBe("12 min");
+    expect(duracionTrabajo(t(0), t(65))).toBe("1 h 05 min");
+    expect(duracionTrabajo(t(0), t(60 * 27))).toBe("1 día 3 h");
+    expect(duracionTrabajo(null, t(5))).toBeNull();
+  });
+
+  it("los filtros solo aceptan cierres conocidos", () => {
+    expect(esCierreAgente("desplegado")).toBe(true);
+    expect(esCierreAgente("fallido")).toBe(true);
+    expect(esCierreAgente("cancelado")).toBe(false);
+    expect(cierresDelFiltro("publicadas")).toEqual(["desplegado", "ya_resuelto"]);
+    expect(cierresDelFiltro("persona")).toEqual(["requiere_ok", "bloqueado"]);
+    expect(cierresDelFiltro("fallido")).toEqual(["fallido"]);
+    expect(cierresDelFiltro("toString")).toBeNull();
+    expect(cierresDelFiltro(undefined)).toBeNull();
   });
 });
