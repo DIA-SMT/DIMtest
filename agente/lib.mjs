@@ -97,6 +97,9 @@ export function reglasDePermisos({ sshDestino, avanceJs }) {
       "Grep",
       "Skill",
       "TodoWrite",
+      // Claude trabaja con `cd <repo> && <comando>`: sin esto, en modo dontAsk se le niega todo
+      // comando encadenado a un cd (aunque el resto esté permitido) y termina en «bloqueado».
+      "Bash(cd *)",
       "Bash(git *)",
       "Bash(gh pr *)",
       "Bash(gh run *)",

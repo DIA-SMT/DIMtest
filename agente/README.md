@@ -93,8 +93,10 @@ Para probar el circuito sin gastar uso ni tocar DIM360, con `CLAUDE_COMANDO=agen
 Para que arranque solo con la máquina, en el **Programador de tareas** de Windows crear una tarea:
 
 - **Desencadenador:** al iniciar el sistema.
-- **Acción:** `cmd` con argumentos `/c cd /d C:\agente-dim360 && npm run agente >> agente\salida.log 2>&1`.
+- **Acción:** `cmd` con argumentos `/c cd /d C:\agente-dim360 && npm run agente >> agente\trabajos\consola.log 2>&1`.
 - **Opciones:** «Ejecutar tanto si el usuario inició sesión como si no», con el usuario de Windows que tiene las credenciales.
+
+El agente escribe solo su registro en `agente\registro.log`. A `consola.log` va el resto de la salida (y los errores, si se cae). No redirijas la consola a `registro.log`: serían dos procesos escribiendo el mismo archivo. Los dos quedan fuera de git.
 
 Mientras lo prueban, también se puede dejar una consola abierta con `npm run agente`.
 
