@@ -12,7 +12,7 @@ Antes de empezar, usá la skill `dim360`: tiene el contexto del proyecto (stack,
 6. **Nunca uses `git push --force`**, ni borres ramas que no creaste, ni reescribas historia.
 7. Si un comando pide una contraseña o un permiso que no tenés, no lo busques: terminá con `bloqueado` y explicá qué falta.
 8. Avisá tu avance con `{{AVANCE}} "mensaje"`: al terminar el diagnóstico, al abrir el PR, **justo antes de mergear** y **justo antes de desplegar**, y al menos cada 10 minutos. Si el comando sale con código distinto de 0 o dice `"seguir":false`, **parás ahí**: no mergeás, no desplegás, no escribís nada más y terminás. Si dice `"publicar":false`, no mergeás ni desplegás: terminás con `pr_abierto`.
-9. **git siempre con `-C`, nunca después de un `cd`.** Usá `git -C Dim360_back-copia status`, `git -C Dim360_front-copia switch main`, etc. Claude Code niega en este modo cualquier `cd <carpeta> && git ...`, aunque git esté permitido. Para el resto (`php`, `composer`, `npm run`, `gh`) sí podés usar `cd <carpeta> && <comando>`.
+9. **git siempre con `-C`, nunca después de un `cd`.** Usá `git -C Dim360_back-copia status`, `git -C Dim360_front-copia switch main`, etc. Claude Code niega en este modo cualquier `cd <carpeta> && git ...`, aunque git esté permitido. Para el resto (`php`, `composer`, `npm run`, `gh`) sí usá `cd <carpeta> && <comando>`: `gh` necesita estar dentro del repo para saber a cuál apunta.
 
 ## Cómo trabajar
 
@@ -29,9 +29,9 @@ Antes de empezar, usá la skill `dim360`: tiene el contexto del proyecto (stack,
    - Back: `php -l` en cada archivo PHP cambiado, y `php bin/phpunit` si hay tests que corran sin base.
    - Front: `npm run build` (incluye `tsc`) y `npm run lint` sobre lo cambiado.
    Si algo falla y no lo podés arreglar, terminá con `bloqueado`.
-6. **PR.** `git -C <repo> push -u origin agente/inc-<número>` y `cd <repo> && gh pr create` con título `INC-<número>: <qué corrige>` y en el cuerpo: la incidencia, la causa, el cambio, cómo lo verificaste y el riesgo. Si el repo tiene verificaciones (CI), esperalas con `gh pr checks --watch` y que pasen.
+6. **PR.** `git -C <repo> push -u origin agente/inc-<número>` y `cd <repo> && gh pr create` con título `INC-<número>: <qué corrige>` y en el cuerpo: la incidencia, la causa, el cambio, cómo lo verificaste y el riesgo. Si el repo tiene verificaciones (CI), esperalas con `cd <repo> && gh pr checks --watch` y que pasen.
 7. **¿Se puede publicar solo?** NO publiques (terminá con `pr_abierto`) si: publicar no está permitido; el cambio toca cálculo de montos, intereses, recargos, vencimientos, liquidaciones, imputaciones o pagos; toca más de 6 archivos; cambia migraciones o el esquema de la base; o no pudiste verificarlo.
-8. **Publicar en test** (solo si el paso 7 lo permite). Avisá con `{{AVANCE}} "Mergeando el PR"` (si dice parar, parás). `gh pr merge --squash`. Avisá con `{{AVANCE}} "Desplegando en test"`. Desplegá con el runbook de la skill `dim360`, por `ssh {{SSH_DESTINO}}` / `scp`:
+8. **Publicar en test** (solo si el paso 7 lo permite). Avisá con `{{AVANCE}} "Mergeando el PR"` (si dice parar, parás). `cd <repo> && gh pr merge --squash`. Avisá con `{{AVANCE}} "Desplegando en test"`. Desplegá con el runbook de la skill `dim360`, por `ssh {{SSH_DESTINO}}` / `scp`:
    - Back: respaldo del archivo actual, `php -l` en el servidor, reemplazo con dueño `www-data`, `cache:clear --env=staging`, y reiniciar `dim360-worker` si cambiaste algo que usa el worker.
    - Front: respaldo de `dist/`, copiar los fuentes cambiados y `npm run build` como `www-data`. Nunca cambies el `.env` del front.
    - Verificá que el servidor responde. Si algo sale mal, **restaurá el respaldo**, avisá y terminá con `bloqueado` explicando qué pasó.
