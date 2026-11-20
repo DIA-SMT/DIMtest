@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, ArrowRight, CircleCheck, Gauge, CircleX, ClipboardCheck, ClipboardList, Clock, FileSpreadsheet, Flame, Hourglass, ListChecks, MessageSquareText, RotateCcw, ShieldAlert, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Activity, ArrowRight, CircleCheck, Gauge, CircleX, ClipboardCheck, ClipboardList, Clock, FileSpreadsheet, Flame, Hourglass, Lightbulb, ListChecks, MessageSquareText, RotateCcw, ShieldAlert, ShieldCheck, TriangleAlert } from "lucide-react";
 import {
   AccesoRapido,
   BarraResultados,
@@ -100,24 +100,45 @@ export default async function Tablero() {
           <AccesoRapido href="/admin/pruebas" titulo="Pruebas" detalle="Ejecuciones e historial" icono={ClipboardList} tono="verde" />
         </nav>
 
-        <Link
-          href="/admin/avance"
-          className="group flex flex-wrap items-center gap-x-5 gap-y-3 rounded-tarjeta border border-borde bg-superficie p-4 shadow-tarjeta transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-azul-hover hover:shadow-elevada sm:p-5"
-        >
-          <span className="grid size-[46px] shrink-0 place-items-center rounded-[14px] bg-exito-fondo text-exito-solido">
-            <Gauge aria-hidden="true" className="size-[22px]" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-[12.5px] text-texto-secundario">Avance de DIM360 hacia el 100 %</span>
-            <span className="block font-display text-lg font-bold text-institucional">
-              Funciona el {porcentaje(m.funciona, m.total)} % · faltan {m.total - m.funciona} de {m.total} pruebas
+        <div className="grid gap-3 sm:gap-4 lg:grid-cols-2">
+          <Link
+            href="/admin/avance"
+            className="group flex flex-wrap items-center gap-x-5 gap-y-3 rounded-tarjeta border border-borde bg-superficie p-4 shadow-tarjeta transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-azul-hover hover:shadow-elevada sm:p-5"
+          >
+            <span className="grid size-[46px] shrink-0 place-items-center rounded-[14px] bg-exito-fondo text-exito-solido">
+              <Gauge aria-hidden="true" className="size-[22px]" />
             </span>
-          </span>
-          <span className="inline-flex items-center gap-1 text-sm font-semibold text-primario-oscuro">
-            Ver semana a semana
-            <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </span>
-        </Link>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[12.5px] text-texto-secundario">Avance de DIM360 hacia el 100 %</span>
+              <span className="block font-display text-lg font-bold text-institucional">
+                Funciona el {porcentaje(m.funciona, m.total)} % · faltan {m.total - m.funciona} de {m.total} pruebas
+              </span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-sm font-semibold text-primario-oscuro">
+              Ver semana a semana
+              <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </Link>
+
+          <Link
+            href={m.sugerencias_nuevas > 0 ? "/admin/sugerencias?estado=nueva" : "/admin/sugerencias"}
+            className="group flex flex-wrap items-center gap-x-5 gap-y-3 rounded-tarjeta border border-borde bg-superficie p-4 shadow-tarjeta transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-azul-hover hover:shadow-elevada sm:p-5"
+          >
+            <span className="grid size-[46px] shrink-0 place-items-center rounded-[14px] bg-superficie-amarilla text-amarillo-texto">
+              <Lightbulb aria-hidden="true" className="size-[22px]" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[12.5px] text-texto-secundario">Sugerencias de los relevadores</span>
+              <span className="block font-display text-lg font-bold text-institucional">
+                {m.sugerencias_nuevas === 0 ? "Ninguna nueva sin mirar" : m.sugerencias_nuevas === 1 ? "1 nueva sin mirar" : `${m.sugerencias_nuevas} nuevas sin mirar`}
+              </span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-sm font-semibold text-primario-oscuro">
+              Ver sugerencias
+              <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </Link>
+        </div>
 
         <section aria-labelledby="titulo-pruebas" className="space-y-4">
           <TituloSeccion id="titulo-pruebas">Pruebas</TituloSeccion>

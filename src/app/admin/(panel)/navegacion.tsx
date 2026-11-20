@@ -10,6 +10,7 @@ import {
   Flame,
   KeyRound,
   LayoutDashboard,
+  Lightbulb,
   LogOut,
   Menu,
   MessageSquareText,
@@ -42,12 +43,14 @@ export function Navegacion({
   puedeUsuarios,
   sinRevisar,
   criticas,
+  sugerenciasNuevas,
 }: {
   nombre: string;
   rol: string;
   puedeUsuarios: boolean;
   sinRevisar: number;
   criticas: number;
+  sugerenciasNuevas: number;
 }) {
   const ruta = usePathname();
   const [abierto, setAbierto] = useState(false);
@@ -62,6 +65,7 @@ export function Navegacion({
     { href: "/admin/correcciones", texto: "Correcciones", icono: Wrench },
     { href: "/admin/prioridades", texto: "Prioridades", icono: Flame, contador: criticas },
     { href: "/admin/informes", texto: "Informes", icono: FileSpreadsheet },
+    { href: "/admin/sugerencias", texto: "Sugerencias", icono: Lightbulb, contador: sugerenciasNuevas },
     { href: "/admin/relevadores", texto: "Relevadores", icono: Users },
     ...(puedeUsuarios
       ? [
@@ -115,9 +119,9 @@ export function Navegacion({
                   <Link
                     href={i.href}
                     aria-current={activo(i.href) ? "page" : undefined}
-                    className={`relative flex h-[46px] items-center rounded-full px-2 text-[14.5px] font-semibold 3xl:px-3 whitespace-nowrap transition-colors hover:bg-superficie-azul hover:text-primario ${
+                    className={`relative flex h-[46px] items-center rounded-full px-1.5 text-[13.5px] font-semibold 2xl:px-2 2xl:text-[14.5px] whitespace-nowrap transition-colors hover:bg-superficie-azul hover:text-primario ${
                       activo(i.href)
-                        ? "text-primario after:absolute after:inset-x-2 3xl:after:inset-x-3 after:bottom-[3px] after:h-[3px] after:rounded-full after:bg-primario"
+                        ? "text-primario after:absolute after:inset-x-1.5 2xl:after:inset-x-2 after:bottom-[3px] after:h-[3px] after:rounded-full after:bg-primario"
                         : "text-institucional"
                     }`}
                   >
@@ -162,7 +166,7 @@ export function Navegacion({
           >
             <Menu aria-hidden="true" className="size-[19px]" />
             Menú
-            {sinRevisar + criticas > 0 ? <span aria-hidden="true" className="size-2 rounded-full bg-amarillo ring-2 ring-institucional/10" /> : null}
+            {sinRevisar + criticas + sugerenciasNuevas > 0 ? <span aria-hidden="true" className="size-2 rounded-full bg-amarillo ring-2 ring-institucional/10" /> : null}
           </button>
         </div>
       </header>

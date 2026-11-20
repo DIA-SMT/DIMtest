@@ -18,6 +18,7 @@ export default async function LayoutPanel({ children }: { children: React.ReactN
         puedeUsuarios={puede(admin.rol, "usuarios.gestionar")}
         sinRevisar={m.observaciones_sin_revisar}
         criticas={m.incidencias_criticas}
+        sugerenciasNuevas={m.sugerencias_nuevas}
       />
       <main id="contenido" className="flex-1">
         {admin.debeCambiarClave ? (

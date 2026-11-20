@@ -4,6 +4,20 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-017 · Sugerencias de los relevadores
+
+**Fecha:** 2026-11-20 · **Pidió:** DIA
+
+**Contexto.** Los relevadores usan DIM360 todos los días y ven lo que le falta, pero el checklist solo recoge si cada función del PDF anda o no. Una función que no existe no tenía dónde anotarse.
+
+**Decisión.**
+- **Portal → Sugerencias** (en la barra y al final del inicio): el relevador elige si es una función nueva, una mejora u otra idea, el módulo (o «General»), un título y el detalle. Ve las suyas con el estado y la respuesta del equipo. No ve las de los demás.
+- **Panel → Sugerencias** (todo el equipo; responden quienes pueden clasificar observaciones): estados nueva, en evaluación, planificada, hecha y descartada, con una respuesta que el relevador lee en el portal. Descartar exige explicar por qué. Las nuevas se cuentan en la barra y en el tablero.
+- No es una incidencia: no cambia el resultado de ninguna prueba ni entra en el avance hacia el 100 %. Si una sugerencia resulta ser un error, se carga como incidencia.
+- La tabla `sugerencias` se actualiza (estado y respuesta); cada respuesta queda en `auditoria`. Un relevador con sugerencias no se borra. A lo sumo 10 por hora por persona.
+
+---
+
 ## D-016 · El agente trabaja en una sola rama, `agente`, y no mergea
 
 **Fecha:** 2026-11-20 · **Pidió:** DIA · **Cambia:** D-015 («Mergea y publica solo»)

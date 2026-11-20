@@ -29,6 +29,11 @@ const ERRORES: Record<string, string> = {
   trabajo_inexistente: "Ese trabajo del agente no existe.",
   trabajo_no_en_curso: "Ese trabajo ya no está en curso (lo cancelaron o venció).",
   agente_sin_publicar: "Publicar está apagado: el agente solo puede dejar el PR abierto.",
+  // Sugerencias (D-017)
+  sugerencias_limite: "Mandaste muchas sugerencias seguidas. Esperá un rato y probá de nuevo.",
+  sugerencia_inexistente: "Esa sugerencia no existe.",
+  falta_respuesta_sugerencia: "Para descartarla, contale a quien la propuso por qué no va por ahora.",
+  modulo_inexistente: "Ese módulo no existe en el catálogo.",
   whatsapp_invalido: "Escribí el número con el código de país, por ejemplo +54 9 381 555 1234.",
 };
 

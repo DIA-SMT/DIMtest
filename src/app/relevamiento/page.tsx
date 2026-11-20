@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Ban, ChevronRight, Clock, ListChecks, RotateCcw } from "lucide-react";
+import { ArrowRight, Ban, ChevronRight, Clock, Lightbulb, ListChecks, RotateCcw } from "lucide-react";
 import { ListaParaVolverAProbar } from "@/features/relevamiento/components/para-volver-a-probar";
 import { Aviso, BarraResultados, CLASE_PORTADA_PRINCIPAL, CLASE_PORTADA_SECUNDARIA, CONTENEDOR_ANGOSTO, LeyendaResultados, Portada, TituloSeccion } from "@/components/ui";
 import { estadoDePruebas, listarModulos, paraVolverAProbar, resumirPorModulo } from "@/features/relevamiento/servicio";
+import { sugerenciasDeRelevador } from "@/features/sugerencias/servicio";
 import { exigirRelevador } from "@/lib/auth/relevador";
 import { conBase } from "@/lib/db";
 import { catalogo } from "@/domain/catalogo/catalogo";
@@ -15,11 +16,13 @@ export const metadata = { title: "Módulos" };
 
 export default async function InicioRelevamiento() {
   const relevador = await exigirRelevador();
-  const { modulos, filas, revalidar } = await conBase(async (q) => ({
+  const { modulos, filas, revalidar, sugerencias } = await conBase(async (q) => ({
     modulos: await listarModulos(q),
     filas: await estadoDePruebas(q),
     revalidar: await paraVolverAProbar(q, relevador.relevadorId),
+    sugerencias: await sugerenciasDeRelevador(q, relevador.relevadorId),
   }));
+  const respondidas = sugerencias.filter((s) => s.respuesta).length;
   const resumen = resumirPorModulo(modulos, filas);
   const total = filas.length;
   const realizadas = filas.filter((f) => f.ejecuciones > 0).length;
@@ -165,6 +168,27 @@ export default async function InicioRelevamiento() {
             })}
           </ul>
         </section>
+
+        <Link
+          href="/relevamiento/sugerencias"
+          className="group flex flex-wrap items-center gap-x-4 gap-y-3 rounded-tarjeta border border-borde bg-superficie p-4 shadow-tarjeta transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-azul-hover hover:shadow-elevada sm:p-5"
+        >
+          <span className="grid size-[46px] shrink-0 place-items-center rounded-[14px] bg-amarillo/25 text-institucional">
+            <Lightbulb aria-hidden="true" className="size-[22px]" />
+          </span>
+          <span className="min-w-[12rem] flex-1">
+            <span className="block font-display text-base font-bold text-institucional">¿Le falta algo a DIM360?</span>
+            <span className="block text-sm text-texto-secundario">
+              {sugerencias.length > 0
+                ? `Mandaste ${sugerencias.length} · ${respondidas === 1 ? "1 tiene" : `${respondidas} tienen`} respuesta del equipo. Podés proponer otra cuando quieras.`
+                : "Proponé una función nueva o una mejora. El equipo de la DIA las lee y te responde."}
+            </span>
+          </span>
+          <span className="inline-flex items-center gap-1 text-sm font-semibold text-primario-oscuro">
+            Dejar una sugerencia
+            <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5" />
+          </span>
+        </Link>
 
         <details className="rounded-tarjeta border border-borde bg-superficie p-4 text-sm">
           <summary className="flex cursor-pointer items-center gap-2 font-semibold">

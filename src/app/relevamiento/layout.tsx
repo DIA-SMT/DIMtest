@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut, RotateCcw } from "lucide-react";
+import { Lightbulb, LogOut, RotateCcw } from "lucide-react";
 import { MarcaCiudad, PieInstitucional } from "@/components/ui";
 import { cambiarUsuarioAccion } from "@/features/relevamiento/actions";
 import { cuantasParaVolverAProbar } from "@/features/relevamiento/servicio";
@@ -33,6 +33,13 @@ export default async function LayoutRelevamiento({ children }: { children: React
                   </span>
                 </Link>
               ) : null}
+              <Link
+                href="/relevamiento/sugerencias"
+                className="inline-flex h-11 items-center gap-2 rounded-[14px] border border-borde bg-superficie px-3 text-sm font-bold text-institucional transition-colors hover:bg-superficie-azul"
+              >
+                <Lightbulb aria-hidden="true" className="size-4 text-primario" />
+                <span className="max-lg:sr-only">Sugerencias</span>
+              </Link>
               <span aria-hidden="true" className="hidden size-10 place-items-center rounded-full bg-superficie-azul text-xs font-bold text-primario sm:grid">
                 {iniciales(relevador.nombre)}
               </span>

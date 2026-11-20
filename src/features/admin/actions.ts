@@ -364,6 +364,7 @@ export async function borrarRelevadorAccion(_previo: EstadoAccion, formData: For
     return borrado;
   });
   if (r.tipo === "con_pruebas") return { error: "Registró pruebas: no se puede borrar, el historial se conserva." };
+  if (r.tipo === "con_sugerencias") return { error: "Dejó sugerencias: no se puede borrar, se conservan con su nombre." };
   revalidatePath("/admin/relevadores");
   return r.tipo === "borrado" ? { ok: true, mensaje: "Relevador borrado." } : { error: "Ese relevador ya no existe." };
 }
