@@ -130,7 +130,11 @@ export function reglasDePermisos({ sshDestino, avanceJs }) {
       "Bash(git push origin main *)",
       "Bash(git push origin main)",
       "Bash(git push origin HEAD:main *)",
-      "Bash(gh pr merge * --admin *)",
+      // Trabaja en su rama `agente` y nunca mergea: el PR «Agente» lo mergea el equipo.
+      "Bash(gh pr merge)",
+      "Bash(gh pr merge *)",
+      "Bash(git push origin --delete *)",
+      "Bash(git push --delete *)",
       "Bash(npm publish *)",
     ],
   };

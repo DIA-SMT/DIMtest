@@ -41,8 +41,8 @@ export function FormConfigAgente({
       <Opcion
         nombre="publicar"
         marcada={config.publicar}
-        titulo="Puede mergear y publicar en test"
-        ayuda="Solo si pasan las verificaciones del repositorio. Apagado, deja el PR abierto para que lo revise una persona."
+        titulo="Puede publicar en test"
+        ayuda="Despliega desde su rama «agente», solo si pasan las verificaciones del repositorio. Nunca mergea: el PR «Agente» lo mergea el equipo. Apagado, deja la corrección en ese PR sin publicar."
       />
       <Opcion
         nombre="automatico"

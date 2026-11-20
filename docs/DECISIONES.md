@@ -4,6 +4,22 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-016 · El agente trabaja en una sola rama, `agente`, y no mergea
+
+**Fecha:** 2026-11-20 · **Pidió:** DIA · **Cambia:** D-015 («Mergea y publica solo»)
+
+**Contexto.** El agente abría una rama `agente/inc-<número>` y un PR por incidencia: en dos días dejó 16 ramas y 14 PR abiertos en los repos de DIM360. El equipo trabaja distinto: cada persona tiene su rama (`lucas`, `matias`…), le trae `main` con un merge y abre un PR con su nombre que se mergea de vez en cuando.
+
+**Decisión.**
+- **Una rama por repo:** `agente`. Un commit por incidencia (`INC-<número>: …`) y un solo PR abierto, «Agente», con un comentario por incidencia que dice si está publicada en test.
+- **No mergea nunca** (tampoco lo tiene permitido): el PR «Agente» lo revisa y mergea el equipo, con merge commit, como los demás.
+- **Publica en test desde su rama**, con las mismas reglas que antes. No publica un archivo si en su rama tiene cambios de otra incidencia que todavía no está en test.
+- Las 14 correcciones que estaban en PR sueltos se juntaron en la rama `agente` y esos PR se cerraron apuntando al nuevo.
+
+**Consecuencias.** Lo que el agente publica está en test antes que en `main`: si alguien despliega un archivo desde `main` o desde su rama, puede pisar una corrección del agente hasta que se mergee el PR «Agente». Si el equipo no quiere una corrección, se revierte su commit en la rama `agente`.
+
+---
+
 ## D-015 · Agente Claude: corrige incidencias de DIM360 y publica en test
 
 **Fecha:** 2026-11-17 · **Pidió:** DIA
