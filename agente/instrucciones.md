@@ -20,7 +20,7 @@ Antes de empezar, usá la skill `dim360`: tiene el contexto del proyecto (stack,
 2. **Actualizar.** En los dos repos, dejá la rama `agente` al día con lo suyo y con `main`:
    - `git -C <repo> fetch origin`
    - `git -C <repo> switch agente` (si todavía no existe en la máquina: `git -C <repo> switch -c agente --track origin/agente`)
-   - `git -C <repo> pull --ff-only`
+   - `git -C <repo> pull --ff-only`. Si falla, alguien rehízo la rama `agente` en GitHub (por ejemplo, después de un merge con squash): no la arregles vos, terminá con `bloqueado`.
    - `git -C <repo> merge --no-edit origin/main` (igual que hace el equipo con sus ramas). Si da conflicto: `git -C <repo> merge --abort` y terminá con `bloqueado` explicando qué archivos chocan.
    Si hay cambios locales sin commitear que no son tuyos, no los toques: terminá con `bloqueado`.
 3. **Diagnosticar.** Buscá la causa en el código. Clasificá:
@@ -47,6 +47,7 @@ Antes de empezar, usá la skill `dim360`: tiene el contexto del proyecto (stack,
    - Front: respaldo de `dist/`, copiar los fuentes cambiados y `npm run build` como `www-data`. Nunca cambies el `.env` del front.
    - Verificá que el servidor responde. Si algo sale mal, **restaurá el respaldo**, avisá y terminá con `bloqueado` explicando qué pasó.
 9. **Ya resuelto.** Si el código de `main` ya lo resolvía y lo que falta es que test se ponga al día: no hace falta commit en tu rama, desplegás desde `origin/main` (`git -C <repo> show origin/main:<ruta>`).
+   - **No pises tus propias correcciones.** Para cada archivo, mirá `git -C <repo> log --no-merges --format="%h %s" origin/main..agente -- <archivo>`. Si tiene commits de incidencias **publicadas en test**, desplegá la versión de la rama `agente` (`git -C <repo> show agente:<ruta>`), que ya trae `main` por el merge del paso 2: la de `main` borraría esas correcciones de test. Si alguno de esos commits **no está publicado**, no lo despliegues: terminá con `bloqueado` y explicá qué archivo y qué incidencias.
    - Desplegá **commits completos** de `main`: todos los archivos de cada commit que haga falta, y los commits anteriores de los que dependa. Nunca archivos sueltos de una tanda: dejarían test con la mitad de un cambio. El límite de 6 archivos del paso 7 no aplica: ese código lo subió el equipo de desarrollo, no es tuyo.
    - **No lo despliegues vos** (terminá con `bloqueado` y la lista de commits que harían falta, para que lo decida una persona) si esos commits: cambian dependencias (`composer.json`, `composer.lock`, `package.json`, `package-lock.json`) o configuración (`.env*`, `config/`), porque copiar archivos no alcanza; **cambian cómo se ingresa, los permisos o qué claves se aceptan**, porque afecta a todos los relevadores en medio del relevamiento; o caen en alguna de las demás condiciones del paso 7 (montos, migraciones, sin poder verificarlo, publicar apagado).
    - Antes de desplegar, avisá con `{{AVANCE}}` la lista de commits y de archivos. Desplegá con las mismas reglas del paso 8 (respaldo, verificación y restaurar si algo sale mal) y terminá con `ya_resuelto`, con los commits desplegados en el resumen.

@@ -124,17 +124,20 @@ export function reglasDePermisos({ sshDestino, avanceJs }) {
       "Read(**/*.pem)",
       "Read(**/.srvpw)",
       "Read(**/config/jwt/**)",
-      "Bash(git push --force *)",
-      "Bash(git push -f *)",
-      "Bash(git push --force-with-lease *)",
-      "Bash(git push origin main *)",
-      "Bash(git push origin main)",
-      "Bash(git push origin HEAD:main *)",
+      // Nunca sube a main ni HEAD, no fuerza (-f, --force, +rama) ni borra ramas (-d, --delete, :rama).
+      // Las mismas reglas con `git -C <repo>`, que es como trabaja (regla 9 de instrucciones.md):
+      // sin ellas, `git -C Dim360_back-copia push origin main` no coincidía con ninguna.
+      ...["git push", "git -C * push"].flatMap((push) => [
+        `Bash(${push}*main*)`,
+        `Bash(${push}*-f*)`,
+        `Bash(${push}*-d*)`,
+        `Bash(${push}* :*)`,
+        `Bash(${push}*+*)`,
+        `Bash(${push}*HEAD*)`,
+      ]),
       // Trabaja en su rama `agente` y nunca mergea: el PR «Agente» lo mergea el equipo.
       "Bash(gh pr merge)",
       "Bash(gh pr merge *)",
-      "Bash(git push origin --delete *)",
-      "Bash(git push --delete *)",
       "Bash(npm publish *)",
     ],
   };
