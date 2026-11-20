@@ -30,12 +30,15 @@ Antes de empezar, usá la skill `dim360`: tiene el contexto del proyecto (stack,
    - Front: `npm run build` (incluye `tsc`) y `npm run lint` sobre lo cambiado.
    Si algo falla y no lo podés arreglar, terminá con `bloqueado`.
 6. **PR.** `git -C <repo> push -u origin agente/inc-<número>` y `cd <repo> && gh pr create` con título `INC-<número>: <qué corrige>` y en el cuerpo: la incidencia, la causa, el cambio, cómo lo verificaste y el riesgo. Si el repo tiene verificaciones (CI), esperalas con `cd <repo> && gh pr checks --watch` y que pasen.
-7. **¿Se puede publicar solo?** NO publiques (terminá con `pr_abierto`) si: publicar no está permitido; el cambio toca cálculo de montos, intereses, recargos, vencimientos, liquidaciones, imputaciones o pagos; toca más de 6 archivos; cambia migraciones o el esquema de la base; o no pudiste verificarlo.
+7. **¿Se puede publicar solo?** NO publiques (terminá con `pr_abierto`) si: publicar no está permitido; el cambio toca cálculo de montos, intereses, recargos, vencimientos, liquidaciones, imputaciones o pagos; el código que escribiste vos en este trabajo toca más de 6 archivos (lo que ya estaba en `main` no cuenta: ver el paso 9); cambia migraciones o el esquema de la base; o no pudiste verificarlo.
 8. **Publicar en test** (solo si el paso 7 lo permite). Avisá con `{{AVANCE}} "Mergeando el PR"` (si dice parar, parás). `cd <repo> && gh pr merge --squash`. Avisá con `{{AVANCE}} "Desplegando en test"`. Desplegá con el runbook de la skill `dim360`, por `ssh {{SSH_DESTINO}}` / `scp`:
    - Back: respaldo del archivo actual, `php -l` en el servidor, reemplazo con dueño `www-data`, `cache:clear --env=staging`, y reiniciar `dim360-worker` si cambiaste algo que usa el worker.
    - Front: respaldo de `dist/`, copiar los fuentes cambiados y `npm run build` como `www-data`. Nunca cambies el `.env` del front.
    - Verificá que el servidor responde. Si algo sale mal, **restaurá el respaldo**, avisá y terminá con `bloqueado` explicando qué pasó.
-9. **Ya resuelto.** Si el código ya lo resolvía: desplegá en test solo los archivos que hagan falta (mismas reglas que el paso 8, incluida la 7) y terminá con `ya_resuelto`. Si no corresponde publicar, `pr_abierto` o `bloqueado` explicando qué falta.
+9. **Ya resuelto.** Si el código de `main` ya lo resolvía y lo que falta es que test se ponga al día:
+   - Desplegá **commits completos** de `main`: todos los archivos de cada commit que haga falta, y los commits anteriores de los que dependa. Nunca archivos sueltos de una tanda: dejarían test con la mitad de un cambio. El límite de 6 archivos del paso 7 no aplica: ese código lo subió el equipo de desarrollo, no es tuyo.
+   - **No lo despliegues vos** (terminá con `bloqueado` y la lista de commits que harían falta, para que lo decida una persona) si esos commits: cambian dependencias (`composer.json`, `composer.lock`, `package.json`, `package-lock.json`) o configuración (`.env*`, `config/`), porque copiar archivos no alcanza; **cambian cómo se ingresa, los permisos o qué claves se aceptan**, porque afecta a todos los relevadores en medio del relevamiento; o caen en alguna de las demás condiciones del paso 7 (montos, migraciones, sin poder verificarlo, publicar apagado).
+   - Antes de desplegar, avisá con `{{AVANCE}}` la lista de commits y de archivos. Desplegá con las mismas reglas del paso 8 (respaldo, verificación y restaurar si algo sale mal) y terminá con `ya_resuelto`, con los commits desplegados en el resumen.
 
 ## Al terminar, siempre
 
