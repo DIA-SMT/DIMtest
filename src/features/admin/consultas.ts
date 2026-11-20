@@ -36,6 +36,7 @@ export interface Metricas {
   incidencias_descartadas: number;
   observaciones_sin_revisar: number;
   revalidaciones_pendientes: number;
+  sugerencias_nuevas: number;
 }
 
 export async function metricas(q: Consulta): Promise<Metricas> {
@@ -60,7 +61,8 @@ export async function metricas(q: Consulta): Promise<Metricas> {
             (select count(*)::int from incidencias where estado = 'descartada') as incidencias_descartadas,
             (select count(*)::int from ejecuciones e where btrim(e.observaciones) <> ''
                and not exists (select 1 from revisiones_observacion r where r.ejecucion_id = e.id)) as observaciones_sin_revisar,
-            (select count(*)::int from revalidaciones where ejecucion_id is null and cancelada_at is null) as revalidaciones_pendientes`,
+            (select count(*)::int from revalidaciones where ejecucion_id is null and cancelada_at is null) as revalidaciones_pendientes,
+            (select count(*)::int from sugerencias where estado = 'nueva') as sugerencias_nuevas`,
     [abiertos, activos],
   );
   return m;
@@ -548,6 +550,7 @@ export interface RelevadorAdmin {
   ultimo_ingreso_at: Date;
   sesiones: number;
   ejecuciones: number;
+  sugerencias: number;
   ultima_ejecucion: Date | null;
   homonimos: number;
 }
@@ -557,6 +560,7 @@ export async function listarRelevadores(q: Consulta): Promise<RelevadorAdmin[]> 
     `select r.id, r.nombre, r.nombre_clave, r.creado_at, r.ultimo_ingreso_at,
             (select count(*)::int from sesiones_relevador s where s.relevador_id = r.id) as sesiones,
             (select count(*)::int from ejecuciones e where e.relevador_id = r.id) as ejecuciones,
+            (select count(*)::int from sugerencias s where s.relevador_id = r.id) as sugerencias,
             (select max(e.creada_at) from ejecuciones e where e.relevador_id = r.id) as ultima_ejecucion,
             (count(*) over (partition by r.nombre_clave))::int as homonimos
        from relevadores r order by r.ultimo_ingreso_at desc`,

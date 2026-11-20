@@ -72,10 +72,12 @@ export default async function Relevadores() {
                     <td className={`${CLASE_TD} whitespace-nowrap`}>{r.ultima_ejecucion ? fechaHora(r.ultima_ejecucion) : "—"}</td>
                     {puedeBorrar ? (
                       <td className={CLASE_TD}>
-                        {r.ejecuciones === 0 ? (
-                          <BorrarRelevador id={r.id} nombre={r.nombre} />
-                        ) : (
+                        {r.ejecuciones > 0 ? (
                           <span className="text-xs text-texto-secundario">Tiene pruebas: se conserva</span>
+                        ) : r.sugerencias > 0 ? (
+                          <span className="text-xs text-texto-secundario">Dejó sugerencias: se conserva</span>
+                        ) : (
+                          <BorrarRelevador id={r.id} nombre={r.nombre} />
                         )}
                       </td>
                     ) : null}

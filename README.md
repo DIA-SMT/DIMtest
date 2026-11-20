@@ -10,8 +10,9 @@ Desarrollado por la Dirección de Inteligencia Artificial.
 | Pieza | Estado |
 |---|---|
 | Catálogo de 217 pruebas extraído del PDF y cargado solo en la base | ✅ |
-| Portal de relevamiento (`/`): ingreso solo con nombre y apellido (la segunda vez, se elige de una lista del navegador), módulos, reservas, resultados, evidencias, revalidación | ✅ |
-| Panel de administración (`/admin`): tablero, pruebas, observaciones, incidencias, correcciones, prioridades, informes, relevadores, equipo, agente | ✅ |
+| Portal de relevamiento (`/`): ingreso solo con nombre y apellido (la segunda vez, se elige de una lista del navegador), módulos, reservas, resultados, evidencias, revalidación, sugerencias | ✅ |
+| Panel de administración (`/admin`): tablero, pruebas, observaciones, incidencias, correcciones, prioridades, sugerencias, informes, relevadores, equipo, agente | ✅ |
+| Sugerencias de los relevadores (D-017): funciones nuevas, mejoras e ideas desde el portal; el equipo las responde en el panel y el relevador ve la respuesta | ✅ |
 | Avance de DIM360 hacia el 100 % (`/admin/avance`, desde el tablero): qué porcentaje de las pruebas funciona, semana a semana, reconstruido del historial, y una estimación al ritmo de las últimas semanas | ✅ |
 | Informes en Excel y PDF (8 tipos), con las evidencias: enlaces en el Excel y anexo de imágenes en el PDF (D-014) | ✅ |
 | Ingreso del equipo con correo y contraseña propios (D-003, D-009) | ✅ |
