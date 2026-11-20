@@ -11,7 +11,8 @@ Desarrollado por la Dirección de Inteligencia Artificial.
 |---|---|
 | Catálogo de 217 pruebas extraído del PDF y cargado solo en la base | ✅ |
 | Portal de relevamiento (`/`): ingreso solo con nombre y apellido (la segunda vez, se elige de una lista del navegador), módulos, reservas, resultados, evidencias, revalidación | ✅ |
-| Panel de administración (`/admin`): tablero, pruebas, observaciones, incidencias, prioridades, informes, relevadores, equipo | ✅ |
+| Panel de administración (`/admin`): tablero, pruebas, observaciones, incidencias, correcciones, prioridades, informes, relevadores, equipo, agente | ✅ |
+| Avance de DIM360 hacia el 100 % (`/admin/avance`, desde el tablero): qué porcentaje de las pruebas funciona, semana a semana, reconstruido del historial, y una estimación al ritmo de las últimas semanas | ✅ |
 | Informes en Excel y PDF (8 tipos), con las evidencias: enlaces en el Excel y anexo de imágenes en el PDF (D-014) | ✅ |
 | Ingreso del equipo con correo y contraseña propios (D-003, D-009) | ✅ |
 | Pruebas e2e con Playwright | ⬜ Pendiente: el circuito se probó a mano en el navegador y con tests de integración |
