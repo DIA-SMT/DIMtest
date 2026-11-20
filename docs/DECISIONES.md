@@ -4,6 +4,26 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-016 · El agente trabaja en una sola rama, `agente`, y no mergea
+
+**Fecha:** 2026-11-20 · **Pidió:** DIA · **Cambia:** D-015 («Mergea y publica solo»)
+
+**Contexto.** El agente abría una rama `agente/inc-<número>` y un PR por incidencia: en dos días dejó 16 ramas y 14 PR abiertos en los repos de DIM360. El equipo trabaja distinto: cada persona tiene su rama (`lucas`, `matias`…), le trae `main` con un merge y abre un PR con su nombre que se mergea de vez en cuando.
+
+**Decisión.**
+- **Una rama por repo:** `agente`. Un commit por incidencia (`INC-<número>: …`) y un solo PR abierto, «Agente», con un comentario por incidencia que dice si está publicada en test.
+- **No mergea nunca** (tampoco lo tiene permitido): el PR «Agente» lo revisa y mergea el equipo, con merge commit, como los demás.
+- **Publica en test desde su rama**, con las mismas reglas que antes. No publica un archivo si en su rama tiene cambios de otra incidencia que todavía no está en test.
+- Las 14 correcciones que estaban en PR sueltos se juntaron en la rama `agente` y esos PR se cerraron apuntando al nuevo.
+
+**Consecuencias.**
+- Lo que el agente publica está en test antes que en `main`: si alguien despliega un archivo desde `main` o desde su rama, puede pisar una corrección del agente hasta que se mergee el PR «Agente». El agente tampoco despliega desde `main` un archivo con correcciones suyas ya publicadas (paso 9).
+- Si el equipo no quiere una corrección, se revierte su commit en la rama `agente`.
+- **El PR «Agente» se mergea con merge commit, nunca con squash.** Con squash, los commits de la rama no quedan en `main`: el agente los sigue viendo como correcciones sin publicar y deja de publicar los archivos que tocan. Si pasa, una persona vuelve la rama `agente` a `main`, en GitHub y en la máquina del agente.
+- Las reglas de permisos niegan subir a `main`, forzar y borrar ramas también con `git -C <repo>`, que es como trabaja el agente. `main` sigue sin protección en DIM360: esas reglas y estas instrucciones son la única barrera.
+
+---
+
 ## D-015 · Agente Claude: corrige incidencias de DIM360 y publica en test
 
 **Fecha:** 2026-11-17 · **Pidió:** DIA

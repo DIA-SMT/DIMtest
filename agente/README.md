@@ -10,7 +10,7 @@ El agente corre en una **máquina de la Dirección dentro de la red municipal** 
 |---|---|---|
 | **Node.js 22.12 o más** | Corre el agente | https://nodejs.org (LTS) |
 | **Git for Windows** | Repos, y la consola Bash que usa Claude | https://git-scm.com/download/win |
-| **GitHub CLI** | Abrir y mergear PR | `winget install GitHub.cli` |
+| **GitHub CLI** | Abrir el PR «Agente» y comentar cada corrección | `winget install GitHub.cli` |
 | **PHP 8.2 y Composer** | Verificar el back antes de publicar | Los mismos que usa el equipo |
 | **Claude Code** | El agente en sí | En PowerShell: `irm https://claude.ai/install.ps1 \| iex` (instalador nativo, deja `claude.exe`) |
 | **OpenSSH** | Desplegar en el servidor de test | Viene con Windows 10/11 (`ssh -V`) |
@@ -81,10 +81,10 @@ Tiene que dar todo ✓. Si algo da ✗, dice qué falta.
 
 ## 6. Primera vuelta, mirando
 
-1. En **Panel → Agente**: **«Puede mergear y publicar» apagado**, **encendido**, guardar.
+1. En **Panel → Agente**: **«Puede publicar en test» apagado**, **encendido**, guardar.
 2. En una incidencia sencilla: **«Pedirle al agente que la corrija»**.
 3. En la máquina: `npm run agente -- --una-vez`. Procesa ese trabajo y termina.
-4. Mirá el historial de la incidencia, el PR que abrió y la carpeta `agente\trabajos\<número>-<fecha>` (qué recibió, qué contestó Claude).
+4. Mirá el historial de la incidencia, su commit en el PR «Agente» y la carpeta `agente\trabajos\<número>-<fecha>` (qué recibió, qué contestó Claude).
 
 Para probar el circuito sin gastar uso ni tocar DIM360, con `CLAUDE_COMANDO=agente/simulador-claude.mjs` en `agente\.env`, el agente usa un simulador.
 

@@ -249,7 +249,7 @@ async function vencerAbandonados(q: Consulta, base?: string) {
 
 export interface PaqueteTrabajo {
   trabajo: { numero: number; origen: string; pedidoPor: string; pedidoAt: Date };
-  /** Si puede mergear y publicar en test, o solo dejar el PR abierto. */
+  /** Si puede publicar en test desde su rama `agente`, o solo dejar la corrección en el PR «Agente». */
   publicar: boolean;
   incidencia: {
     numero: number;
