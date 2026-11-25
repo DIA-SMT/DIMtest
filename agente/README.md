@@ -62,7 +62,7 @@ Copiá `agente\.env.example` a `agente\.env` (no se sube a git) y completalo:
 
 | Variable | Qué va |
 |---|---|
-| `PANEL_URL` | `https://dim-test.vercel.app` |
+| `PANEL_URL` | `https://dim360.195-35-42-168.sslip.io` |
 | `AGENTE_TOKEN` | El token del panel (paso 3.4) |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Lo de `claude setup-token` (paso 3.1) |
 | `CARPETA_DIM360` | `C:\repos\dim360` |

@@ -3,7 +3,7 @@ import { armarPedido, clientePanel, interpretarSalida, leerConfig, nombreSeguro,
 
 const TOKEN = `dimag_${"a".repeat(43)}`;
 const ENV = {
-  PANEL_URL: "https://dim-test.vercel.app/",
+  PANEL_URL: "https://dim360.195-35-42-168.sslip.io/",
   AGENTE_TOKEN: TOKEN,
   CARPETA_DIM360: "C:\\repos\\dim360",
   SSH_DESTINO: "dim360-test",
@@ -14,7 +14,7 @@ describe("configuración del agente", () => {
   it("acepta una configuración completa y aplica los valores por defecto", () => {
     const { config, errores } = leerConfig(ENV);
     expect(errores).toEqual([]);
-    expect(config).toMatchObject({ panelUrl: "https://dim-test.vercel.app", intervaloSegundos: 120, minutosMaximos: 60, claude: "claude" });
+    expect(config).toMatchObject({ panelUrl: "https://dim360.195-35-42-168.sslip.io", intervaloSegundos: 120, minutosMaximos: 60, claude: "claude" });
   });
 
   it("nombra cada variable que falta o está mal, sin mostrar valores", () => {
@@ -28,7 +28,7 @@ describe("configuración del agente", () => {
 
   it("solo acepta http en localhost (para probar contra el panel local)", () => {
     expect(leerConfig({ ...ENV, PANEL_URL: "http://localhost:3360" }).errores).toEqual([]);
-    expect(leerConfig({ ...ENV, PANEL_URL: "http://dim-test.vercel.app" }).errores).toHaveLength(1);
+    expect(leerConfig({ ...ENV, PANEL_URL: "http://dim360.195-35-42-168.sslip.io" }).errores).toHaveLength(1);
   });
 });
 
