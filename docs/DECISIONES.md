@@ -4,6 +4,21 @@ Registro de por qué el sistema es como es. **Las más nuevas van arriba.** Nunc
 
 ---
 
+## D-018 · La app pasa a la VPS de la Dirección; la base sigue en Supabase
+
+**Fecha:** 2026-11-25 · **Pidió:** DIA
+
+**Contexto.** Los proyectos de la Dirección se están mudando de Vercel (plan gratuito: si la cuenta se da de baja, caen todos juntos) a la VPS propia, con la guía «Migrar proyectos a la VPS».
+
+**Decisión.**
+- La app corre en la VPS como los demás proyectos: usuario `dim360qa`, `/srv/dim360-qa`, pm2 en `127.0.0.1:3017`, nginx con certificado en `dim360.195-35-42-168.sslip.io` hasta tener el dominio oficial. Procedimiento en [DESPLIEGUE-VPS.md](DESPLIEGUE-VPS.md).
+- **Por ahora solo la app**: la base y el bucket de evidencias siguen en Supabase, para mudarla rápido y sin cortar el relevamiento. La VPS usa el pooler de sesión.
+- **Vercel se dio de baja**: la VPS es la única. La dirección vieja (`dim-test.vercel.app`) ya no existe, y el agente apunta a la nueva (`PANEL_URL`).
+
+**Consecuencias.** Al cambiar de dirección se cierran las sesiones y cada navegador olvida su lista de nombres: los relevadores eligen su perfil en «¿Sos vos?». Mergear a `main` ya no despliega solo: hay que correr `desplegar.sh` en la VPS. Falta, más adelante: mover la base y las evidencias a la VPS (con respaldo diario) y el dominio oficial.
+
+---
+
 ## D-017 · Sugerencias de los relevadores
 
 **Fecha:** 2026-11-20 · **Pidió:** DIA

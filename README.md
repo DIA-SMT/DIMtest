@@ -89,6 +89,8 @@ PRUEBAS_DATABASE_URL=postgres://postgres@localhost:54360/postgres npm run test:i
 
 ## 5. Puesta en producción
 
+La app corre en la VPS de la Dirección (D-018); la base y las evidencias, en Supabase. Cómo desplegar, volver atrás e instalar desde cero: [docs/DESPLIEGUE-VPS.md](docs/DESPLIEGUE-VPS.md).
+
 **Primero migrar, después desplegar.**
 
 ```bash
@@ -105,19 +107,19 @@ npm run admin:crear -- --usuario nombre@smt.gob.ar --nombre "Nombre Apellido"
 | `DIRECT_URL` | No | Conexión directa para `db:migrar` (si la app usa un pooler) | Sí |
 | `DATABASE_SSL` | No | `requerido` o `desactivado` (por defecto: requerido salvo localhost) | No |
 | `SESSION_SECRET` | Sí en producción | Firma de las sesiones (32+ caracteres) | Sí |
-| `SUPABASE_URL` | En Vercel | URL del proyecto (`https://<ref>.supabase.co`), para el bucket de evidencias | No |
-| `SUPABASE_SECRET_KEY` | En Vercel | Clave secreta de Supabase (`sb_secret_…` o la `service_role`), solo en el servidor | **Sí** |
+| `SUPABASE_URL` | En la VPS | URL del proyecto (`https://<ref>.supabase.co`), para el bucket de evidencias | No |
+| `SUPABASE_SECRET_KEY` | En la VPS | Clave secreta de Supabase (`sb_secret_…` o la `service_role`), solo en el servidor | **Sí** |
 | `SUPABASE_BUCKET` | No | Nombre del bucket (por defecto `evidencias`) | No |
 | `WHATSAPP_TOKEN` | Para los avisos del agente | Token de acceso de WhatsApp Cloud API (Meta) | **Sí** |
 | `WHATSAPP_NUMERO_ID` | Junto con el token | Id del número de WhatsApp en Meta | No |
 | `WHATSAPP_PLANTILLA` / `WHATSAPP_IDIOMA` / `WHATSAPP_VERSION_API` | No | Plantilla aprobada (`aviso_dim360`), idioma (`es_AR`) y versión de la API (`v23.0`) | No |
 | `CARPETA_ARCHIVOS` | No | Dónde guardar las evidencias si no hay bucket (por defecto `.local/archivos`) | No |
 | `RESERVA_MINUTOS` | No | Duración de la reserva de una prueba (por defecto 30) | No |
-| `ENCABEZADOS_SEGURIDAD` | No | `nginx` si los encabezados de seguridad los pone el proxy | No |
+| `ENCABEZADOS_SEGURIDAD` | En la VPS | `nginx`: los encabezados de seguridad los pone nginx (se lee al compilar) | No |
 
 ### Evidencias (D-011)
 
-- **Con `SUPABASE_URL` y `SUPABASE_SECRET_KEY`** (y una base real): van a un **bucket privado** de Supabase Storage. Es lo que hace falta en Vercel, que no tiene disco persistente. El bucket no tiene URL pública: la app lo lee con la clave secreta y sirve cada archivo por `/evidencias/<id>`, solo a quien tiene sesión.
+- **Con `SUPABASE_URL` y `SUPABASE_SECRET_KEY`** (y una base real): van a un **bucket privado** de Supabase Storage. Es lo que usa la VPS (D-018), igual que antes Vercel. El bucket no tiene URL pública: la app lo lee con la clave secreta y sirve cada archivo por `/evidencias/<id>`, solo a quien tiene sesión.
 - **Sin ellas, o en modo local**: van a disco (`CARPETA_ARCHIVOS`). En la computadora nunca se sube nada al bucket, aunque `.env.local` tenga la clave (la usan los scripts).
 - `npm run almacenamiento:preparar` crea el bucket (privado, 8 MB por archivo, JPG, PNG, WebP y PDF) y prueba subir, leer y borrar.
 

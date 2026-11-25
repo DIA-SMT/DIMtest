@@ -8,7 +8,7 @@ export function leerConfig(env) {
   const errores = [];
   const url = (env.PANEL_URL ?? "").replace(/\/$/, "");
   if (!/^https:\/\/[^\s/]+$/.test(url) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(url)) {
-    errores.push("PANEL_URL: la dirección del panel, por ejemplo https://dim-test.vercel.app");
+    errores.push("PANEL_URL: la dirección del panel, por ejemplo https://dim360.195-35-42-168.sslip.io");
   }
   const token = env.AGENTE_TOKEN ?? "";
   if (!/^dimag_[A-Za-z0-9_-]{43}$/.test(token)) errores.push("AGENTE_TOKEN: el token que se genera en Panel → Agente");
